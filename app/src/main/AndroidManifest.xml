@@ -10,6 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Crimson">
         <activity
+            android:name=".Registration.Registration_Email"
+            android:exported="false" />
+        <activity
+            android:name=".Registration.Registration_PhoneVerification"
+            android:exported="false" />
+        <activity
+            android:name=".Registration.Registration_Phone"
+            android:exported="false" />
+        <activity
+            android:name=".Registration.Registration_Main"
+            android:exported="false" />
+        <activity
             android:name=".Chat"
             android:exported="true" />
         <activity

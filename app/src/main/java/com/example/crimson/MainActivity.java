@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void saveData(String token,String phoneNo,String profilePic,String userName,String userID){
+    public void saveData(String token,String phoneNo,String profilePic,String userName,String userID,String address){
         SharedPreferences sharedPreferences= getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("TOKEN", token);
@@ -30,12 +30,14 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("PROFILE_PICTURE", profilePic);
         editor.putString("USER_NAME", userName);
         editor.putString("USER_ID", userID);
+        editor.putString("ADDRESS", address);
         editor.apply();
     }
 
     public void getData(){
         SharedPreferences sharedPreferences= getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         text= sharedPreferences.getString(TEXT, "VALUE NOT FOUND!");
+
     }
 
 }
