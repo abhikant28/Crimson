@@ -1,4 +1,4 @@
-package com.example.crimson.Database;
+package com.akw.crimson.Database;
 
 import android.app.Application;
 
@@ -6,12 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.example.crimson.AppObjects.Message;
-import com.example.crimson.AppObjects.Profile;
-import com.example.crimson.AppObjects.User;
+import com.akw.crimson.AppObjects.Message;
+import com.akw.crimson.AppObjects.Profile;
+import com.akw.crimson.AppObjects.User;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class TheViewModel extends AndroidViewModel {
 

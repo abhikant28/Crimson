@@ -1,4 +1,4 @@
-package com.example.crimson.Registration;
+package com.akw.crimson.Registration;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,7 +17,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.crimson.R;
+import com.akw.crimson.MainActivity;
+import com.akw.crimson.R;
 
 public class Registration_PhoneVerification extends AppCompatActivity {
 
@@ -56,7 +57,10 @@ public class Registration_PhoneVerification extends AppCompatActivity {
                     String otp = et_OTP.getText().toString();
                     int check = makeTheCall(otp);
                     if(check==5785){
-                        SharedPreferences sharedPreferences= getSharedPreferences()
+                        SharedPreferences sharedPreferences= getSharedPreferences(MainActivity.SHARED_PREFS, MODE_PRIVATE);
+                        SharedPreferences.Editor editor= sharedPreferences.edit();
+                        editor.putString("TOKEN", docen);
+                        editor.apply();
                         startActivity(new Intent(getApplicationContext(),Registration_Email.class));
                     }else if(check == 6118){
                         Toast.makeText(getApplicationContext(),"Network Unavailable",Toast.LENGTH_SHORT).show();

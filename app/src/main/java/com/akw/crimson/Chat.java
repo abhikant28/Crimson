@@ -1,4 +1,4 @@
-package com.example.crimson;
+package com.akw.crimson;
 
 import static java.security.AccessController.getContext;
 
@@ -10,9 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.crimson.AppObjects.Profile;
-import com.example.crimson.Chat_RecyclerView_Adapter;
-import com.example.crimson.R;
+import com.akw.crimson.AppObjects.Profile;
+import com.akw.crimson.R;
 
 public class Chat extends AppCompatActivity {
 

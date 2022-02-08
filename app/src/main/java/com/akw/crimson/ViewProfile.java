@@ -1,4 +1,4 @@
-package com.example.crimson;
+package com.akw.crimson;
 
 public class ViewProfile {
 

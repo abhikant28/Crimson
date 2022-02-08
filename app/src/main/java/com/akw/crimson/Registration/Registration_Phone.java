@@ -1,4 +1,4 @@
-package com.example.crimson.Registration;
+package com.akw.crimson.Registration;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,7 +19,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.crimson.R;
+import com.akw.crimson.R;
 
 
 public class Registration_Phone extends AppCompatActivity implements AdapterView.OnItemSelectedListener {

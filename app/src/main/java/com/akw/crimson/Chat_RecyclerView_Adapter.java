@@ -1,4 +1,4 @@
-package com.example.crimson;
+package com.akw.crimson;
 
 
 import android.view.LayoutInflater;
@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.crimson.AppObjects.Message;
+import com.akw.crimson.AppObjects.Message;
 
 
 public class Chat_RecyclerView_Adapter extends ListAdapter<Message,Chat_RecyclerView_Adapter.MyViewHolder> {

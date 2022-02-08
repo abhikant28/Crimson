@@ -1,4 +1,4 @@
-package com.example.crimson.Database.DAOs;
+package com.akw.crimson.Database.DAOs;
 
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -6,7 +6,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.example.crimson.AppObjects.Profile;
+import com.akw.crimson.AppObjects.Profile;
 
 import java.util.List;
 

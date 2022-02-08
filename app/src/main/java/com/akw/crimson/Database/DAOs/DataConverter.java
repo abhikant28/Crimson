@@ -1,4 +1,4 @@
-package com.example.crimson.Database.DAOs;
+package com.akw.crimson.Database.DAOs;
 
 import androidx.room.TypeConverter;
 

@@ -1,6 +1,5 @@
-package com.example.crimson.Registration;
+package com.akw.crimson.Registration;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -8,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.crimson.R;
+import com.akw.crimson.R;
 
 public class Registration_Main extends AppCompatActivity {
 

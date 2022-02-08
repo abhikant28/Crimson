@@ -1,10 +1,10 @@
-package com.example.crimson.Registration;
+package com.akw.crimson.Registration;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.example.crimson.R;
+import com.akw.crimson.R;
 
 public class Registration_Email extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.crimson.Database;
+package com.akw.crimson.Database;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -9,12 +9,12 @@ import androidx.room.RoomDatabase;
 import androidx.room.Database;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.example.crimson.AppObjects.Message;
-import com.example.crimson.AppObjects.Profile;
-import com.example.crimson.AppObjects.User;
-import com.example.crimson.Database.DAOs.UsersDao;
-import com.example.crimson.Database.DAOs.MessagesDao;
-import com.example.crimson.Database.DAOs.ProfileDao;
+import com.akw.crimson.AppObjects.Message;
+import com.akw.crimson.AppObjects.Profile;
+import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Database.DAOs.UsersDao;
+import com.akw.crimson.Database.DAOs.MessagesDao;
+import com.akw.crimson.Database.DAOs.ProfileDao;
 
 @Database(entities = {Profile.class, User.class, Message.class}, version=1)
 abstract class TheDatabase extends RoomDatabase{

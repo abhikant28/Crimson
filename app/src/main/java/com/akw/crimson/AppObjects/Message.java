@@ -1,4 +1,4 @@
-package com.example.crimson.AppObjects;
+package com.akw.crimson.AppObjects;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

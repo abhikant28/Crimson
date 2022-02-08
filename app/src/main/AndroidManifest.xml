@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.crimson">
+    package="com.akw.crimson">
 
     <application
         android:allowBackup="true"
@@ -10,22 +10,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Crimson">
         <activity
-            android:name=".Registration.Registration_Email"
+            android:name="com.akw.crimson.Registration.Registration_Email"
             android:exported="false" />
         <activity
-            android:name=".Registration.Registration_PhoneVerification"
+            android:name="com.akw.crimson.Registration.Registration_PhoneVerification"
             android:exported="false" />
         <activity
-            android:name=".Registration.Registration_Phone"
+            android:name="com.akw.crimson.Registration.Registration_Phone"
             android:exported="false" />
         <activity
-            android:name=".Registration.Registration_Main"
+            android:name="com.akw.crimson.Registration.Registration_Main"
             android:exported="false" />
         <activity
-            android:name=".Chat"
+            android:name="com.akw.crimson.Chat"
             android:exported="true" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.akw.crimson.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
