@@ -14,7 +14,7 @@ import com.akw.crimson.R;
 public class Chat extends AppCompatActivity {
 
     Profile profile;
-    Chat_RecyclerView_Adapter chatAdapter;
+    Chat_RecyclerAdapter chatAdapter;
     RecyclerView chatRecyclerView;
 
     @Override
@@ -29,7 +29,6 @@ public class Chat extends AppCompatActivity {
 
     private void loadChat(String profileID) {
             Log.i("SetAdapter:","Working");
-            Chat_RecyclerView_Adapter adapter = new Chat_RecyclerView_Adapter( );
             LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             layoutManager.setStackFromEnd(true);
