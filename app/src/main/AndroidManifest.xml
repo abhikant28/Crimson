@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.akw.crimson">
+    package="com.akw.crimson" >
 
     <application
         android:allowBackup="true"
@@ -8,25 +8,28 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Crimson">
+        android:theme="@style/Theme.Crimson" >
         <activity
-            android:name="com.akw.crimson.Registration.Registration_Email"
+            android:name=".MainChatList"
             android:exported="false" />
         <activity
-            android:name="com.akw.crimson.Registration.Registration_PhoneVerification"
+            android:name=".Registration.Registration_Email"
             android:exported="false" />
         <activity
-            android:name="com.akw.crimson.Registration.Registration_Phone"
+            android:name=".Registration.Registration_PhoneVerification"
             android:exported="false" />
         <activity
-            android:name="com.akw.crimson.Registration.Registration_Main"
+            android:name=".Registration.Registration_Phone"
             android:exported="false" />
         <activity
-            android:name="com.akw.crimson.Chat"
+            android:name=".Registration.Registration_Main"
+            android:exported="false" />
+        <activity
+            android:name=".Chat.Chat"
             android:exported="true" />
         <activity
-            android:name="com.akw.crimson.MainActivity"
-            android:exported="true">
+            android:name=".MainActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

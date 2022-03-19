@@ -47,10 +47,6 @@ public class User {
         return pic;
     }
 
-    public void setPic(String pic) {
-        this.pic = pic;
-    }
-
     public String getUser_id() {
         return user_id;
     }

@@ -1,6 +1,4 @@
-package com.akw.crimson;
-
-import static java.security.AccessController.getContext;
+package com.akw.crimson.Chat;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -31,8 +29,8 @@ public class Chat extends AppCompatActivity {
 
     private void loadChat(String profileID) {
             Log.i("SetAdapter:","Working");
-            Chat_RecyclerView_Adapter adapter = new Chat_RecyclerView_Adapter(topicList,rListener);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+            Chat_RecyclerView_Adapter adapter = new Chat_RecyclerView_Adapter( );
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             layoutManager.setStackFromEnd(true);
             layoutManager.setSmoothScrollbarEnabled(false);
