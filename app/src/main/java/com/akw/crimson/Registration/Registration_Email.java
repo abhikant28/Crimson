@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.akw.crimson.R;
 
-import java.net.PasswordAuthentication;
 import java.util.Properties;
 
 import javax.mail.*;
@@ -26,14 +25,14 @@ public class Registration_Email extends AppCompatActivity {
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password.toCharArray());
+                return new PasswordAuthentication(username, password);
             }
         });
 
         try {
 
             Message message = new MimeMessage(session);
-            ((MimeMessage) message).setFrom(new InternetAddress("to@yourdomain.com"));
+            message.setFrom(new InternetAddress("to@yourdomain.com"));
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse("to@yourdomain.com"));
             message.setSubject("9$$#AA#$$9");
