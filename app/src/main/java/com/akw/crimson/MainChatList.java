@@ -1,14 +1,21 @@
 package com.akw.crimson;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.akw.crimson.AppObjects.Message;
 import com.akw.crimson.AppObjects.User;
 import com.akw.crimson.Chat.Chat;
+import com.akw.crimson.Database.TheViewModel;
+
+import java.util.List;
 
 public class MainChatList extends AppCompatActivity {
 
@@ -16,7 +23,7 @@ public class MainChatList extends AppCompatActivity {
     ChatList_RecyclerAdapter chatListAdapter;
     User user;
 
-
+    TheViewModel dbViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +34,13 @@ public class MainChatList extends AppCompatActivity {
         chatListAdapter= new ChatList_RecyclerAdapter();
 
         getChatList();
-
+        dbViewModel = ViewModelProviders.of(this).get(TheViewModel.class);
+        dbViewModel.getChatList().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(@Nullable List<User> users) {
+                chatListAdapter.submitList(users);
+            }
+        });
     }
 
     private void getChatList() {

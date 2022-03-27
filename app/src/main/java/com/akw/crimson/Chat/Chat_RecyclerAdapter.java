@@ -92,9 +92,10 @@ public class Chat_RecyclerAdapter extends ListAdapter<Message, Chat_RecyclerAdap
             }
         }
 
-    public Message getUserAt(int position) {
+        public Message getUserAt(int position) {
             return getItem(position);
         }
+
         public interface OnItemClickListener {
             void onItemClick(Message user);
         }
