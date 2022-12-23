@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Phone Number Verification"
-        android:textSize="28sp"
+        android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
@@ -38,24 +38,27 @@
 
     <Spinner
         android:id="@+id/Registration_Phone_Spinner_CountryNames"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="16dp"
+        android:tooltipText="Select Country"
+        android:spinnerMode="dialog"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="204dp" />
+        app:layout_constraintTop_toBottomOf="@id/textView3" />
 
     <Button
         android:id="@+id/Registration_Phone_Button_Next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
         android:text="Next"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="332dp" />
+        app:layout_constraintTop_toBottomOf="@id/Registration_Phone_LinearLayout_number" />
 
     <LinearLayout
+        android:id="@+id/Registration_Phone_LinearLayout_number"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -73,7 +76,6 @@
             android:id="@+id/Registration_CountryCode_TextViewPhone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="+ 91"
             android:textSize="24sp" />
 

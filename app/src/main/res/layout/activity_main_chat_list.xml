@@ -4,11 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainChatList">
+    tools:context=".MainChatList"
+    android:background="#EF1440">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MainChat_List_RecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/main_chat_list_item"/>
+        tools:listitem="@layout/main_chatlist_item"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="15dp"
+
+        android:src="@drawable/ic_baseline_message_24"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

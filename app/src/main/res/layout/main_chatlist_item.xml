@@ -3,37 +3,52 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="5dp">
+    android:background="#DC143C"
+    android:padding="10dp">
 
-    <androidx.appcompat.widget.AppCompatImageView
+<androidx.cardview.widget.CardView
+    android:id="@+id/MainChatList_Item_CardView_UserPic"
+    android:layout_width="46dp"
+    android:layout_height="46dp"
+    app:cardCornerRadius="23dp"
+    android:layout_marginLeft="15dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+    <ImageView
         android:id="@+id/MainChatList_Item_ImageView_UserPic"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginStart="15dp"
-        android:src="@drawable/common_google_signin_btn_icon_dark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cropToPadding="true"
+        android:src="@drawable/ic_baseline_person_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+</androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/MainChatList_Item_TextView_UserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="15dp"
         android:text="User Name"
-        android:textSize="16sp"
+        android:textSize="20dp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/MainChatList_Item_ImageView_UserPic"
+            android:textColor="@color/white"
+        android:layout_marginLeft="15dp"
+        app:layout_constraintStart_toEndOf="@id/MainChatList_Item_CardView_UserPic"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/MainChatList_Item_TextView_UserMsg"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginLeft="15dp"
         android:text="Message content"
-        app:layout_constraintStart_toEndOf="@id/MainChatList_Item_ImageView_UserPic"
+        app:layout_constraintStart_toEndOf="@id/MainChatList_Item_CardView_UserPic"
         app:layout_constraintTop_toBottomOf="@id/MainChatList_Item_TextView_UserName"
-        android:layout_width="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:textColor="#B3B2B2"
+        android:textSize="15dp"/>
 
     <TextView
         android:id="@+id/MainChatList_Item_TextView_UnreadCount"
@@ -41,17 +56,27 @@
         android:layout_height="wrap_content"
         android:text="2"
         android:textStyle="italic"
+        android:textColor="#B3B2B2"
+        android:layout_marginEnd="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/MainChatList_Item_TextView_Time"
-        app:layout_constraintStart_toEndOf="@+id/MainChatList_Item_TextView_UserMsg"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
     <TextView
         android:id="@+id/MainChatList_Item_TextView_Time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
+        android:layout_marginEnd="12dp"
+        android:textColor="#B3B2B2"
         android:text="1:00 PM"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="-3dp"
+        android:background="#393838"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

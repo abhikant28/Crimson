@@ -7,32 +7,32 @@
     android:paddingVertical="5dp"
     app:flow_horizontalAlign="end">
 
-    <LinearLayout
-        android:id="@+id/Message_Sent_LL"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/purple_500"
-        android:orientation="vertical"
-        android:paddingHorizontal="30dp"
-        android:paddingVertical="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+<!--    <LinearLayout-->
+<!--        android:id="@+id/Message_Sent_LL"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/purple_500"-->
+<!--        android:orientation="vertical"-->
+<!--        android:paddingHorizontal="30dp"-->
+<!--        android:paddingVertical="5dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
 
-        <TextView
-            android:id="@+id/Message_Sent_msgBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Message"
-            android:textSize="25dp"/>
+<!--        <TextView-->
+<!--            android:id="@+id/Message_Sent_msgBox"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Message"-->
+<!--            android:textSize="25dp"/>-->
 
-        <TextView
-            android:id="@+id/Message_Sent_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time"
-            android:textSize="15dp" />
-    </LinearLayout>
+<!--        <TextView-->
+<!--            android:id="@+id/Message_Sent_time"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Time"-->
+<!--            android:textSize="15dp" />-->
+<!--    </LinearLayout>-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

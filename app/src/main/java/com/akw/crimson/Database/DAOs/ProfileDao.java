@@ -1,19 +1,20 @@
 package com.akw.crimson.Database.DAOs;
 
+import android.database.Cursor;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
 import com.akw.crimson.AppObjects.Profile;
 
-import java.util.List;
-
 @Dao
 public interface ProfileDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Profile profile);
 
     @Delete
@@ -23,9 +24,9 @@ public interface ProfileDao {
     void update(Profile profile);
 
     @Query("SELECT * FROM profile_table")
-    List<Profile> getAllProfiles();
+    Cursor getAllProfiles();
 
-    @Query("Select * FROM profile_table where ID=:user_id")
+    @Query("Select * FROM profile_table where user_ID=:user_id")
     Profile getProfile(String user_id);
 
 }

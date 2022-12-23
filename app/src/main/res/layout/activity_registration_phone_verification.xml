@@ -10,75 +10,71 @@
         android:id="@+id/Registration_PhoneVerification_TextView_Number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:paddingTop="15dp"
         android:text="Verify NUMBER"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toTopOf="@+id/Registration_PhoneVerification_TextView_MessageSent"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.032" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/Registration_PhoneVerification_TextView_MessageSent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="12dp"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:text="We have sent a 6 digit One TIme Password to your number via SMS. Please check."
-        android:textSize="19dp"
-        app:layout_constraintBottom_toTopOf="@+id/Registration_PhoneVerification_TextView_Change"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="20dp"
+        android:layout_marginTop="32dp"
+        android:text="We have sent a 6 digit One Time Password to your number via SMS. Please check."
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/Registration_PhoneVerification_TextView_Number"
+        app:layout_constraintStart_toStartOf="@+id/Registration_PhoneVerification_TextView_Number"
         app:layout_constraintTop_toBottomOf="@+id/Registration_PhoneVerification_TextView_Number" />
 
     <TextView
         android:id="@+id/Registration_PhoneVerification_TextView_Change"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="52dp"
+        android:layout_marginTop="4dp"
         android:text="Change Number?"
         android:textColor="#0277BD"
-        app:layout_constraintBottom_toTopOf="@+id/Registration_PhoneVerification_EditText_OTP"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/Registration_PhoneVerification_TextView_MessageSent"
+        app:layout_constraintTop_toBottomOf="@+id/Registration_PhoneVerification_TextView_MessageSent" />
 
     <EditText
         android:id="@+id/Registration_PhoneVerification_EditText_OTP"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="88dp"
-        android:ems="6"
-        android:hint="_  _  _    _  _  _"
+        android:layout_marginTop="32dp"
+        android:hint="___ ___"
         android:inputType="number"
         android:textAlignment="center"
+        android:letterSpacing="1"
         android:textSize="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/Registration_PhoneVerification_Button_Verify"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:maxLength="6"
+        app:layout_constraintEnd_toEndOf="@+id/Registration_PhoneVerification_TextView_Change"
+        app:layout_constraintStart_toStartOf="@+id/Registration_PhoneVerification_TextView_Change"
+        app:layout_constraintTop_toBottomOf="@+id/Registration_PhoneVerification_TextView_Change" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Enter 6 - digit code"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/Registration_PhoneVerification_EditText_OTP"
+        app:layout_constraintStart_toStartOf="@+id/Registration_PhoneVerification_EditText_OTP"
         app:layout_constraintTop_toBottomOf="@+id/Registration_PhoneVerification_EditText_OTP" />
 
     <Button
         android:id="@+id/Registration_PhoneVerification_Button_Verify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
         android:text="Verify"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="367dp" />
+        app:layout_constraintEnd_toEndOf="@+id/textView6"
+        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
 </androidx.constraintlayout.widget.ConstraintLayout>

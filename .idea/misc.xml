@@ -6,11 +6,12 @@
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/activity_chat.xml" value="0.2" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/activity_main_chat_list.xml" value="0.25" />
+        <entry key="..\:/Work/Crimson/app/src/main/res/layout/activity_register.xml" value="0.25" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/activity_registration_email.xml" value="0.25" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/activity_registration_main.xml" value="0.264" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/activity_registration_phone.xml" value="0.264" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/activity_registration_phone_verification.xml" value="0.264" />
-        <entry key="..\:/Work/Crimson/app/src/main/res/layout/chat_date_layout.xml" value="0.12708333333333333" />
+        <entry key="..\:/Work/Crimson/app/src/main/res/layout/chat_date_layout.xml" value="0.264" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/main_chat_list_item.xml" value="0.25" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/message_layout.xml" value="0.264" />
         <entry key="..\:/Work/Crimson/app/src/main/res/layout/message_received_layout.xml" value="0.24564102564102563" />

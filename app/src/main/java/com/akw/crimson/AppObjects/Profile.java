@@ -1,5 +1,6 @@
 package com.akw.crimson.AppObjects;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -7,22 +8,32 @@ import androidx.room.PrimaryKey;
 public class Profile {
 
      @PrimaryKey
-     private String ID;
+     @NonNull private String user_ID;
      private String address;
      private String name;
      private String pic;
      private String phoneNumber;
      private String status;
      private String groups;
+     private boolean blocked;
 
-     public Profile(String address,String ID, String name, String pic, String phoneNumber, String status, String groups) {
-          this.ID = ID;
+     public Profile(String address,String user_ID, String name, String pic, String phoneNumber, String status, String groups, boolean blocked) {
+          this.user_ID = user_ID;
           this.address=address;
           this.name = name;
           this.pic = pic;
           this.phoneNumber = phoneNumber;
           this.status = status;
           this.groups = groups;
+          this.blocked=blocked;
+     }
+
+     public String getUser_ID() {
+          return user_ID;
+     }
+
+     public void setUser_ID(String user_ID) {
+          this.user_ID = user_ID;
      }
 
      public String getAddress() {
@@ -31,14 +42,6 @@ public class Profile {
 
      public void setAddress(String address) {
           this.address = address;
-     }
-
-     public String getID() {
-          return ID;
-     }
-
-     public void setID(String ID) {
-          this.ID = ID;
      }
 
      public String getName() {
@@ -79,5 +82,13 @@ public class Profile {
 
      public void setGroups(String groups) {
           this.groups = groups;
+     }
+
+     public boolean isBlocked() {
+          return blocked;
+     }
+
+     public void setBlocked(boolean blocked) {
+          this.blocked = blocked;
      }
 }

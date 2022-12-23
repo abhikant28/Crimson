@@ -1,6 +1,7 @@
 package com.akw.crimson.Database;
 
 import android.app.Application;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,18 +11,23 @@ import com.akw.crimson.AppObjects.Message;
 import com.akw.crimson.AppObjects.Profile;
 import com.akw.crimson.AppObjects.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TheViewModel extends AndroidViewModel {
 
     private TheRepository repository;
-    private LiveData<List<Message>> chatMessages;
-    private LiveData<List<User>> chatList;
+    private Cursor chatMessages;
+    private Cursor chatList;
+    private LiveData<List<User>> allUsers;
+    private LiveData<List<Message>> pendingMessagesList;
 
     public TheViewModel(@NonNull Application application) {
         super(application);
         repository= new TheRepository(application);
-        chatList=repository.getChatList();
+//        chatList=repository.getChatList();
+        allUsers=repository.getAllUserList();
+        pendingMessagesList= repository.getPendingMessagesList();
     }
 
     public void insertMessage(Message msg){
@@ -30,11 +36,14 @@ public class TheViewModel extends AndroidViewModel {
     public void updateMessage(Message msg){
         repository.updateMessage(msg);
     }
-    public LiveData<List<Message>> getChatMessages(String user_ID){
+    public Cursor getChatMessages(String user_ID){
         return repository.getChatMessages(user_ID);
     }
     public Message getMessage(String L_msg_ID){
         return repository.getMessage(L_msg_ID);
+    }
+    public LiveData<List<Message>> getPendingMessagesList() {
+        return pendingMessagesList;
     }
 
     public void insertUser(User user){
@@ -46,11 +55,11 @@ public class TheViewModel extends AndroidViewModel {
     public void deleteUser(User user){
         repository.deleteUser(user);
     }
-    public LiveData<List<User>> getChatList(){
-        return chatList;
+    public Cursor getChatList(){
+        return repository.getChatList();
     }
-    public List<User> getAllUsers(){
-        return repository.getAllUsers();
+    public LiveData<List<User>> getAllUsersList(){
+        return repository.getAllUserList();
     }
     public User getUser(String user_ID){
         return repository.getUser(user_ID);
@@ -65,13 +74,11 @@ public class TheViewModel extends AndroidViewModel {
     public void updateProfile(Profile profile){
         repository.updateProfile(profile);
     }
-    public List<Profile> getAllProfiles(){
+    public Cursor getAllProfiles(){
         return repository.getAllProfiles();
     }
     public Profile getProfile(String user_id){
         return repository.getProfile(user_id);
     }
 
-
-    }
 }

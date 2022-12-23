@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "824777866852",
+    "firebase_url": "https://crimson-ims-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "crimson-ims",
+    "storage_bucket": "crimson-ims.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824777866852:android:29b27e5a12510ada80e971",
+        "android_client_info": {
+          "package_name": "com.akw.crimson"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "824777866852-d9kd9k3l9jdprif35knkkccsf0efkvbd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8b7MWtFfmDRr3EdBtpfpZEPTg19ieYo4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "824777866852-d9kd9k3l9jdprif35knkkccsf0efkvbd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

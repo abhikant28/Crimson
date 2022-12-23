@@ -1,37 +1,101 @@
 package com.akw.crimson.AppObjects;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 @Entity(tableName = "messages_Table")
 public class Message {
 
-    @PrimaryKey(autoGenerate = true)
-    private String local_msg_ID;
+    @PrimaryKey
+    @NonNull private String local_msg_ID;
     private String msg_ID;
     private String user_id;
+    private String _id;
     private String tag;
     private String msg;
     private String time;
+    private String date;
     private boolean self;
     private boolean unread;
-
     private boolean media;
     private String mediaID;
-
     private int status;
 
-    public Message( String user_id, String tag, String msg, String time, boolean self, boolean unread, boolean media, String mediaID, int status) {
+
+    public String asString(String selfID) {
+        //return "{"+msg_ID+","+selfID+","+tag+","+msg+","+time+","+date+","+media+","+mediaID+"}";
+         return "["+msg_ID+","+selfID+","+tag+","+ "\""+msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_","%u%")+"\""+","+media+","+mediaID+"]";
+
+    }
+
+    public Message(String msg_ID, String user_id, String tag, String msg,boolean self, boolean media, String mediaID, int status) {
+        Calendar time = Calendar.getInstance();
+        this.local_msg_ID = msg_ID+"_"+user_id;
+        this.msg_ID = msg_ID;
+        this.user_id = user_id;
+        this.tag = tag;
+        this.msg = msg;
+        this.time = (time==null)?"12:00 ":(String.format("%02d", time.get(Calendar.HOUR_OF_DAY))+":"+String.format("%02d",time.get(Calendar.MINUTE)));
+        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+        this.unread = true;
+        this.media = media;
+        this.mediaID = mediaID;
+        this.status = status;
+        this.self=self;
+    }
+
+
+    public Message(String[] s){
+        Calendar time = Calendar.getInstance();
+        this.local_msg_ID = msg_ID+"_"+user_id;
+        this.msg_ID = s[0];
+        this.user_id = s[1];
+        this.tag = s[2];
+        this.msg = s[3].replaceAll("%c%", ",").replaceAll("%q%", "\"").replaceAll("%u%", "_");
+        this.time = (time==null)?"12:00 ":(String.format("%02d", time.get(Calendar.HOUR_OF_DAY))+":"+String.format("%02d",time.get(Calendar.MINUTE)));
+        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+        this.unread = false;
+        this.media = Boolean.parseBoolean(s[4]);
+        this.mediaID = s[5];
+        this.status = 4;
+        this.self=false;
+    }
+
+    public Message(String msg_id, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status, String time, String date) {
+        this.local_msg_ID = msg_ID+"_"+user_id;
+        this.msg_ID = msg_id;
         this.user_id = user_id;
         this.tag = tag;
         this.msg = msg;
         this.time = time;
-        this.self = self;
-        this.unread = unread;
+        this.date = date;
+        this.unread = true;
         this.media = media;
         this.mediaID = mediaID;
         this.status = status;
-        this.msg_ID=user_id+local_msg_ID;
+        this.self=self;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getLocal_msg_ID() {
@@ -82,6 +146,14 @@ public class Message {
         this.time = time;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     public boolean isSelf() {
         return self;
     }
@@ -121,4 +193,6 @@ public class Message {
     public void setStatus(int status) {
         this.status = status;
     }
+
+
 }

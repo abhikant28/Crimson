@@ -4,65 +4,114 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#DF1C43"
     tools:context=".Chat.Chat">
 
-    <Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/toolbar"
-        android:title="Name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/Chat_RecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
-        tools:listitem="@layout/message_received_layout"/>
-
     <LinearLayout
-        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="4dp">
+        <!--    <androidx.appcompat.widget.Toolbar-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        android:id="@+id/toolbar"-->
+        <!--        android:title="Name"-->
+        <!--        app:layout_constraintStart_toStartOf="parent"-->
+        <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/Chat_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#DF1C43"
+            tools:listitem="@layout/message_layout" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:animateLayoutChanges="true"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:weightSum="1">
 
-            <EditText
-                android:id="@+id/editTextTextPersonName"
-                android:layout_width="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Text"
-                tools:layout_editor_absoluteX="60dp"
-                tools:layout_editor_absoluteY="465dp" />
+                android:layout_weight="1"
+                android:backgroundTint="#636363"
+                app:cardCornerRadius="25dp">
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@drawable/ic_baseline_attach_file_24" />
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:padding="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:weightSum="1"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <ImageButton
+                        android:id="@+id/Chat_Button_Emoji"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/ic_baseline_emoji_emotions_24"
+                        android:backgroundTint="#B3B2B2"
+                         />
+
+                    <EditText
+                        android:id="@+id/Chat_EditText_Message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="2dp"
+                        android:background="@drawable/round_box_chat_input"
+                        android:backgroundTint="#636363"
+                        android:hint="Message..."
+                        android:textColorHint="#B3B2B2"
+                        android:textSize="18dp"
+                        android:singleLine="false"
+                        android:textColor="@color/white"
+                        android:scrollHorizontally="false"
+                        android:maxLines="10"
+                        android:inputType="textMultiLine|textCapSentences"/>
+
+                    <ImageButton
+                        android:id="@+id/Chat_Button_Attachment"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/ic_baseline_attach_file_24"
+                        android:backgroundTint="#B3B2B2"
+                        android:rotation="-45" />
+
+                    <ImageButton
+                        android:id="@+id/Chat_Button_Camera"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/ic_baseline_camera_alt_24"
+                        android:backgroundTint="#B3B2B2"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <ImageButton
+                android:id="@+id/Chat_Button_Send"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_marginLeft="2dp"
+                android:background="@drawable/circle_box"
+                android:src="@drawable/ic_baseline_send_24" />
+
         </LinearLayout>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/ic_baseline_send_24" />
-
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
