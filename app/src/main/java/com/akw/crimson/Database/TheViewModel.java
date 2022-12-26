@@ -11,7 +11,6 @@ import com.akw.crimson.AppObjects.Message;
 import com.akw.crimson.AppObjects.Profile;
 import com.akw.crimson.AppObjects.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TheViewModel extends AndroidViewModel {
@@ -19,14 +18,16 @@ public class TheViewModel extends AndroidViewModel {
     private TheRepository repository;
     private Cursor chatMessages;
     private Cursor chatList;
-    private LiveData<List<User>> allUsers;
+    private LiveData<List<User>> getChatList;
     private LiveData<List<Message>> pendingMessagesList;
+    private  LiveData<List<User>> getAllUsers;
 
     public TheViewModel(@NonNull Application application) {
         super(application);
         repository= new TheRepository(application);
 //        chatList=repository.getChatList();
-        allUsers=repository.getAllUserList();
+        getChatList =repository.getGetChatList();
+       getAllUsers = repository.getGetAllUsersList();
         pendingMessagesList= repository.getPendingMessagesList();
     }
 
@@ -46,6 +47,7 @@ public class TheViewModel extends AndroidViewModel {
         return pendingMessagesList;
     }
 
+
     public void insertUser(User user){
         repository.insertUser(user);
     }
@@ -55,15 +57,16 @@ public class TheViewModel extends AndroidViewModel {
     public void deleteUser(User user){
         repository.deleteUser(user);
     }
-    public Cursor getChatList(){
-        return repository.getChatList();
+    public LiveData<List<User>> getChatListUsers(){
+        return repository.getGetChatList();
     }
     public LiveData<List<User>> getAllUsersList(){
-        return repository.getAllUserList();
+        return repository.getGetAllUsersList();
     }
     public User getUser(String user_ID){
         return repository.getUser(user_ID);
     }
+
 
     public void insertProfile(Profile profile){
         repository.insertProfile(profile);

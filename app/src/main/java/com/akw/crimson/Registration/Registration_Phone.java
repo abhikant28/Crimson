@@ -40,6 +40,20 @@ public class Registration_Phone extends AppCompatActivity implements AdapterView
 //    private RequestQueue queue;
 
     @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        tv_countryCode.setText(" + " + countryDialCodes[i]+" ");
+        et_phoneNumber.setText("");
+        phoneNumber= " + " + countryDialCodes[i];
+        spinner.setSelection(i);
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration_phone);
@@ -49,6 +63,11 @@ public class Registration_Phone extends AppCompatActivity implements AdapterView
             finish();
         }
 
+        setViews();
+
+    }
+
+    private void setViews() {
         spinner= findViewById(R.id.Registration_Phone_Spinner_CountryNames);
         tv_countryCode=findViewById(R.id.Registration_CountryCode_TextViewPhone);
         et_phoneNumber=findViewById(R.id.Registration_Phone_editTextPhone);
@@ -71,25 +90,13 @@ public class Registration_Phone extends AppCompatActivity implements AdapterView
                 }
             }
         });
+
         spinner.setOnItemSelectedListener(this);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countryList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        tv_countryCode.setText(" + " + countryDialCodes[i]+" ");
-        et_phoneNumber.setText("");
-        phoneNumber= " + " + countryDialCodes[i];
-        spinner.setSelection(i);
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
-    }
 
 //    public void makeTheCall(String number){
 //        queue = Volley.newRequestQueue(getApplicationContext());

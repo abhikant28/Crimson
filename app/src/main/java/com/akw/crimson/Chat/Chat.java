@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.akw.crimson.Adapters.Chat_RecyclerAdapter;
 import com.akw.crimson.AppObjects.Message;
 import com.akw.crimson.AppObjects.User;
 import com.akw.crimson.Database.TheViewModel;
@@ -64,6 +65,7 @@ public class Chat extends AppCompatActivity {
         user = dbViewModel.getUser(getIntent().getStringExtra("USER_ID"));
         userID = user.getUser_id();
 
+        Log.i("CONNECTED::::", user.isConnected()+"");
         //Log.i("USER_ID", user.get_id());
         setMyActionBar();
         setClicks();
@@ -94,7 +96,7 @@ public class Chat extends AppCompatActivity {
 
     private void setMyActionBar() {
         ActionBar ab = getSupportActionBar();
-        ab.setTitle(user.getName());
+        ab.setTitle(user.getDisplayName());
         ab.setSubtitle("Status");
         ab.setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

@@ -9,12 +9,7 @@ public class Profile {
 
      @PrimaryKey
      @NonNull private String user_ID;
-     private String address;
-     private String name;
-     private String pic;
-     private String phoneNumber;
-     private String status;
-     private String groups;
+     private String address,name,pic,phoneNumber,status,groups;
      private boolean blocked;
 
      public Profile(String address,String user_ID, String name, String pic, String phoneNumber, String status, String groups, boolean blocked) {

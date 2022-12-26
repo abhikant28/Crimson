@@ -22,17 +22,8 @@ public class Message {
 
     @PrimaryKey
     @NonNull private String local_msg_ID;
-    private String msg_ID;
-    private String user_id;
-    private String _id;
-    private String tag;
-    private String msg;
-    private String time;
-    private String date;
-    private boolean self;
-    private boolean unread;
-    private boolean media;
-    private String mediaID;
+    private String msg_ID, user_id, _id, tag, msg, time, date, mediaID;
+    private boolean self, unread, media;
     private int status;
 
 

@@ -13,13 +13,13 @@
         android:layout_height="match_parent"
         tools:listitem="@layout/main_chatlist_item"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/MainChat_floatButton_newMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="15dp"
-
         android:src="@drawable/ic_baseline_message_24"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

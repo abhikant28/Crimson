@@ -108,7 +108,9 @@ public class Registration_PhoneVerification extends AppCompatActivity {
                             // Update UI
 
                             Toast.makeText(getApplicationContext(), "Verified!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(), Registration_Profile.class));
+                            Intent intent=new Intent(getApplicationContext(), Registration_Profile.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
                             finish();
 
                         } else {

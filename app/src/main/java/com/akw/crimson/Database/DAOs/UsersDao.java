@@ -10,10 +10,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.akw.crimson.AppObjects.Message;
 import com.akw.crimson.AppObjects.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Dao
@@ -28,13 +26,14 @@ public interface UsersDao {
     @Delete
     void delete(User user);
 
-    @Query("SELECT * FROM user_table WHERE connected is 1 ORDER BY time asc")
-    Cursor getChatList();
 
     @Query("SELECT * FROM user_table ORDER BY time ASC")
     Cursor getAllUsersCursor();
 
-    @Query("SELECT * FROM user_table ORDER BY date desc, lower(time) desc")
+    @Query("SELECT * FROM user_table WHERE connected is 1 ORDER BY date desc, lower(time) desc")
+    LiveData<List<User>> getChatList();
+
+    @Query("SELECT * FROM user_table ORDER BY displayName")
     LiveData<List<User>> getAllUsersList();
 
     @Query("SELECT * FROM user_table WHERE user_id=:user_ID LIMIT 1")

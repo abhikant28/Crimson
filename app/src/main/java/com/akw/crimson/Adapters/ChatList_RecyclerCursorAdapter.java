@@ -1,4 +1,4 @@
-package com.akw.crimson;
+package com.akw.crimson.Adapters;
 
 
 import android.content.Context;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.akw.crimson.R;
 
 
 public class ChatList_RecyclerCursorAdapter extends RecyclerView.Adapter<ChatList_RecyclerCursorAdapter.ViewHolder> {

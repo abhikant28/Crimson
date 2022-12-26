@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DC143C"
+    tools:context=".Registration.Registration_Profile">
+
+    <TextView
+        android:id="@+id/Registration_Email_TextView_Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:textColor="@color/white"
+        android:text="Registration "
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/Registration_Email_cv_profilePic"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#FFFFFF"
+        app:cardCornerRadius="250dp"
+        app:layout_constraintEnd_toEndOf="@id/Registration_Email_TextView_Title"
+        app:layout_constraintStart_toStartOf="@id/Registration_Email_TextView_Title"
+        app:layout_constraintTop_toBottomOf="@id/Registration_Email_TextView_Title">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/Registration_Email_iv_profilePic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/Registration_Email_tv_addPic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Profile Picture"
+                android:textAlignment="center"
+                android:textColor="#9E4242"
+                android:textSize="10dp"
+                android:elevation="-1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <EditText
+        android:id="@+id/Registration_Email_EditView_Password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/round_box_chat_message"
+        android:backgroundTint="#FFFFFF"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="10dp"
+        android:textColor="#C31034"
+        android:hint="Your Name                             "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Registration_Email_cv_profilePic" />
+
+    <EditText
+        android:id="@+id/Registration_Email_EditView_Mail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:background="@drawable/round_box_chat_message"
+        android:backgroundTint="#FFFFFF"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="10dp"
+        android:textColor="#C31034"
+        android:hint="Email                                      "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_Password" />
+
+    <Button
+        android:id="@+id/Registration_Email_Button_Verify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="  Submit  "
+
+        android:backgroundTint="#FA1644"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Registration_Email_EditView_Mail" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,9 @@
-package com.akw.crimson.Chat;
+package com.akw.crimson.Adapters;
 
 
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.recyclerview.widget.RecyclerView;

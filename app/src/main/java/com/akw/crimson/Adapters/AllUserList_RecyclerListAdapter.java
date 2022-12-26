@@ -1,4 +1,4 @@
-package com.akw.crimson;
+package com.akw.crimson.Adapters;
 
 
 import android.view.LayoutInflater;
@@ -13,9 +13,10 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.R;
 import com.squareup.picasso.Picasso;
 
-public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_RecyclerListAdapter.MyViewHolder> {
+public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserList_RecyclerListAdapter.MyViewHolder> {
     private OnItemClickListener listener;
 
     private static final DiffUtil.ItemCallback<User> DIFF_CALLBACK_User = new DiffUtil.ItemCallback<User>() {
@@ -30,7 +31,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
         }
     };
 
-    protected ChatList_RecyclerListAdapter() {
+    public AllUserList_RecyclerListAdapter() {
         super(DIFF_CALLBACK_User);
     }
 
@@ -71,12 +72,12 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         User user = getItem(position);
 
-        holder.tv_name.setText(user.getName());
-        holder.tv_lastMsg.setText(user.getLast_msg());
+        holder.tv_name.setText(user.getDisplayName());
+        holder.tv_lastMsg.setText("");
         Picasso.get().load(user.getPic()).into(holder.iv_profilePic);
-        holder.tv_unreadCount.setText(String.valueOf((user.getUnread_count())!=0?user.getUnread_count():""));
+        holder.tv_unreadCount.setText("");
 
-        holder.tv_time.setText((user.getTime()==null?"12:00":String.valueOf(user.getTime().substring(0,5))));
+        holder.tv_time.setText("");
     }
 
     public User getUser(int position) {
@@ -86,62 +87,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
     public interface OnItemClickListener {
         void OnItemClick(User User);
     }
-
-    public void setOnItemCLickListener(OnItemClickListener listener) {
+    public void setOnItemCLickListener(AllUserList_RecyclerListAdapter.OnItemClickListener listener) {
         this.listener = listener;
     }
-
-//    public void setNextAlert(User User, Context cxt) {
-//        Calendar date = User.getDate();
-//
-//        switch (User.getType()) {
-//            case "monthly":
-//                date.add(Calendar.MONTH, 1);
-//                break;
-//            case "daily":
-//                date.add(Calendar.DATE, 1);
-//                break;
-//            case "yearly":
-//                date.add(Calendar.YEAR, 1);
-//                break;
-//            case "weekly":
-//                date.add(Calendar.DATE, 7);
-//        }
-//
-//        User.setDate(date);
-//        Intent intent = new Intent(cxt.getApplicationContext(), AlertReceiver.class);
-//        intent.putExtra("title", "Reminder : ");
-//        intent.putExtra("body", User.getTitle());
-//        viewModel.update(User);
-//        PendingIntent pendingIntent = PendingIntent.getBroadcast(cxt.getApplicationContext(), User.getT_id(), intent, 0);
-//        AlarmManager alarmManager = (AlarmManager) cxt.getSystemService(Context.ALARM_SERVICE);
-//        alarmManager.setExact(AlarmManager.RTC_WAKEUP, date.getTimeInMillis(), pendingIntent);
-//
-//    }
-
-//    public void showPopup(View v, int pos){
-//        Log.i("LONG:::","CLICKED");
-//        PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
-//        popupMenu.inflate(R.menu.long_press_menu_User);
-//        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem menuItem) {
-//                switch (menuItem.getItemId()){
-//                    case R.id.User_MenuOption_Delete:
-//
-//                        deleteDialogBox(getItem(pos),v.getContext());
-//                        return true;
-//
-//                    default:
-//                        return false;
-//                }
-//            }
-//        });        popupMenu.show();
-//    }
-//    private void deleteDialogBox(User User, Context cxt) {
-//        User_Delete_Dialog deleteDialog = new User_Delete_Dialog(User);
-//
-//        deleteDialog.show(((FragmentActivity)cxt).getSupportFragmentManager(), "New Group");
-//    }
-
 }

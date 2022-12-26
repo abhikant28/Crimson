@@ -57,6 +57,13 @@ public class SharedPrefManager {
         Log.i("SHARED PREFS::::", "APPLIED");
         return true;
     }
+    public void storeUserToken(String token){
+        SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor= sharedPreferences.edit();
+        editor.putString("FIREBASE_TOKEN", token);
+        editor.apply();
+        return;
+    }
     public boolean storeUserNumber(String num,String userID){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();

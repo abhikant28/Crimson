@@ -8,17 +8,20 @@ import androidx.room.PrimaryKey;
 public class User {
 
     @PrimaryKey
-    @NonNull private String user_id;
+    @NonNull
+    private String user_id;
     private String _id;
-    private String last_msg;
-    private int unread_count=0;
-    private String name;
-    private String time;
-    private String pic="";
-    private boolean connected;
-    private String phoneNumber;
-    private String date;
-    private boolean unread;
+    private String last_msg, name, userName, displayName, time, pic = "", phoneNumber, date;
+    private boolean unread, connected;
+    private int unread_count = 0;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public boolean isUnread() {
         return unread;
@@ -64,15 +67,25 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+//
+//
+//    @Ignore
+//    public User(String user_id, String last_msg, String name, String pic, String phoneNumber,boolean connected) {
+//        this.user_id = user_id;
+//        this.last_msg = last_msg;
+//        this.name = name;
+//        this.pic=pic;
+//        this.phoneNumber=phoneNumber;
+//        this.connected=connected;
+//    }
 
-
-    public User(String user_id, String last_msg, String name, String pic, String phoneNumber,boolean connected) {
+    public User(String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected) {
         this.user_id = user_id;
-        this.last_msg = last_msg;
         this.name = name;
-        this.pic=pic;
-        this.phoneNumber=phoneNumber;
-        this.connected=connected;
+        this.displayName = displayName;
+        this.pic = pic;
+        this.phoneNumber = phoneNumber;
+        this.connected = connected;
     }
 
     public String getPic() {
@@ -120,4 +133,11 @@ public class User {
     }
 
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 }

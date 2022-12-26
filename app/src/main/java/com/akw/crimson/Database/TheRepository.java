@@ -3,6 +3,7 @@ package com.akw.crimson.Database;
 import android.app.Application;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -16,7 +17,6 @@ import com.akw.crimson.Database.DAOs.UsersDao;
 
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -27,9 +27,9 @@ public class TheRepository {
     private UsersDao usersDao;
     private MessagesDao messagesDao;
 
-    private Cursor chatList;
-    private LiveData<List<User>> allUserList;
+    private LiveData<List<User>> getChatList;
     private LiveData<List<Message>> pendingMessagesList;
+    private LiveData<List<User>> getAllUsers;
 
     public TheRepository(Application application){
         TheDatabase database = TheDatabase.getInstance(application);
@@ -37,7 +37,8 @@ public class TheRepository {
         usersDao = database.usersDao();
         messagesDao =database.messagesDao();
 //        chatList= usersDao.getChatList();
-        allUserList=usersDao.getAllUsersList();
+        getChatList =usersDao.getChatList();
+        getAllUsers = usersDao.getAllUsersList();
         pendingMessagesList=messagesDao.pendingMessages();
     }
 
@@ -65,7 +66,8 @@ public class TheRepository {
         return pendingMessagesList;
     }
 
-    public LiveData<List<User>> getAllUserList(){ return allUserList; }
+    public LiveData<List<User>> getGetChatList(){ return getChatList; }
+    public LiveData<List<User>> getGetAllUsersList(){ return getAllUsers; }
 
     public void insertUser(User user){
         new InsertUserAsyncTask(usersDao).execute(user);
@@ -75,26 +77,6 @@ public class TheRepository {
     }
     public void deleteUser(User user){
         new DeleteUserAsyncTask(usersDao).execute(user);
-    }
-    public Cursor getChatList(){
-        try {
-            return new GetChatListAsyncTask(usersDao).execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    public Cursor getAllUsers(){
-        try {
-            return new GetAllUserAsyncTask(usersDao).execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
     public User getUser(String user_ID){
         try {
@@ -150,6 +132,7 @@ public class TheRepository {
         protected Void doInBackground(Message... messages) {
             messagesDao.insert(messages[0]);
             User user=usersDao.getUser(messages[0].getUser_id());
+//            Log.i("CONNECTING USER:::::", user.getDisplayName()+user.isConnected());
             try{
                 user.setLast_msg(messages[0].getMsg().substring(0, 15)+"...");
             }catch (StringIndexOutOfBoundsException e){
@@ -168,6 +151,7 @@ public class TheRepository {
             Chat.updated=true;
             Chat.updateID=user.getUser_id();
 
+            user.setConnected(true);
             usersDao.update(user);
             return null;
         }
@@ -197,19 +181,7 @@ public class TheRepository {
             return messagesDao.getMessage(L_msg_ID[0]);
         }
     }
-    private static class GetChatListAsyncTask extends AsyncTask<Void,Void,Cursor>{
-        private UsersDao dao;
 
-        private GetChatListAsyncTask(UsersDao dao){
-            this.dao=dao;
-        }
-
-        @Override
-        protected Cursor doInBackground(Void... voids) {
-            return dao.getChatList();
-        }
-
-    }
     private static class InsertUserAsyncTask extends AsyncTask<User,Void,Void>{
         private UsersDao dao;
 
