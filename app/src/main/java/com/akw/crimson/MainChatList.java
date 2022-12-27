@@ -19,9 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Adapters.ChatList_RecyclerListAdapter;
-import com.akw.crimson.AppObjects.Message;
 import com.akw.crimson.AppObjects.User;
-import com.akw.crimson.Chat.Chat;
+import com.akw.crimson.Chat.ChatActivity;
 import com.akw.crimson.Database.SharedPrefManager;
 import com.akw.crimson.Database.TheViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,19 +33,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-public class MainChatList extends AppCompatActivity {
+public class MainChatList extends BaseActivity {
 
     RecyclerView rv_chatList;
-    //    ChatList_RecyclerCursorAdapter chatList_CursorAdapter;
     ChatList_RecyclerListAdapter chatList_recyclerListAdapter = new ChatList_RecyclerListAdapter();
     TheViewModel dbViewModel;
-    ArrayList<Message> msg;
     public static User user;
-//    Cursor c;
 
     FloatingActionButton fab_startNew;
 
@@ -87,7 +82,6 @@ public class MainChatList extends AppCompatActivity {
 //        InsertMessage im = new InsertMessage(3, msg);
 //        new Thread(im).start();
 
-        fireStore();
 
         sendToken();
     }
@@ -102,20 +96,6 @@ public class MainChatList extends AppCompatActivity {
                 chatList_recyclerListAdapter.submitList(users);
             }
         });
-    }
-
-    private void fireStore() {
-//        FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
-//        Hashtable<String, Object> data= new Hashtable<>();
-//
-//        firebaseFirestore.collection("users")
-//                .document(new SharedPrefManager(this).getLocalUserID()).set(data, SetOptions.merge())
-//                .addOnSuccessListener(documentReference -> {
-//                    Toast.makeText(getApplicationContext(), "Data Inserted with Success", Toast.LENGTH_SHORT).show();
-//                })
-//                .addOnFailureListener(documentReference -> {
-//                    Toast.makeText(getApplicationContext(), "Data Insert Failed", Toast.LENGTH_SHORT).show();
-//                });
     }
 
 
@@ -182,7 +162,7 @@ public class MainChatList extends AppCompatActivity {
         chatList_recyclerListAdapter.setOnItemCLickListener(new ChatList_RecyclerListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(User User) {
-                Intent intent = new Intent(getApplicationContext(), Chat.class);
+                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                 intent.putExtra("USER_ID", User.getUser_id());
                 Log.i("USER ID::::::", User.getName());
                 startActivity(intent);

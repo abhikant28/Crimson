@@ -4,12 +4,21 @@
     <item android:id="@+id/chatList_Menu_search"
         android:icon="@drawable/ic_baseline_search_24"
         android:title="Search"
-        app:showAsAction="ifRoom"></item>
+        app:showAsAction="always"/>
+    <item android:id="@+id/chatList_Menu_camera"
+        android:icon="@drawable/ic_baseline_camera_alt_24"
+        android:title="Camera"
+        app:showAsAction="ifRoom"/>
     <item android:id="@+id/chatList_Menu_NewGroup"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="New Group"></item>
+        android:title="New Group"/>
     <item android:id="@+id/chatList_Menu_Settings"
     android:icon="@drawable/ic_baseline_search_24"
-    android:title="Settings"></item>
-
+    android:title="Settings"/>
+    <item android:id="@+id/chatList_Menu_autoSendMsg"
+        android:title="Prepare Message"/>
+    <item android:id="@+id/chatList_Menu_gallery"
+    android:title="Gallery"/>
+    <item android:id="@+id/chatList_Menu_payments"
+        android:title="Payments"/>
 </menu>

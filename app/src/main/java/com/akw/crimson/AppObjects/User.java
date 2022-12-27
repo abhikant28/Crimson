@@ -1,5 +1,7 @@
 package com.akw.crimson.AppObjects;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -44,6 +46,7 @@ public class User {
     }
 
     public void setConnected(boolean connected) {
+        Log.i("UpDATING Connected:::", connected+"_"+displayName);
         this.connected = connected;
     }
 

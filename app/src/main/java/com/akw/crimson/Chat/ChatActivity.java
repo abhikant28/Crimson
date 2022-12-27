@@ -11,8 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,13 +21,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.akw.crimson.Adapters.Chat_RecyclerAdapter;
 import com.akw.crimson.AppObjects.Message;
 import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.BaseActivity;
 import com.akw.crimson.Database.TheViewModel;
 import com.akw.crimson.R;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
+import java.util.Objects;
 
-public class Chat extends AppCompatActivity {
+public class ChatActivity extends BaseActivity {
 
     private Chat_RecyclerAdapter chatAdapter;
     private RecyclerView chatRecyclerView;
@@ -37,11 +43,12 @@ public class Chat extends AppCompatActivity {
     private TheViewModel dbViewModel;
     private Cursor chatCursor;
     private Thread chatThread;
+    private ActionBar ab;
 
     public static volatile User user;
     public static volatile boolean updated = false;
     public static volatile String userID, updateID;
-
+    private Boolean isOnline = false;
 
 
     @Override
@@ -53,7 +60,12 @@ public class Chat extends AppCompatActivity {
         chatThread.interrupt();
     }
 
-    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listenForOnline();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +77,6 @@ public class Chat extends AppCompatActivity {
         user = dbViewModel.getUser(getIntent().getStringExtra("USER_ID"));
         userID = user.getUser_id();
 
-        Log.i("CONNECTED::::", user.isConnected()+"");
         //Log.i("USER_ID", user.get_id());
         setMyActionBar();
         setClicks();
@@ -82,9 +93,10 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!et_message.getText().toString().trim().equals("")) {
-                    Message message= new Message("1" + Calendar.getInstance().getTime().getTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
+                    Message message = new Message("1" + Calendar.getInstance().getTime().getTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
                     dbViewModel.insertMessage(message);
                     //send(message);
+                    user.setConnected(true);
                     et_message.setText("");
                 }
             }
@@ -93,9 +105,31 @@ public class Chat extends AppCompatActivity {
 
     }
 
+    private void listenForOnline() {
+        FirebaseFirestore firestorDB = FirebaseFirestore.getInstance();
+        firestorDB.collection("users").document(userID).addSnapshotListener(ChatActivity.this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    return;
+                }
+                if (value != null) {
+                    if (value.getLong("online") != null) {
+                        int online = Objects.requireNonNull(value.getLong("online")).intValue();
+                        isOnline = online == 1;
+                    }
+                }
+                if (isOnline) {
+                    ab.setSubtitle("Online");
+                } else {
+                    ab.setSubtitle("");
+                }
+            }
+        });
+    }
 
     private void setMyActionBar() {
-        ActionBar ab = getSupportActionBar();
+        ab = getSupportActionBar();
         ab.setTitle(user.getDisplayName());
         ab.setSubtitle("Status");
         ab.setDisplayHomeAsUpEnabled(true);
@@ -133,6 +167,7 @@ public class Chat extends AppCompatActivity {
 
             }
         });
+        chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount());
     }
 
 
@@ -185,6 +220,7 @@ public class Chat extends AppCompatActivity {
                         }
                     });
                     updated = false;
+                    user = dbViewModel.getUser(userID);
                 }
             }
 

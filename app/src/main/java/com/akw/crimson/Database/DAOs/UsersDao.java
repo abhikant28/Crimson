@@ -39,4 +39,7 @@ public interface UsersDao {
     @Query("SELECT * FROM user_table WHERE user_id=:user_ID LIMIT 1")
     User getUser(String user_ID);
 
+    @Query("SELECT COUNT(*) > 0 FROM user_table WHERE phoneNumber = :value")
+    boolean checkForNumber(String value);
+
 }

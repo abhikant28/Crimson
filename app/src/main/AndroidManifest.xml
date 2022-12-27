@@ -49,9 +49,10 @@
             android:name=".Registration.Registration_Main"
             android:exported="false" />
         <activity
-            android:name=".Chat.Chat"
+            android:name=".Chat.ChatActivity"
             android:exported="true"
-            android:parentActivityName=".MainChatList" />
+            android:parentActivityName=".MainChatList"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

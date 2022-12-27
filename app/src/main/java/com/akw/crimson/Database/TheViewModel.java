@@ -66,7 +66,9 @@ public class TheViewModel extends AndroidViewModel {
     public User getUser(String user_ID){
         return repository.getUser(user_ID);
     }
-
+    public boolean checkForUserNum(String userNum){
+        return repository.checkForUserNum(userNum);
+    }
 
     public void insertProfile(Profile profile){
         repository.insertProfile(profile);

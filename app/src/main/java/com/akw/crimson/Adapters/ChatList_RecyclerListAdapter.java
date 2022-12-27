@@ -1,6 +1,7 @@
 package com.akw.crimson.Adapters;
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +73,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         User user = getItem(position);
 
+        Log.i("USERNAME::::", user.getDisplayName());
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText(user.getLast_msg());
         Picasso.get().load(user.getPic()).into(holder.iv_profilePic);
