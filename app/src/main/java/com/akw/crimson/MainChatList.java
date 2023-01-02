@@ -9,49 +9,83 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.akw.crimson.Adapters.AllUserList_RecyclerListAdapter;
+import com.akw.crimson.Adapters.ChatList_MessageSearch_RecyclerListAdapter;
 import com.akw.crimson.Adapters.ChatList_RecyclerListAdapter;
+import com.akw.crimson.AppObjects.Message;
+import com.akw.crimson.AppObjects.Profile;
 import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.Communications.Communicator;
+import com.akw.crimson.Backend.Constants;
+import com.akw.crimson.Backend.Database.SharedPrefManager;
+import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Chat.ChatActivity;
-import com.akw.crimson.Database.SharedPrefManager;
-import com.akw.crimson.Database.TheViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Hashtable;
 import java.util.List;
-
+ 
 public class MainChatList extends BaseActivity {
 
     RecyclerView rv_chatList;
+    RecyclerView rv_searchUsers;
+    RecyclerView rv_searchMessages;
     ChatList_RecyclerListAdapter chatList_recyclerListAdapter = new ChatList_RecyclerListAdapter();
+    AllUserList_RecyclerListAdapter searchUserList_rvAdapter = new AllUserList_RecyclerListAdapter();
+    ChatList_MessageSearch_RecyclerListAdapter searchMessageList_rv_Adapter = new ChatList_MessageSearch_RecyclerListAdapter();
     TheViewModel dbViewModel;
     public static User user;
 
     FloatingActionButton fab_startNew;
+    TextView tv_noResults;
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.chatlist_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.chatList_Menu_search);
+
+        // getting search view of our item.
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        // below line is to call set on query text listener method.
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.i("QUERY CHANGE:::::",newText);
+                if (newText.length() == 0) {
+                    rv_chatList.setVisibility(View.VISIBLE);
+                    searchMessageList_rv_Adapter.submitList(null);
+                    searchUserList_rvAdapter.submitList(null);
+                    tv_noResults.setVisibility(View.GONE);
+                } else {
+                    rv_chatList.setVisibility(View.GONE);
+                    searchQuery(newText);
+                }
+                return false;
+            }
+        });
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -76,7 +110,7 @@ public class MainChatList extends BaseActivity {
         setView();
         connectLocalDatabase();
 
-        setChatList(false);
+        setChatList();
 
 //        makeMsgs();
 //        InsertMessage im = new InsertMessage(3, msg);
@@ -87,7 +121,7 @@ public class MainChatList extends BaseActivity {
     }
 
     private void connectLocalDatabase() {
-        dbViewModel = ViewModelProviders.of(this).get(TheViewModel.class);
+        dbViewModel = Communicator.localDB;
 //        c = dbViewModel.getChatList();
 
         dbViewModel.getChatListUsers().observe(this, new Observer<List<User>>() {
@@ -98,6 +132,22 @@ public class MainChatList extends BaseActivity {
         });
     }
 
+    private void searchQuery(String newText) {
+        List<Message> messagesFound=dbViewModel.searchInMessages(newText);
+        List<User> usersFound=dbViewModel.searchUserByText(newText);
+        if(messagesFound.size()==0 && usersFound.size()==0) {
+            tv_noResults.setVisibility(View.VISIBLE);
+            searchMessageList_rv_Adapter.submitList(null);
+            searchUserList_rvAdapter.submitList(null);
+            return;
+        }
+        tv_noResults.setVisibility(View.GONE);
+        searchMessageList_rv_Adapter.submitList(null);
+        searchMessageList_rv_Adapter.submitList(messagesFound);
+        searchUserList_rvAdapter.submitList(null);
+        searchUserList_rvAdapter.submitList(usersFound);
+
+    }
 
     private void sendToken() {
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this::updateToken);
@@ -107,68 +157,54 @@ public class MainChatList extends BaseActivity {
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         Hashtable<String, Object> data = new Hashtable<>();
-        data.put("token", token);
+        data.put(Constants.KEY_FIRESTORE_USER_TOKEN, token);
 
-        firebaseFirestore.collection("users")
+        firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS)
                 .document(new SharedPrefManager(this).getLocalUserID()).set(data, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                 })
                 .addOnFailureListener(documentReference -> {
                 });
-
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-                .getReferenceFromUrl("https://crimson-ims-default-rtdb.asia-southeast1.firebasedatabase.app/");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String userID = new SharedPrefManager(getApplicationContext()).getLocalUserID();
-                databaseReference.child("users").child(userID).child("firebase_token").setValue(token);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
     }
 
 
-    private void setChatList(boolean type) {
+    private void setChatList() {
         rv_chatList.setLayoutManager(new LinearLayoutManager(this));
-//        if (type) {
-//            rv_chatList.setAdapter(chatList_CursorAdapter);
-//            chatList_CursorAdapter.setOnItemClickListener(new ChatList_RecyclerCursorAdapter.OnListItemClickListener() {
-//                @Override
-//                public void onListItemClick(int position) {
-//                    Intent intent = new Intent(getApplicationContext(), Chat.class);
-//                    c.moveToPosition(position);
-//                    user = dbViewModel.getUser(c.getString(c.getColumnIndexOrThrow("user_id")));
-//                    intent.putExtra("USER_ID", user.getUser_id());
-//                    Log.i("USER ID::::::", user.getName());
-//                    startActivity(intent);
-//                }
-//
-//            });
-        //        chatList_CursorAdapter = new ChatList_RecyclerCursorAdapter(this, c
-        //                , new ChatList_RecyclerCursorAdapter.OnListItemClickListener() {
-        //            @Override
-        //            public void onListItemClick(int position) {
-        //
-        //            }
-        //        });
-//        } else {
         rv_chatList.setAdapter(chatList_recyclerListAdapter);
         chatList_recyclerListAdapter.setOnItemCLickListener(new ChatList_RecyclerListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(User User) {
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                intent.putExtra("USER_ID", User.getUser_id());
+                intent.putExtra(Constants.KEY_INTENT_USERID, User.getUser_id());
                 Log.i("USER ID::::::", User.getName());
                 startActivity(intent);
             }
         });
-//        }
+
+        rv_searchUsers.setLayoutManager(new LinearLayoutManager(this));
+        rv_searchUsers.setAdapter(searchUserList_rvAdapter);
+        searchUserList_rvAdapter.setOnItemCLickListener(new AllUserList_RecyclerListAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClick(User User) {
+                Intent intent = new Intent(getApplicationContext(), ViewProfile.class);
+                intent.putExtra(Constants.KEY_INTENT_USERID, User.getUser_id());
+                startActivity(intent);
+            }
+        });
+
+        searchMessageList_rv_Adapter=new ChatList_MessageSearch_RecyclerListAdapter(dbViewModel);
+        rv_searchMessages.setLayoutManager(new LinearLayoutManager(this));
+        rv_searchMessages.setAdapter(searchMessageList_rv_Adapter);
+        searchMessageList_rv_Adapter.setOnItemCLickListener(new ChatList_MessageSearch_RecyclerListAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClick(Message message) {
+                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+                intent.putExtra(Constants.KEY_INTENT_USERID, message.getUser_id());
+                intent.putExtra(Constants.KEY_INTENT_MESSAGEID, message.getMsg_ID());
+                intent.putExtra(Constants.KEY_INTENT_STARTED_BY, Constants.KEY_INTENT_STARTED_BY_SEARCH);
+                startActivity(intent);
+            }
+        });
     }
 
     private void setView() {
@@ -176,7 +212,10 @@ public class MainChatList extends BaseActivity {
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#DC143C"));
         ab.setBackgroundDrawable(colorDrawable);
 
+        tv_noResults=findViewById(R.id.MainChat_tv_Search_noResultsFound);
         rv_chatList = findViewById(R.id.MainChat_List_RecyclerView);
+        rv_searchMessages=findViewById(R.id.MainChat_MessageSearch_List_RecyclerView);
+        rv_searchUsers=findViewById(R.id.MainChat_UserSearch_List_RecyclerView);
         fab_startNew = findViewById(R.id.MainChat_floatButton_newMessage);
 
         fab_startNew.setOnClickListener(new View.OnClickListener() {
@@ -187,58 +226,5 @@ public class MainChatList extends BaseActivity {
         });
 
     }
-
-//    private void makeMsgs() {
-//        msg = new ArrayList<>();
-//        boolean sel = true;
-//        Calendar cal = Calendar.getInstance();
-//        for (int i = 5; i < 18; i++) {
-//            sel = (!sel);
-//            Message message = new Message(i + String.valueOf(cal.get(Calendar.HOUR_OF_DAY)
-//                    + cal.get(Calendar.MINUTE))
-//                    + cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND),
-//                    "1", "", Dataset.messagesDataSet[i], sel, false
-//                    , "_", 0);
-//            msg.add(message);
-//        }
-//        for (int i = 15; i < 30; i++) {
-//            sel = (!sel);
-//            msg.add(new Message(i + String.valueOf(cal.get(Calendar.HOUR_OF_DAY)
-//                    + cal.get(Calendar.MINUTE)) + cal.get(Calendar.SECOND) + cal.get(Calendar.MILLISECOND)
-//                    , "4", "", Dataset.messagesDataSet[i], sel, false
-//                    , "_", 0));
-//        }
-//    }
-//
-//    class InsertMessage implements Runnable {
-//        int time;
-//        ArrayList<Message> msg;
-//
-//        InsertMessage(int time, ArrayList<Message> msg) {
-//            this.time = time * 1000;
-//            this.msg = msg;
-//            Log.i("INSERT MSG THREAD::::::::", "Starting...");
-//        }
-//
-//        @Override
-//        public void run() {
-//            Log.i("INSERT MSG THREAD::::::::", "Running...");
-//            HTTPRequest.postMessage(msg.get(0));
-//            for (int i = 0; i < msg.size(); i++) {
-//                int finalI = i;
-//                try {
-//                    Thread.sleep(time);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                int[] ar = new int[]{1, 2, 3};
-//
-//                //Log.i("::::::::Message:::", String.valueOf(msg.get(0)));
-//                dbViewModel.insertMessage(msg.get(finalI));
-//            }
-//            Log.i("INSERT MSG THREAD::::::::", "Inserted.");
-//        }
-//    }
 }
 

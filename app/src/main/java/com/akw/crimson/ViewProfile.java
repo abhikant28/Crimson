@@ -1,6 +1,6 @@
 package com.akw.crimson;
 
-public class ViewProfile {
+public class ViewProfile extends BaseActivity{
 
 
 

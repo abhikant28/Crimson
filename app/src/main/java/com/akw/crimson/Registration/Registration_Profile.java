@@ -19,10 +19,11 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.akw.crimson.Database.SharedPrefManager;
+import com.akw.crimson.Backend.Constants;
+import com.akw.crimson.Backend.Database.SharedPrefManager;
+import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,10 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -52,7 +50,6 @@ public class Registration_Profile extends AppCompatActivity {
 
     private String encodedImage;
     private boolean hasPic=false;
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://crimson-ims-default-rtdb.asia-southeast1.firebasedatabase.app/");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +61,6 @@ public class Registration_Profile extends AppCompatActivity {
 //        checkForProfile();
         checkFireStoreForProfile();
     }
-
 
 
     private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
@@ -81,7 +77,7 @@ public class Registration_Profile extends AppCompatActivity {
                             iv_profilePic.setImageBitmap(bitmap);
                             tv_ImageText.setVisibility(View.GONE);
                             hasPic=true;
-                            encodedImage=encodeImage(bitmap);
+                            encodedImage=UsefulFunctions.encodeImage(bitmap);
                         }catch (FileNotFoundException e){
                             e.printStackTrace();
                         }
@@ -94,22 +90,22 @@ public class Registration_Profile extends AppCompatActivity {
         FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
         String userID= new SharedPrefManager(getApplicationContext()).getLocalUserID();
 
-        DocumentReference ref=firebaseFirestore.collection("users").document(userID);
+        DocumentReference ref=firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS).document(userID);
         ref.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        String phone=document.getString("phone");
-                        String email=document.getString("email");
-                        String name=document.getString("name");
-                        String profilePic=document.getString("pic");
+                        String phone=document.getString(Constants.KEY_FIRESTORE_USER_PHONE);
+                        String email=document.getString(Constants.KEY_FIRESTORE_USER_EMAIL);
+                        String name=document.getString(Constants.KEY_FIRESTORE_USER_NAME);
+                        String profilePic=document.getString(Constants.KEY_FIRESTORE_USER_PIC);
                         encodedImage=profilePic;
                         if(!encodedImage.isEmpty())hasPic=true;
                         et_mail.setText(email);
                         et_pass.setText(name);
-                        Bitmap bitmap= decodeImage(profilePic);
+                        Bitmap bitmap= UsefulFunctions.decodeImage(profilePic);
                         iv_profilePic.setImageBitmap(bitmap);
 //                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
                     } else {
@@ -122,32 +118,6 @@ public class Registration_Profile extends AppCompatActivity {
         });
     }
 
-    private void checkForProfile(){
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                String userID= new SharedPrefManager(getApplicationContext()).getLocalUserID();
-                if(snapshot.child("users").hasChild(userID)){
-                    Toast.makeText(getApplicationContext(), "Welcome Back!", Toast.LENGTH_SHORT).show();
-                    String name= String.valueOf(snapshot.child("users").child(userID).child("name").getValue());
-                    String email=String.valueOf(snapshot.child("users").child(userID).child("email").getValue());
-                    String profilePic=String.valueOf(snapshot.child("users").child(userID).child("pic").getValue());
-                    et_mail.setText(email);
-                    et_pass.setText(name);
-                    Bitmap bitmap= decodeImage(profilePic);
-                    iv_profilePic.setImageBitmap(bitmap);
-
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
-
     private boolean checkFields() {
         if (et_pass.getText().toString().isEmpty()) {
             return false;
@@ -157,20 +127,6 @@ public class Registration_Profile extends AppCompatActivity {
         return !mail.isEmpty() && mail.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
     }
 
-    private String encodeImage(Bitmap bitmap) {
-        int previewWidth=150;
-        int previewHeight=bitmap.getHeight()*previewWidth/bitmap.getWidth();
-        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap,previewWidth,previewHeight,false);
-        ByteArrayOutputStream byteArrayOutputStream= new ByteArrayOutputStream();
-        previewBitmap.compress(Bitmap.CompressFormat.JPEG,50,byteArrayOutputStream);
-        byte[] bytes= byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(bytes, Base64.DEFAULT);
-    }
-
-    private Bitmap decodeImage(String input){
-        byte[] decoded = Base64.decode(input, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
-    }
 
     private void setViews() {
         et_mail = findViewById(R.id.Registration_Email_EditView_Mail);
@@ -195,20 +151,18 @@ public class Registration_Profile extends AppCompatActivity {
                     //verifyMail("AZBY_0987654321_AZBY",et_pass.getText().toString(),et_mail.getText().toString());
                     //checkMail();
                     Intent intent = new Intent(getApplicationContext(), FinalRegister.class);
-                    intent.putExtra("email", et_mail.getText().toString().toLowerCase().trim());
-                    intent.putExtra("name", et_pass.getText().toString().trim());
+                    intent.putExtra(Constants.KEY_INTENT_EMAIL, et_mail.getText().toString().toLowerCase().trim());
+                    intent.putExtra(Constants.KEY_INTENT_USERNAME, et_pass.getText().toString().trim());
                     if(hasPic){
                         Log.i("HAS PIC:::","TRUE");
-                        intent.putExtra("encodedImg", encodedImage);
+                        intent.putExtra(Constants.KEY_INTENT_PIC, encodedImage);
                     }else{
                         Log.i("HAS PIC:::","FALSE");
 
                     }
                     startActivity(intent);
                 }
-
             }
         });
     }
-
 }

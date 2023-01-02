@@ -46,7 +46,6 @@ public class User {
     }
 
     public void setConnected(boolean connected) {
-        Log.i("UpDATING Connected:::", connected+"_"+displayName);
         this.connected = connected;
     }
 
@@ -81,10 +80,19 @@ public class User {
 //        this.phoneNumber=phoneNumber;
 //        this.connected=connected;
 //    }
+public User(String user_id,  String name, String displayName, String pic, String phoneNumber, boolean connected) {
+    this.user_id = user_id;
+    this.name = name;
+    this.displayName = displayName;
+    this.pic = pic;
+    this.phoneNumber = phoneNumber;
+    this.connected = connected;
+}
 
-    public User(String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected) {
+    public User(String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected) {
         this.user_id = user_id;
         this.name = name;
+        this.userName=username;
         this.displayName = displayName;
         this.pic = pic;
         this.phoneNumber = phoneNumber;

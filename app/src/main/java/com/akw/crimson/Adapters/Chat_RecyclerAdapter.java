@@ -16,7 +16,7 @@ import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.AppObjects.Message;
-import com.akw.crimson.Database.TheViewModel;
+import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.R;
 
 
@@ -134,8 +134,8 @@ public class Chat_RecyclerAdapter extends RecyclerView.Adapter<Chat_RecyclerAdap
 
         }
         Message msg=dbview.getMessage(cursor.getString(cursor.getColumnIndexOrThrow("local_msg_ID")));
-        msg.setStatus(1);
         msg.setUnread(false);
+        if(!msg.isSelf())msg.setStatus(3);
         dbview.updateMessage(msg);
         //Log.i("ALL ::::", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
         //holder.v1.setImageURI(Uri.parse(mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndexOrThrow(MediaStore.Images.Media.DATA))));

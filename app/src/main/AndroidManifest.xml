@@ -64,12 +64,16 @@
         </activity>
 
         <service
-            android:name=".Communications.FireBaseCloudMessaging"
+            android:name=".Backend.Communications.FireBaseCloudMessaging"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service
+            android:name=".Backend.Communications.Communicator"
+            android:exported="true"
+            android:enabled="true"/>
     </application>
 
 </manifest>

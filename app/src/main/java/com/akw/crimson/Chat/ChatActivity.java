@@ -1,5 +1,6 @@
 package com.akw.crimson.Chat;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -21,9 +22,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.akw.crimson.Adapters.Chat_RecyclerAdapter;
 import com.akw.crimson.AppObjects.Message;
 import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.Communications.Communicator;
+import com.akw.crimson.Backend.Communications.Messaging;
+import com.akw.crimson.Backend.Constants;
+import com.akw.crimson.Backend.Database.SharedPrefManager;
+import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.BaseActivity;
-import com.akw.crimson.Database.TheViewModel;
 import com.akw.crimson.R;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -54,15 +61,20 @@ public class ChatActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        user.setUnread_count(0);
-        user.setUnread(false);
+        if(user!=null){
+            user.setUnread_count(0);
+            user.setUnread(false);
+        }
         dbViewModel.updateUser(user);
         chatThread.interrupt();
+        stopService(new Intent(this,Communicator.class));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Intent intent= new Intent(new Intent(this, Communicator.class));
+        startService(intent);
         listenForOnline();
     }
 
@@ -73,8 +85,8 @@ public class ChatActivity extends BaseActivity {
 
         attachViews();
 
-        dbViewModel = ViewModelProviders.of(this).get(TheViewModel.class);
-        user = dbViewModel.getUser(getIntent().getStringExtra("USER_ID"));
+        dbViewModel = Communicator.localDB;
+        user = dbViewModel.getUser(getIntent().getStringExtra(Constants.KEY_INTENT_USERID));
         userID = user.getUser_id();
 
         //Log.i("USER_ID", user.get_id());
@@ -92,12 +104,27 @@ public class ChatActivity extends BaseActivity {
         ib_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if (!et_message.getText().toString().trim().equals("")) {
-                    Message message = new Message("1" + Calendar.getInstance().getTime().getTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
+                    Message message = new Message(new SharedPrefManager(getApplicationContext()).getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
                     dbViewModel.insertMessage(message);
                     //send(message);
                     user.setConnected(true);
                     et_message.setText("");
+                    if (!isOnline) {
+                        Log.i("NOT ONLINE","SENDING MSG");
+                        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                        firestore.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Log.i("NOT ONLINE","SENDING MSG token"+documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN));
+                                String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
+                                Messaging.sendMessageNotification(new SharedPrefManager(getApplicationContext()).getLocalUserID(), userToken, message.getTag(), message.getMsg_ID());
+                                Messaging.sendMessageRetroNotification(new SharedPrefManager(getApplicationContext()).getLocalUserID(), userToken, message.getTag(), message.getMsg_ID(),userID);
+                            }
+                        });
+
+                    }
                 }
             }
         });
@@ -106,16 +133,16 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void listenForOnline() {
-        FirebaseFirestore firestorDB = FirebaseFirestore.getInstance();
-        firestorDB.collection("users").document(userID).addSnapshotListener(ChatActivity.this, new EventListener<DocumentSnapshot>() {
+        FirebaseFirestore firestoreDB = FirebaseFirestore.getInstance();
+        firestoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).addSnapshotListener(ChatActivity.this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error != null) {
                     return;
                 }
                 if (value != null) {
-                    if (value.getLong("online") != null) {
-                        int online = Objects.requireNonNull(value.getLong("online")).intValue();
+                    if (value.get(Constants.KEY_FIRESTORE_USER_ONLINE) != null) {
+                        int online = Integer.parseInt(String.valueOf(Objects.requireNonNull(value.get(Constants.KEY_FIRESTORE_USER_ONLINE))));
                         isOnline = online == 1;
                     }
                 }
@@ -126,31 +153,6 @@ public class ChatActivity extends BaseActivity {
                 }
             }
         });
-    }
-
-    private void setMyActionBar() {
-        ab = getSupportActionBar();
-        ab.setTitle(user.getDisplayName());
-        ab.setSubtitle("Status");
-        ab.setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        ImageView iv = new ImageView(getApplicationContext());
-        iv.setPadding(50, 50, 50, 50);
-        Picasso.get().load(user.getPic()).into(iv);
-        Drawable d = iv.getDrawable();
-        getSupportActionBar().setIcon(d);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        ColorDrawable colorDrawable
-                = new ColorDrawable(Color.parseColor("#DC143C"));
-        ab.setBackgroundDrawable(colorDrawable);
-    }
-
-
-    private void attachViews() {
-        chatRecyclerView = findViewById(R.id.Chat_RecyclerView);
-        ib_send = findViewById(R.id.Chat_Button_Send);
-        ib_attach = findViewById(R.id.Chat_Button_Attachment);
-        et_message = findViewById(R.id.Chat_EditText_Message);
     }
 
 
@@ -225,6 +227,31 @@ public class ChatActivity extends BaseActivity {
             }
 
         }
+    }
+
+    private void setMyActionBar() {
+        ab = getSupportActionBar();
+        ab.setTitle(user.getDisplayName());
+        ab.setSubtitle("Status");
+        ab.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ImageView iv = new ImageView(getApplicationContext());
+        iv.setPadding(50, 50, 50, 50);
+        Picasso.get().load(user.getPic()).into(iv);
+        Drawable d = iv.getDrawable();
+        getSupportActionBar().setIcon(d);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        ColorDrawable colorDrawable
+                = new ColorDrawable(Color.parseColor("#DC143C"));
+        ab.setBackgroundDrawable(colorDrawable);
+    }
+
+
+    private void attachViews() {
+        chatRecyclerView = findViewById(R.id.Chat_RecyclerView);
+        ib_send = findViewById(R.id.Chat_Button_Send);
+        ib_attach = findViewById(R.id.Chat_Button_Attachment);
+        et_message = findViewById(R.id.Chat_EditText_Message);
     }
 
 

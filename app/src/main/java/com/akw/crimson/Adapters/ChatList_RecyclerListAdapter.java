@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.R;
 import com.squareup.picasso.Picasso;
 
@@ -28,7 +29,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
 
         @Override
         public boolean areContentsTheSame(@NonNull User oldItem, @NonNull User newItem) {
-            return oldItem.getUnread_count() == newItem.getUnread_count() ;
+            return oldItem.getUnread_count() == newItem.getUnread_count() && oldItem.getDisplayName().equals(newItem.getDisplayName()) && oldItem.getPic().equals(newItem.getPic()) && oldItem.getTime().equals(newItem.getTime());
         }
     };
 
@@ -73,10 +74,9 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         User user = getItem(position);
 
-        Log.i("USERNAME::::", user.getDisplayName());
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText(user.getLast_msg());
-        Picasso.get().load(user.getPic()).into(holder.iv_profilePic);
+        holder.iv_profilePic.setImageBitmap(UsefulFunctions.decodeImage(user.getPic()));
         holder.tv_unreadCount.setText(String.valueOf((user.getUnread_count())!=0?user.getUnread_count():""));
         holder.tv_time.setText((user.getTime()==null?"12:00":String.valueOf(user.getTime().substring(0,5))));
     }

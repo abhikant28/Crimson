@@ -38,11 +38,13 @@
 
     <Spinner
         android:id="@+id/Registration_Phone_Spinner_CountryNames"
+        style="@style/CustomCountrySpinnerLook"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="16dp"
-        android:tooltipText="Select Country"
+        android:layout_marginHorizontal="20sp"
+        android:layout_marginTop="15sp"
         android:spinnerMode="dialog"
+        android:tooltipText="Select Country"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textView3" />

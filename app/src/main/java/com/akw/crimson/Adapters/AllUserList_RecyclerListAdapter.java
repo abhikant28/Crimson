@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.R;
 import com.squareup.picasso.Picasso;
 
@@ -74,7 +75,9 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
 
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText("");
-        Picasso.get().load(user.getPic()).into(holder.iv_profilePic);
+        if(user.getPic()!=null){
+            holder.iv_profilePic.setImageBitmap(UsefulFunctions.decodeImage(user.getPic()));
+        }
         holder.tv_unreadCount.setText("");
 
         holder.tv_time.setText("");

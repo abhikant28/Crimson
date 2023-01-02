@@ -6,12 +6,39 @@
     android:layout_height="match_parent"
     tools:context=".MainChatList"
     android:background="#EF1440">
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MainChat_List_RecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/main_chatlist_item"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/MainChat_UserSearch_List_RecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/MainChat_List_RecyclerView"
+        tools:listitem="@layout/main_chatlist_item"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/MainChat_MessageSearch_List_RecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/main_chatlist_item"/>
+    <TextView
+        android:id="@+id/MainChat_tv_Search_noResultsFound"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="No Results found."/>
+
+</LinearLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/MainChat_floatButton_newMessage"
         android:layout_width="wrap_content"

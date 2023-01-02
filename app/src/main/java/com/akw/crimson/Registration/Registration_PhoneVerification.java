@@ -15,7 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.akw.crimson.Database.SharedPrefManager;
+import com.akw.crimson.Backend.Constants;
+import com.akw.crimson.Backend.Database.SharedPrefManager;
+import com.akw.crimson.MainActivity;
 import com.akw.crimson.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -41,6 +43,10 @@ public class Registration_PhoneVerification extends AppCompatActivity {
     String otpId = "";
     private FirebaseAuth mAuth;
 
+    @Override
+    public void onBackPressed() {
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +55,7 @@ public class Registration_PhoneVerification extends AppCompatActivity {
 
 
         if (getIntent() != null) {
-            number = getIntent().getStringExtra("NUMBER");
+            number = getIntent().getStringExtra(Constants.KEY_INTENT_PHONE);
         }
         if (number.equals("INVALID")) {
             finish();
@@ -66,7 +72,7 @@ public class Registration_PhoneVerification extends AppCompatActivity {
 
         PhoneAuthOptions options =
                 PhoneAuthOptions.newBuilder(mAuth)
-                        .setPhoneNumber(num)       // Phone number to verify
+                        .setPhoneNumber(num.replaceAll(" ", ""))       // Phone number to verify
                         .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
                         .setActivity(cxt)                 // Activity (for callback binding)
                         .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -162,8 +168,10 @@ public class Registration_PhoneVerification extends AppCompatActivity {
                 builder.setPositiveButton("Change number", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         number=null;
-                        finish();
-                    }
+                        Intent intent = new Intent(getApplicationContext(), Registration_Phone.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();                    }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
