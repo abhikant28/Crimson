@@ -1,7 +1,4 @@
-package com.akw.crimson.AppObjects;
-
-import android.os.Parcel;
-import android.os.Parcelable;
+package com.akw.crimson.Backend.AppObjects;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
@@ -9,13 +6,6 @@ import androidx.room.PrimaryKey;
 
 import com.akw.crimson.Backend.Constants;
 
-import org.json.JSONObject;
-import org.json.JSONStringer;
-
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -23,53 +13,69 @@ import java.util.Calendar;
 public class Message {
 
     @PrimaryKey
-    @NonNull private String msg_ID;
+    @NonNull
+    private String msg_ID;
     private String local_msg_ID, user_id, _id, tag, msg, time, date, mediaID;
     private boolean self, unread, media;
     private int status;
 
 
     public String asString(String selfID) {
-         return "["+msg_ID+","+selfID+","+tag+","+ "\""+msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_","%u%")+"\""+","+media+","+mediaID+"]";
+        return "[" + msg_ID + "," + selfID + "," + tag + "," + "\"" + msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_", "%u%") + "\"" + "," + media + "," + mediaID + "]";
 
     }
 
-    public Message(String msg_ID, String user_id, String tag, String msg,boolean self, boolean media, String mediaID, int status) {
+    public Message(String msg_ID, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status) {
         Calendar time = Calendar.getInstance();
-        this.local_msg_ID = msg_ID+"_"+user_id;
+        this.local_msg_ID = msg_ID + "_" + user_id;
         this.msg_ID = msg_ID;
         this.user_id = user_id;
         this.tag = tag;
         this.msg = msg;
-        this.time = (time==null)?"12:00 ":(String.format("%02d", time.get(Calendar.HOUR_OF_DAY))+":"+String.format("%02d",time.get(Calendar.MINUTE)));
+        this.time = (time == null) ? "12:00 " : (String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)));
         this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
         this.unread = true;
         this.media = media;
         this.mediaID = mediaID;
         this.status = status;
-        this.self=self;
+        this.self = self;
     }
 
+    public Message(String msg_ID, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status, Calendar time) {
+        this.local_msg_ID = msg_ID + "_" + user_id;
+        this.msg_ID = msg_ID;
+        this.user_id = user_id;
+        this.tag = tag;
+        this.msg = msg;
+        this.time = (time == null) ? "12:00 " : (String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)));
+        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+        this.unread = true;
+        this.media = media;
+        this.mediaID = mediaID;
+        this.status = status;
+        this.self = self;
+    }
 
-    public Message(String[] s){
+    public Message(String[] s) {
         Calendar time = Calendar.getInstance();
-        this.local_msg_ID = msg_ID+"_"+user_id;
+        this.local_msg_ID = msg_ID + "_" + user_id;
         this.msg_ID = s[0].substring(1);
         this.user_id = s[1];
         this.tag = s[2];
-        String msg =s[3].replaceAll("%c%", ",").replaceAll("%q%", "\"").replaceAll("%u%", "_");;
-        this.msg = msg.substring(1,msg.length()-1);
-        this.time = (time==null)?"12:00 ":(String.format("%02d", time.get(Calendar.HOUR_OF_DAY))+":"+String.format("%02d",time.get(Calendar.MINUTE)));
+        String msg = s[3].replaceAll("%c%", ",").replaceAll("%q%", "\"").replaceAll("%u%", "_");
+        ;
+        this.msg = msg.substring(1, msg.length() - 1);
+        this.time = (time == null) ? "12:00 " : (String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)));
         this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
         this.unread = false;
         this.media = Boolean.parseBoolean(s[4]);
-        this.mediaID = s[5].substring(0,s[5].length()-1);
+        this.mediaID = s[5].substring(0, s[5].length() - 1);
         this.status = 2;
-        this.self=false;
+        this.self = false;
     }
 
     public Message(String msg_id, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status, String time, String date) {
-        this.local_msg_ID = msg_ID+"_"+user_id;
+        this.local_msg_ID = msg_ID + "_" + user_id;
         this.msg_ID = msg_id;
         this.user_id = user_id;
         this.tag = tag;
@@ -80,7 +86,7 @@ public class Message {
         this.media = media;
         this.mediaID = mediaID;
         this.status = status;
-        this.self=self;
+        this.self = self;
     }
 
     public String get_id() {
@@ -116,7 +122,7 @@ public class Message {
     }
 
     public String getTag() {
-        if(tag==null) tag= Constants.KEY_FCM_TYPE_MSG;
+        if (tag == null) tag = Constants.KEY_FCM_TYPE_MSG;
         return tag;
     }
 

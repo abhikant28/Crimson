@@ -1,4 +1,4 @@
-package com.akw.crimson.AppObjects;
+package com.akw.crimson.Backend.AppObjects;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;

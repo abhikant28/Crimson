@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="20dp"
         android:layout_marginTop="32dp"
-        android:text="We have sent a 6 digit One Time Password to your number via SMS. Please check."
+        android:text="We have sent a 6 digit One Time Password toName your number via SMS. Please check."
         android:textSize="15dp"
         android:textColor="@color/black"
         android:textAlignment="center"

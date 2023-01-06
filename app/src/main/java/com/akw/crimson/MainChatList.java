@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,9 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.akw.crimson.Adapters.AllUserList_RecyclerListAdapter;
 import com.akw.crimson.Adapters.ChatList_MessageSearch_RecyclerListAdapter;
 import com.akw.crimson.Adapters.ChatList_RecyclerListAdapter;
-import com.akw.crimson.AppObjects.Message;
-import com.akw.crimson.AppObjects.Profile;
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
@@ -36,20 +36,21 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Hashtable;
 import java.util.List;
- 
-public class MainChatList extends BaseActivity {
 
+public class MainChatList extends AppCompatActivity {
+
+    ActionBar ab;
+    TextView tv_noResults;
     RecyclerView rv_chatList;
     RecyclerView rv_searchUsers;
     RecyclerView rv_searchMessages;
+
     ChatList_RecyclerListAdapter chatList_recyclerListAdapter = new ChatList_RecyclerListAdapter();
     AllUserList_RecyclerListAdapter searchUserList_rvAdapter = new AllUserList_RecyclerListAdapter();
     ChatList_MessageSearch_RecyclerListAdapter searchMessageList_rv_Adapter = new ChatList_MessageSearch_RecyclerListAdapter();
+
     TheViewModel dbViewModel;
     public static User user;
-
-    FloatingActionButton fab_startNew;
-    TextView tv_noResults;
 
 
     @Override
@@ -70,7 +71,7 @@ public class MainChatList extends BaseActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.i("QUERY CHANGE:::::",newText);
+                Log.i("QUERY CHANGE:::::", newText);
                 if (newText.length() == 0) {
                     rv_chatList.setVisibility(View.VISIBLE);
                     searchMessageList_rv_Adapter.submitList(null);
@@ -90,11 +91,16 @@ public class MainChatList extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.chatList_Menu_search:
-                break;
             case R.id.chatList_Menu_Settings:
                 break;
             case R.id.chatList_Menu_NewGroup:
+                break;
+            case R.id.chatList_Menu_autoSendMsg:
+                startActivity(new Intent(this, PrepareMessageActivity.class));
+                break;
+            case R.id.chatList_Menu_camera:
+                break;
+            case R.id.chatList_Menu_payments:
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -112,17 +118,13 @@ public class MainChatList extends BaseActivity {
 
         setChatList();
 
-//        makeMsgs();
-//        InsertMessage im = new InsertMessage(3, msg);
-//        new Thread(im).start();
-
-
         sendToken();
+
+
     }
 
     private void connectLocalDatabase() {
         dbViewModel = Communicator.localDB;
-//        c = dbViewModel.getChatList();
 
         dbViewModel.getChatListUsers().observe(this, new Observer<List<User>>() {
             @Override
@@ -133,9 +135,9 @@ public class MainChatList extends BaseActivity {
     }
 
     private void searchQuery(String newText) {
-        List<Message> messagesFound=dbViewModel.searchInMessages(newText);
-        List<User> usersFound=dbViewModel.searchUserByText(newText);
-        if(messagesFound.size()==0 && usersFound.size()==0) {
+        List<Message> messagesFound = dbViewModel.searchInMessages(newText);
+        List<User> usersFound = dbViewModel.searchUserByText(newText);
+        if (messagesFound.size() == 0 && usersFound.size() == 0) {
             tv_noResults.setVisibility(View.VISIBLE);
             searchMessageList_rv_Adapter.submitList(null);
             searchUserList_rvAdapter.submitList(null);
@@ -178,6 +180,7 @@ public class MainChatList extends BaseActivity {
                 intent.putExtra(Constants.KEY_INTENT_USERID, User.getUser_id());
                 Log.i("USER ID::::::", User.getName());
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 
@@ -192,7 +195,7 @@ public class MainChatList extends BaseActivity {
             }
         });
 
-        searchMessageList_rv_Adapter=new ChatList_MessageSearch_RecyclerListAdapter(dbViewModel);
+        searchMessageList_rv_Adapter = new ChatList_MessageSearch_RecyclerListAdapter(dbViewModel);
         rv_searchMessages.setLayoutManager(new LinearLayoutManager(this));
         rv_searchMessages.setAdapter(searchMessageList_rv_Adapter);
         searchMessageList_rv_Adapter.setOnItemCLickListener(new ChatList_MessageSearch_RecyclerListAdapter.OnItemClickListener() {
@@ -200,7 +203,7 @@ public class MainChatList extends BaseActivity {
             public void OnItemClick(Message message) {
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                 intent.putExtra(Constants.KEY_INTENT_USERID, message.getUser_id());
-                intent.putExtra(Constants.KEY_INTENT_MESSAGEID, message.getMsg_ID());
+                intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, message.getMsg_ID());
                 intent.putExtra(Constants.KEY_INTENT_STARTED_BY, Constants.KEY_INTENT_STARTED_BY_SEARCH);
                 startActivity(intent);
             }
@@ -208,15 +211,15 @@ public class MainChatList extends BaseActivity {
     }
 
     private void setView() {
-        ActionBar ab = getSupportActionBar();
+        ab = getSupportActionBar();
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#DC143C"));
         ab.setBackgroundDrawable(colorDrawable);
 
-        tv_noResults=findViewById(R.id.MainChat_tv_Search_noResultsFound);
+        tv_noResults = findViewById(R.id.MainChat_tv_Search_noResultsFound);
         rv_chatList = findViewById(R.id.MainChat_List_RecyclerView);
-        rv_searchMessages=findViewById(R.id.MainChat_MessageSearch_List_RecyclerView);
-        rv_searchUsers=findViewById(R.id.MainChat_UserSearch_List_RecyclerView);
-        fab_startNew = findViewById(R.id.MainChat_floatButton_newMessage);
+        rv_searchMessages = findViewById(R.id.MainChat_MessageSearch_List_RecyclerView);
+        rv_searchUsers = findViewById(R.id.MainChat_UserSearch_List_RecyclerView);
+        FloatingActionButton fab_startNew = findViewById(R.id.MainChat_floatButton_newMessage);
 
         fab_startNew.setOnClickListener(new View.OnClickListener() {
             @Override

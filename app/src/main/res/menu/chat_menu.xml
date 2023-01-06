@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/chat_menu_profile"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="View Profile" />
+    <item
+        android:id="@+id/chat_menu_media"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="View Media" />
+    <item
+        android:id="@+id/chat_menu_search"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+    <item
+        android:id="@+id/chat_menu_prepareMessage"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="Prepare Message" />
+    <item
+        android:id="@+id/chat_menu_importChat"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="Import Chat" />
+    <item
+        android:id="@+id/chat_menu_wallpaper"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="Wallpaper" />
+    <item
+        android:id="@+id/chat_menu_more"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="More">
+        <menu>
+            <item
+                android:id="@+id/chat_menu_mute"
+                android:icon="@drawable/ic_baseline_search_24"
+                android:title="Mute Notifications" />
+            <item
+                android:id="@+id/chat_menu_block"
+                android:icon="@drawable/ic_baseline_search_24"
+                android:title="Block" />
+            <item
+                android:id="@+id/chat_menu_exportChat"
+                android:icon="@drawable/ic_baseline_search_24"
+                android:title="Export Chat" />
+            <item
+                android:id="@+id/chat_menu_clearChat"
+                android:icon="@drawable/ic_baseline_search_24"
+                android:title="Clear Chat" />
+        </menu>
+    </item>
+
+</menu>

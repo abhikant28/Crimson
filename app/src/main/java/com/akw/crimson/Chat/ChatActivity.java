@@ -6,22 +6,32 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Adapters.Chat_RecyclerAdapter;
-import com.akw.crimson.AppObjects.Message;
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Communications.Messaging;
 import com.akw.crimson.Backend.Constants;
@@ -30,7 +40,6 @@ import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.BaseActivity;
 import com.akw.crimson.R;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,7 +53,7 @@ public class ChatActivity extends BaseActivity {
 
     private Chat_RecyclerAdapter chatAdapter;
     private RecyclerView chatRecyclerView;
-    private ImageButton ib_send, ib_attach;
+    private ImageButton ib_send, ib_attach, ib_camera;
     private EditText et_message;
 
     private TheViewModel dbViewModel;
@@ -56,27 +65,97 @@ public class ChatActivity extends BaseActivity {
     public static volatile boolean updated = false;
     public static volatile String userID, updateID;
     private Boolean isOnline = false;
+    private int searchPosition;
 
 
     @Override
     protected void onStop() {
         super.onStop();
-        if(user!=null){
+        if (user != null) {
             user.setUnread_count(0);
             user.setUnread(false);
         }
         dbViewModel.updateUser(user);
         chatThread.interrupt();
-        stopService(new Intent(this,Communicator.class));
+        stopService(new Intent(this, Communicator.class));
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent= new Intent(new Intent(this, Communicator.class));
+        Intent intent = new Intent(new Intent(this, Communicator.class));
         startService(intent);
         listenForOnline();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.chat_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.chat_menu_search);
+
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query.length() != 0) {
+                    searchPosition=0;
+                    searchInChat(query, chatCursor);
+                }else{
+                    searchPosition=0;
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        ViewGroup.LayoutParams navButtonsParams = new ViewGroup.LayoutParams(ab.getHeight() * 2 / 3, ab.getHeight() * 2 / 3);
+
+        Button btnNext = new Button(this);
+        btnNext.setBackground(getResources().getDrawable(R.drawable.));
+
+        Button btnPrev = new Button(this);
+        btnPrev.setBackground(getResources().getDrawable(R.drawable.));
+
+        searchStats = new TextView(this);
+
+        ((LinearLayout) searchView.getChildAt(0)).addView(searchStats);
+        ((LinearLayout) searchView.getChildAt(0)).addView(btnPrev, navButtonsParams);
+        ((LinearLayout) searchView.getChildAt(0)).addView(btnNext, navButtonsParams);
+
+        ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.BOTTOM);
+
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!searchQuery.equals("")) {
+                    lawTextWebView.findNext(true);
+                }
+            }
+        });
+
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!searchQuery.equals("")) {
+                    lawTextWebView.findNext(false);
+                }
+            }
+        });
+
+        return true;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +178,16 @@ public class ChatActivity extends BaseActivity {
 
     }
 
+    private void searchInChat(String query, Cursor chatCursor) {
+        Cursor cursor=chatCursor;
+        int i=0;
+        while(cursor.moveToNext()){
+            if (cursor.getString(cursor.getColumnIndexOrThrow("msg")).contains(query)) {
+                chatRecyclerView.scrollToPosition(i);
+            }
+            i++;
+        }
+    }
 
     private void setClicks() {
         ib_send.setOnClickListener(new View.OnClickListener() {
@@ -106,21 +195,20 @@ public class ChatActivity extends BaseActivity {
             public void onClick(View view) {
 
                 if (!et_message.getText().toString().trim().equals("")) {
-                    Message message = new Message(new SharedPrefManager(getApplicationContext()).getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
+                    Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
                     dbViewModel.insertMessage(message);
                     //send(message);
                     user.setConnected(true);
                     et_message.setText("");
                     if (!isOnline) {
-                        Log.i("NOT ONLINE","SENDING MSG");
+                        Log.i("NOT ONLINE", "SENDING MSG");
                         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                         firestore.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                Log.i("NOT ONLINE","SENDING MSG token"+documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN));
                                 String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-                                Messaging.sendMessageNotification(new SharedPrefManager(getApplicationContext()).getLocalUserID(), userToken, message.getTag(), message.getMsg_ID());
-                                Messaging.sendMessageRetroNotification(new SharedPrefManager(getApplicationContext()).getLocalUserID(), userToken, message.getTag(), message.getMsg_ID(),userID);
+                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTag(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
+//                                Messaging.sendMessageRetroNotification(new SharedPrefManager(getApplicationContext()).getLocalUserID(), userToken, message.getTag(), message.getMsg_ID(),userID);
                             }
                         });
 
@@ -201,9 +289,7 @@ public class ChatActivity extends BaseActivity {
                 }
             });
             while (true) {
-                //Log.i("CHAT UPDATE:::::","Watching..."+updateID+":"+user.get_id()+":"+updated);
                 if (updated && chatAdapter != null && updateID.equals(userID)) {
-                    //Log.i("CHAT UPDATE::::", "Message received");
                     int l = chatCursor.getCount();
                     chatCursor = dbViewModel.getChatMessages(inp);
                     runOnUiThread(new Runnable() {
@@ -248,10 +334,35 @@ public class ChatActivity extends BaseActivity {
 
 
     private void attachViews() {
+        new SharedPrefManager(getApplicationContext());
         chatRecyclerView = findViewById(R.id.Chat_RecyclerView);
         ib_send = findViewById(R.id.Chat_Button_Send);
         ib_attach = findViewById(R.id.Chat_Button_Attachment);
         et_message = findViewById(R.id.Chat_EditText_Message);
+        ib_camera = findViewById(R.id.Chat_Button_Camera);
+
+        et_message.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() != 0) {
+                    ib_attach.setVisibility(View.GONE);
+                    ib_camera.setVisibility(View.GONE);
+                } else {
+                    ib_attach.setVisibility(View.VISIBLE);
+                    ib_camera.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
 

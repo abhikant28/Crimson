@@ -26,7 +26,7 @@
         android:layout_marginTop="35dp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:text="Crimson will send a SMS to verify your phone number. Please select your country and enter your phone number below."
+        android:text="Crimson will send a SMS toName verify your phone number. Please select your country and enter your phone number below."
         android:textAlignment="textStart"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/Registration_Phone_Spinner_CountryNames"

@@ -1,5 +1,8 @@
 package com.akw.crimson.Backend;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 public class Constants {
@@ -7,8 +10,9 @@ public class Constants {
     public static final String KEY_INTENT_STARTED_BY_SEARCH = "search";
     public static final String KEY_INTENT_LIST_POSITION = "listPosition";
     public static final String KEY_INTENT_USERID = "userID";
-    public static final String KEY_INTENT_MESSAGEID = "messageID";
+    public static final String KEY_INTENT_MESSAGE_ID = "messageID";
     public static final String KEY_INTENT_USERNAME = "username";
+    public static final String KEY_INTENT_PREP_MSG_ID = "preparedID";
     public static final String KEY_INTENT_PIC = "userPic";
     public static final String KEY_INTENT_EMAIL = "userEmail";
     public static final String KEY_INTENT_PHONE = "userPhone";
@@ -25,7 +29,7 @@ public class Constants {
     public static final String KEY_FCM_MSG_TAG_GROUP = "2";
     public static final String KEY_FCM_TYPE = "type";
     public static final String KEY_FCM_TYPE_MSG = "1";
-    public static final String KEY_FCM_SERVER_KEY = "AAAAwAiXfmQ:APA91bGtlDupCsKN4bih2StMtYr13wOzVnT0r9SaiIIUvN3l7gamK8L02s2OsbPewCVNGnBvM7s7fiufIwj0MhyAHgjgVuF_AG-fq0tZWm2AhBh4Kj6RagrnW8YjJD1SpEwJuCvWFVjA";
+    public static final String KEY_FCM_SERVER_KEY = "AAAAwAiXfmQ:APA91bGtlDupCsKN4bih2StMtYr13wOzVnT0r9SaiIIUvN3l7gamK8L02s2OsbPewCVNGnBvM7s7fiufIwj0MhyAHgjgVuF_AG-fq0tZWm2AhBh4Kj6RagrnW8YjJD1SpEwJuCvWFVjA\t\n";
 
 
 
@@ -44,8 +48,23 @@ public class Constants {
     public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
     public static final String REMOTE_MSG_DATA = "data";
     public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
+    public static final int KEY_ACTIVITY_RESULT_CONTACT_SELECT = 3;
 
     public static HashMap<String,String> remoteMsgHeaders=null;
+    public static JSONObject FcmJsonObject=null;
+
+    public static JSONObject getFCMjsonObject(){
+        if(FcmJsonObject==null){
+            FcmJsonObject= new JSONObject();
+            try {
+                FcmJsonObject.put(REMOTE_MSG_CONTENT_TYPE, "application/json");
+                FcmJsonObject.put(REMOTE_MSG_AUTHORIZATION, "key="+KEY_FCM_SERVER_KEY);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return FcmJsonObject;
+    }
 
     public static HashMap<String,String> getRemoteMsgHeaderes(){
         if(remoteMsgHeaders==null){

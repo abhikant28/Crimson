@@ -9,9 +9,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.akw.crimson.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.Message;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Dao
@@ -42,4 +41,7 @@ public interface MessagesDao {
 
     @Query("SELECT * from messages_Table where msg LIKE'%' || :query || '%'")
     List<Message> searchInMessage(String query);
+
+    @Query("SELECT * from messages_Table where user_id=:userID AND msg LIKE'%' || :query || '%'")
+    List<Message> searchInUserMessages(String userID, String query);
 }

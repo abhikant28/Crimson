@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#DC143C"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/PrepareMessage_Item_TextView_UserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:text="User Name"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/PrepareMessage_Item_TextView_UserMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Message content"
+        android:layout_marginTop="10sp"
+        android:textColor="#B3B2B2"
+        app:layout_constraintStart_toStartOf="@+id/PrepareMessage_Item_TextView_Time"
+        app:layout_constraintTop_toBottomOf="@+id/PrepareMessage_Item_TextView_Time" />
+
+    <TextView
+        android:id="@+id/PrepareMessage_Item_TextView_Time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1:00 PM"
+        android:textColor="#B3B2B2"
+        android:layout_marginTop="10sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="@+id/PrepareMessage_Item_TextView_UserName"
+        app:layout_constraintTop_toBottomOf="@+id/PrepareMessage_Item_TextView_UserName" />
+
+    <ImageButton
+        android:id="@+id/PrepareMessage_Item_ib_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/ic_baseline_edit_24"
+        android:backgroundTint="#DC143C"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/PrepareMessage_Item_ib_delete"
+        app:layout_constraintTop_toTopOf="parent" />
+    <ImageButton
+        android:id="@+id/PrepareMessage_Item_ib_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/ic_baseline_delete_outline_24"
+        android:backgroundTint="#DC143C"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

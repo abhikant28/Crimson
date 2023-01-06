@@ -7,9 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.akw.crimson.AppObjects.Message;
-import com.akw.crimson.AppObjects.Profile;
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.Profile;
+import com.akw.crimson.Backend.AppObjects.User;
 
 import java.util.List;
 
@@ -50,6 +50,9 @@ public class TheViewModel extends AndroidViewModel {
     }
     public List<Message> searchInMessages(String query){
         return repository.searchInMessage(query);
+    }
+    public List<Message> searchInUserMessages(String query, String id){
+        return repository.searchInUserMessage(query,id);
     }
     public LiveData<List<Message>> getPendingMessagesList() {
         return pendingMessagesList;

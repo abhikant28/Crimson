@@ -12,10 +12,9 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.R;
-import com.squareup.picasso.Picasso;
 
 public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserList_RecyclerListAdapter.MyViewHolder> {
     private OnItemClickListener listener;
@@ -79,7 +78,6 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
             holder.iv_profilePic.setImageBitmap(UsefulFunctions.decodeImage(user.getPic()));
         }
         holder.tv_unreadCount.setText("");
-
         holder.tv_time.setText("");
     }
 

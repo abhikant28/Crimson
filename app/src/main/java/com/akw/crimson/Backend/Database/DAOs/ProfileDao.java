@@ -9,7 +9,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.akw.crimson.AppObjects.Profile;
+import com.akw.crimson.Backend.AppObjects.Profile;
 
 @Dao
 public interface ProfileDao {

@@ -9,9 +9,9 @@ import androidx.room.RoomDatabase;
 import androidx.room.Database;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.akw.crimson.AppObjects.Message;
-import com.akw.crimson.AppObjects.Profile;
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.Profile;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Database.DAOs.ProfileDao;
 import com.akw.crimson.Backend.Database.DAOs.UsersDao;
 import com.akw.crimson.Backend.Database.DAOs.MessagesDao;

@@ -15,8 +15,8 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LifecycleService;
 import androidx.lifecycle.Observer;
 
-import com.akw.crimson.AppObjects.Message;
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;

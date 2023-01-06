@@ -1,11 +1,9 @@
 package com.akw.crimson.Adapters;
 
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,9 +11,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.Database.TheViewModel;
-import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.R;
 
 public class ChatList_MessageSearch_RecyclerListAdapter extends ListAdapter<Message, ChatList_MessageSearch_RecyclerListAdapter.MyViewHolder> {

@@ -1,7 +1,6 @@
 package com.akw.crimson.Adapters;
 
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +12,9 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.R;
-import com.squareup.picasso.Picasso;
 
 public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_RecyclerListAdapter.MyViewHolder> {
     private OnItemClickListener listener;

@@ -2,9 +2,14 @@ package com.akw.crimson.Backend.Database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.PreparedMessage;
+import com.akw.crimson.Backend.AppObjects.User;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class SharedPrefManager {
     public static final String SHARED_PREF_NAME="CRIMSON_SHAREDPREFERENCE";
@@ -24,18 +29,18 @@ public class SharedPrefManager {
         return instance;
     }
 
-    public boolean storeToken(String token){
+    public static  boolean storeToken(String token){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString(KEY_ACCESS_TOKEN,token);
         editor.apply();
         return true;
     }
-    public String getToken(){
+    public static  String getToken(){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_ACCESS_TOKEN,null);
     }
-    public boolean storeUser(User user,String token){
+    public static  boolean storeUser(User user,String token){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("USER_ID", user.get_id());
@@ -46,7 +51,7 @@ public class SharedPrefManager {
         editor.apply();
         return true;
     }
-    public boolean storeUserProfile(String profilePic,String userName,String address){
+    public static  boolean storeUserProfile(String profilePic,String userName,String address){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("USER_NAME", userName);
@@ -56,14 +61,13 @@ public class SharedPrefManager {
         editor.apply();
         return true;
     }
-    public void storeUserToken(String token){
+    public static  void storeUserToken(String token){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("FIREBASE_TOKEN", token);
         editor.apply();
-        return;
     }
-    public boolean storeUserNumber(String num,String userID){
+    public static  boolean storeUserNumber(String num,String userID){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("USER_PHONE",num);
@@ -72,19 +76,36 @@ public class SharedPrefManager {
         editor.apply();
         return true;
     }
-    public User getLocalUser(){
+    public static User getLocalUser(){
         SharedPreferences sp= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         User lUser=new User(sp.getString("USER_ID",null ),null,sp.getString("USER_NAME",null )
         ,sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null),true);
         return lUser;
     }
-    public String getLocalUserID(){
+    public static String getLocalUserID(){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         return sharedPreferences.getString("USER_ID", null);
     }
-    public String getLocalPhoneNumber(){
+    public static  String getLocalPhoneNumber(){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         return sharedPreferences.getString("USER_PHONE", null);
+    }
+    public static void putPreparedMessages(ArrayList<PreparedMessage> newMessages){
+        Gson gson= new Gson();
+        String json= gson.toJson(newMessages);
+        SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString("PREPARED_MESSAGES",json);
+        editor.apply();
+    }
+    public static ArrayList<PreparedMessage> getPreparedMessages(){
+        SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        String s=sharedPreferences.getString("PREPARED_MESSAGES", null);
+        Gson gson= new Gson();
+        Type type = new TypeToken<ArrayList<PreparedMessage>>() {}.getType();
+        ArrayList<PreparedMessage> messages= gson.fromJson(s, type);
+        if (messages==null)messages=new ArrayList<>();
+        return messages;
     }
 
 }

@@ -10,7 +10,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.User;
 
 import java.util.List;
 

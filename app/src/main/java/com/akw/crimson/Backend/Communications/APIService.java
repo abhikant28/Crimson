@@ -2,6 +2,8 @@ package com.akw.crimson.Backend.Communications;
 
 import com.akw.crimson.Backend.Constants;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 import okhttp3.ResponseBody;
@@ -20,8 +22,9 @@ public interface APIService {
 
 
     @POST("send")
+    @Headers({"Authorization: key="+ Constants.KEY_FCM_SERVER_KEY,
+            "Content-Type:application/json"})
     Call<String> sendRetroMessage(
-            @HeaderMap HashMap<String, String> headers,
             @Body String messageBody
     );
 }

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DF1C43">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#DF1C43"
+        android:paddingHorizontal="10sp"
+        tools:context=".PrepareMessageActivity">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:text="Create Message to send automatically: "
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:text="To : "
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@+id/textView4"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+        <TextView
+            android:id="@+id/PrepareMessage_tv_selectContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="100sp"
+            android:text="Select Contact"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/textView10"
+            app:layout_constraintTop_toTopOf="@+id/textView10" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            android:textColor="@color/white"
+            android:text="When : "
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@+id/textView4"
+            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+        <TextView
+            android:id="@+id/PrepareMessage_tv_setDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Day"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toStartOf="@+id/PrepareMessage_tv_setTime"
+            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintTop_toTopOf="@+id/textView5" />
+
+        <TextView
+            android:id="@+id/PrepareMessage_tv_setTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="50sp"
+            android:text="Set Time"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/PrepareMessage_tv_setDate" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="20sp"
+            android:animateLayoutChanges="true"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/textView5"
+            app:layout_constraintTop_toBottomOf="@+id/textView5">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#636363"
+                app:cardCornerRadius="25dp">
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="5dp"
+                    android:weightSum="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <ImageButton
+                        android:id="@+id/PrepareMessage_Button_Emoji"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="1dp"
+                        android:background="@drawable/ic_baseline_emoji_emotions_24"
+                        android:backgroundTint="#B3B2B2" />
+
+                    <EditText
+                        android:id="@+id/PrepareMessage_EditText_Message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/round_box_chat_input"
+                        android:backgroundTint="#636363"
+                        android:hint="Message..."
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLines="10"
+                        android:scrollHorizontally="false"
+                        android:singleLine="false"
+                        android:textColor="@color/white"
+                        android:textColorHint="#B3B2B2"
+                        android:textSize="18dp" />
+
+                    <ImageButton
+                        android:id="@+id/PrepareMessage_Button_Attachment"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/ic_baseline_attach_file_24"
+                        android:backgroundTint="#B3B2B2"
+                        android:rotation="-45" />
+
+                    <ImageButton
+                        android:id="@+id/PrepareMessage_Button_Camera"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="4dp"
+                        android:background="@drawable/ic_baseline_camera_alt_24"
+                        android:backgroundTint="#B3B2B2" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <ImageButton
+                android:id="@+id/PrepareMessage_Button_Send"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginLeft="2dp"
+                android:background="@drawable/circle_box"
+                android:src="@drawable/ic_baseline_check_24" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/PrepareMessage_rv_preparedMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+            tools:listitem="@layout/prepare_message_list_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

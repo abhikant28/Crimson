@@ -12,8 +12,7 @@
     android:orientation="vertical"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent">
+    app:layout_constraintEnd_toEndOf="parent">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MainChat_List_RecyclerView"
         android:layout_width="match_parent"
@@ -35,7 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:text="No Results found."/>
 
 </LinearLayout>

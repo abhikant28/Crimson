@@ -15,7 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.cursoradapter.widget.CursorAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.R;
 

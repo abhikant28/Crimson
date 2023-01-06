@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Adapters.AllUserList_RecyclerListAdapter;
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Chat.ChatActivity;
@@ -50,8 +50,7 @@ public class StartNew extends BaseActivity {
     ActionBar ab;
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 22:
@@ -216,6 +215,7 @@ public class StartNew extends BaseActivity {
             }
         });
         ab = getSupportActionBar();
+        ab.setTitle("Select Contact");
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#DC143C"));
         ab.setBackgroundDrawable(colorDrawable);
     }

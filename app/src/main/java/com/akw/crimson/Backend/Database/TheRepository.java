@@ -6,9 +6,9 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
-import com.akw.crimson.AppObjects.Message;
-import com.akw.crimson.AppObjects.Profile;
-import com.akw.crimson.AppObjects.User;
+import com.akw.crimson.Backend.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.Profile;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Database.DAOs.ProfileDao;
 import com.akw.crimson.Chat.ChatActivity;
 import com.akw.crimson.Backend.Database.DAOs.MessagesDao;
@@ -72,6 +72,16 @@ public class TheRepository {
     public List<Message> searchInMessage(String query) {
         try {
             return new SearchInMessageAsyncTask(messagesDao).execute(query).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public List<Message> searchInUserMessage(String query, String id) {
+        try {
+            return new SearchInUserMessageAsyncTask(messagesDao).execute(new String[]{query,id}).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -270,6 +280,18 @@ public class TheRepository {
         @Override
         protected List<Message> doInBackground(String... L_msg_ID) {
             return messagesDao.searchInMessage(L_msg_ID[0]);
+        }
+    }
+    private static class SearchInUserMessageAsyncTask extends AsyncTask<String, Void, List<Message>> {
+        private MessagesDao messagesDao;
+
+        private SearchInUserMessageAsyncTask(MessagesDao msgDao) {
+            this.messagesDao = msgDao;
+        }
+
+        @Override
+        protected List<Message> doInBackground(String... query) {
+            return messagesDao.searchInUserMessages(query[0],query[1]);
         }
     }
     private static class InsertUserAsyncTask extends AsyncTask<User, Void, Void> {

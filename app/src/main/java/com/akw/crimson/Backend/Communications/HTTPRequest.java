@@ -2,7 +2,7 @@ package com.akw.crimson.Backend.Communications;
 
 import android.util.Log;
 
-import com.akw.crimson.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.Message;
 
 import org.json.JSONArray;
 import org.json.JSONException;
