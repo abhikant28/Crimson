@@ -65,35 +65,35 @@ public class AlertReceiver extends BroadcastReceiver {
         databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(prepMsg.getToID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.i("COMMUNICATOR::::", "Pending Messages: Adding message");
+                Log.i("COMMUNICATOR:::", "Pending Messages: Adding message");
                 // Check if the user ID node exists
                 if (dataSnapshot.hasChild(thisUserID)) {
-                    Log.i("COMMUNICATOR::::", "Pending Messages: Previous Messages Exist");
+                    Log.i("COMMUNICATOR:::", "Pending Messages: Previous Messages Exist");
                     JSONArray array = null;
                     try {
                         array = new JSONArray(dataSnapshot.child(thisUserID).getValue(String.class));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    Log.i("COMMUNICATOR::::", "Pending Messages: Add Message to Array");
+                    Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
                     array.put(UsefulFunctions.encodeText(prepMsg.getMessage().asString(thisUserID)));
 
                     dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
                 } else {
-                    Log.i("COMMUNICATOR::::", "Pending Messages: No Previous Messages");
+                    Log.i("COMMUNICATOR:::", "Pending Messages: No Previous Messages");
                     // Create a new JSONArray
                     JSONArray array = new JSONArray();
-                    Log.i("COMMUNICATOR::::", "Pending Messages: Add Message to Array");
+                    Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
                     array.put(UsefulFunctions.encodeText(prepMsg.getMessage().asString(thisUserID)));
 
                     dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
                 }
-                Log.i("COMMUNICATOR::::", "Pending Messages: Message Sent");
+                Log.i("COMMUNICATOR:::", "Pending Messages: Message Sent");
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.i("COMMUNICATOR::::", "Cancelled 3");
+                Log.i("COMMUNICATOR:::", "Cancelled 3");
 
             }
         });

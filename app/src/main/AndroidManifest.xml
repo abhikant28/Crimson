@@ -10,8 +10,8 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -21,6 +21,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Crimson">
+        <activity
+            android:name=".Preferences.ProfileUpdate_BottomSheet_DialogBox"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".Preferences.EditProfile"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".Preferences.SettingsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".SelectContact"
             android:exported="false">
@@ -92,6 +113,7 @@
             android:enabled="true"
             android:exported="true"
             android:permission="TODO" />
+
         <receiver
             android:name=".Backend.AlertReceiver"
             android:enabled="true"
@@ -101,16 +123,3 @@
     </application>
 
 </manifest>
-
-
-
-
-
-
-
-
-
-
-
-
-

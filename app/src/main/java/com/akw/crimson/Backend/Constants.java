@@ -49,6 +49,9 @@ public class Constants {
     public static final String REMOTE_MSG_DATA = "data";
     public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
     public static final int KEY_ACTIVITY_RESULT_CONTACT_SELECT = 3;
+    public static final String KEY_FRAGMENT_TYPE = "fragmentType";
+    public static final String KEY_FRAGMENT_TYPE_NAME = "name";
+    public static final String KEY_FRAGMENT_TYPE_ABOUT = "about";
 
     public static HashMap<String,String> remoteMsgHeaders=null;
     public static JSONObject FcmJsonObject=null;

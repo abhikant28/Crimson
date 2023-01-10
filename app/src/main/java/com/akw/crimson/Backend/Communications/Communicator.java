@@ -65,21 +65,21 @@ public class Communicator extends LifecycleService {
 
 
         thisUserID = new SharedPrefManager(this).getLocalUserID();
-        Log.i("COMMUNICATOR::::", "onStart Started");
+        Log.i("COMMUNICATOR:::", "onStart Started");
         DatabaseReference userData = databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(thisUserID);
 
         if (starter == Constants.KEY_INTENT_START_FCM) {
-            Log.i("COMMUNICATOR::::", "Started by FCM");
+            Log.i("COMMUNICATOR:::", "Started by FCM");
             Log.i("USER ID::::", thisUserID);
             userData.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Log.i("COMMUNICATOR::::", "DATA CHANGE DETECTED from"+senderUserID);
+                    Log.i("COMMUNICATOR:::", "DATA CHANGE DETECTED from"+senderUserID);
 
                     DataSnapshot child = snapshot.child(senderUserID);
 
                     if (child.exists()) {
-                        Log.i("COMMUNICATOR::::", "DATA FROM > " + child.getValue());
+                        Log.i("COMMUNICATOR:::", "DATA FROM > " + child.getValue());
                         // Get the key value of the child
                         String key = child.getKey();
                         // Get the value of the child
@@ -103,27 +103,27 @@ public class Communicator extends LifecycleService {
                         }
                         child.getRef().removeValue();
                     } else {
-                        Log.i("COMMUNICATOR::::", "DATA FROM > " + senderUserID + " Not Found");
+                        Log.i("COMMUNICATOR:::", "DATA FROM > " + senderUserID + " Not Found");
                     }
                     stopSelf();
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.i("COMMUNICATOR::::", "Cancelled 1");
+                    Log.i("COMMUNICATOR:::", "Cancelled 1");
                 }
             });
         } else {
-            Log.i("COMMUNICATOR::::", "Started in Default Mode");
+            Log.i("COMMUNICATOR:::", "Started in Default Mode");
             userData.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Log.i("COMMUNICATOR::::", "Database Change Detected");
+                    Log.i("COMMUNICATOR:::", "Database Change Detected");
 
                     for (DataSnapshot child : snapshot.getChildren()) {
                         // Get the key value of the child
                         String key = child.getKey();
-                        Log.i("COMMUNICATOR::::", "Messages by: " + key);
+                        Log.i("COMMUNICATOR:::", "Messages by: " + key);
                         // Get the value of the child
                         String str = child.getValue(String.class);
                         JSONArray value = null;
@@ -131,7 +131,7 @@ public class Communicator extends LifecycleService {
                             value = new JSONArray(str);
                             // Iterate over the elements in the array
                             for (int i = 0; i < Objects.requireNonNull(value).length(); i++) {
-                                Log.i("COMMUNICATOR::::", "Messages COUNT: " + value.length());
+                                Log.i("COMMUNICATOR:::", "Messages COUNT: " + value.length());
                                 // Get the string value of the element
                                 String element = null;
                                 element = value.getString(i);
@@ -154,7 +154,7 @@ public class Communicator extends LifecycleService {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.i("COMMUNICATOR::::", "Cancelled 2");
+                    Log.i("COMMUNICATOR:::", "Cancelled 2");
 
                 }
             });
@@ -172,19 +172,19 @@ public class Communicator extends LifecycleService {
         localDB.getPendingMessagesList().observe(this, new Observer<List<Message>>() {
             @Override
             public void onChanged(List<Message> messages) {
-                Log.i("COMMUNICATOR::::", "Pending Messages Found " + messages.size());
+                Log.i("COMMUNICATOR:::", "Pending Messages Found " + messages.size());
                 HashMap<String, HashSet<Message>> messageMap = makeUserIdMap(messages);
                 String[] keys = messageMap.keySet().toArray(new String[0]);
-                Log.i("COMMUNICATOR::::", "Messages For > " + Arrays.deepToString(keys));
+                Log.i("COMMUNICATOR:::", "Messages For > " + Arrays.deepToString(keys));
                 for (String key : keys) {
-                    Log.i("COMMUNICATOR::::", "Messages For > " + key);
+                    Log.i("COMMUNICATOR:::", "Messages For > " + key);
                     databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(key).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.i("COMMUNICATOR::::", "Pending Messages: Adding message");
+                            Log.i("COMMUNICATOR:::", "Pending Messages: Adding message");
                             // Check if the user ID node exists
                             if (dataSnapshot.hasChild(thisUserID)) {
-                                Log.i("COMMUNICATOR::::", "Pending Messages: Previous Messages Exist");
+                                Log.i("COMMUNICATOR:::", "Pending Messages: Previous Messages Exist");
                                 // Get the array from the snapshot
                                 JSONArray array = null;
                                 try {
@@ -195,7 +195,7 @@ public class Communicator extends LifecycleService {
 
                                 // Add the new values to the array
                                 for (Message msg : messageMap.get(key)) {
-                                    Log.i("COMMUNICATOR::::", "Pending Messages: Add Message to Array");
+                                    Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
                                     array.put(UsefulFunctions.encodeText(msg.asString(thisUserID)));
                                 }
 
@@ -203,22 +203,22 @@ public class Communicator extends LifecycleService {
                                 // Update the array in the database
                                 dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
                             } else {
-                                Log.i("COMMUNICATOR::::", "Pending Messages: No Previous Messages");
+                                Log.i("COMMUNICATOR:::", "Pending Messages: No Previous Messages");
                                 // Create a new JSONArray
                                 JSONArray array = new JSONArray();
                                 for (Message msg : messageMap.get(key)) {
-                                    Log.i("COMMUNICATOR::::", "Pending Messages: Add Message to Array");
+                                    Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
                                     array.put(UsefulFunctions.encodeText(msg.asString(thisUserID)));
                                 }
                                 // Add the array to the database
                                 dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
                             }
-                            Log.i("COMMUNICATOR::::", "Pending Messages: Message Sent");
+                            Log.i("COMMUNICATOR:::", "Pending Messages: Message Sent");
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-                            Log.i("COMMUNICATOR::::", "Cancelled 3");
+                            Log.i("COMMUNICATOR:::", "Cancelled 3");
 
                         }
                     });
@@ -237,7 +237,7 @@ public class Communicator extends LifecycleService {
         localDB.getReceivedMessagesList().observe(this, new Observer<List<Message>>() {
             @Override
             public void onChanged(List<Message> messages) {
-                Log.i("COMMUNICATOR::::", "New Messages Found - " + messages.size());
+                Log.i("COMMUNICATOR:::", "New Messages Found - " + messages.size());
                 List<Message> msgs = localDB.getReceivedMessagesList().getValue();
                 if (msgs != null) msgs.retainAll(messages);
                 HashMap<String, HashSet<Message>> map = makeUsernameMap(localDB, msgs);
@@ -250,7 +250,7 @@ public class Communicator extends LifecycleService {
 
 
     private void fetchUserDetails(String user_id, Message msg) {
-        Log.i("COMMUNICATOR::::", "Fetching UserDetails");
+        Log.i("COMMUNICATOR:::", "Fetching UserDetails");
         Log.i("FETCH USER::::",user_id);
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -271,10 +271,10 @@ public class Communicator extends LifecycleService {
 
 
     private void notifyUser(HashMap<String, HashSet<Message>> map) {
-        Log.i("COMMUNICATOR::::", "New Messages Found: Making Notifying User");
+        Log.i("COMMUNICATOR:::", "New Messages Found: Making Notifying User");
         String[] keys = map.keySet().toArray(new String[0]);
         Intent intent;
-        Log.i("COMMUNICATOR::::", "New Messages Found: Making Notifying User Count > " + map.size());
+        Log.i("COMMUNICATOR:::", "New Messages Found: Making Notifying User Count > " + map.size());
 
         intent = new Intent(getApplicationContext(), MainChatList.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
@@ -294,7 +294,7 @@ public class Communicator extends LifecycleService {
         int notificationID = new Random().nextInt();
 
         for (String key : keys) {
-            Log.i("COMMUNICATOR::::", "New Messages Found: Making Notifications");
+            Log.i("COMMUNICATOR:::", "New Messages Found: Making Notifications");
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
             builder.setSmallIcon(R.drawable.ic_launcher_foreground);
             ArrayList<Message> messages = new ArrayList<>(map.get(key));
@@ -315,7 +315,7 @@ public class Communicator extends LifecycleService {
     }
 
     private HashMap<String, HashSet<Message>> makeUsernameMap(TheViewModel localDB, List<Message> messages) {
-        Log.i("COMMUNICATOR::::", "New Messages Found: Making Name List");
+        Log.i("COMMUNICATOR:::", "New Messages Found: Making Name List");
 
         HashMap<String, HashSet<Message>> map = makeUserIdMap(messages);
 
@@ -328,7 +328,7 @@ public class Communicator extends LifecycleService {
     }
 
     private HashMap<String, HashSet<Message>> makeUserIdMap(List<Message> messages) {
-        Log.i("COMMUNICATOR::::", "New Messages Found: Making ID List");
+        Log.i("COMMUNICATOR:::", "New Messages Found: Making ID List");
         HashMap<String, HashSet<Message>> map = new HashMap<>();
         for (Message msg : messages) {
             if (map.containsKey(msg.getUser_id())) {

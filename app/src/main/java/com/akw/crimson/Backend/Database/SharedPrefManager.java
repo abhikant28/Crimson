@@ -43,7 +43,7 @@ public class SharedPrefManager {
     public static  boolean storeUser(User user,String token){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();
-        editor.putString("USER_ID", user.get_id());
+        editor.putString("USER_ID", user.getUser_id());
         editor.putString("USER_NAME", user.getName());
         editor.putString("USER_PIC", user.getPic());
         editor.putString("USER_PHONE",user.getPhoneNumber());
@@ -51,12 +51,23 @@ public class SharedPrefManager {
         editor.apply();
         return true;
     }
+    public static  boolean storeUser(User user){
+        SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor= sharedPreferences.edit();
+        editor.putString("USER_ID", user.getUser_id());
+        editor.putString("USER_NAME", user.getName());
+        editor.putString("USER_PIC", user.getPic());
+        editor.putString("USER_PHONE",user.getPhoneNumber());
+        editor.apply();
+        return true;
+    }
     public static  boolean storeUserProfile(String profilePic,String userName,String address){
         SharedPreferences sharedPreferences= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor= sharedPreferences.edit();
         editor.putString("USER_NAME", userName);
-        editor.putString("USER_PIC", profilePic);
-        editor.putString("USER_EMAIL", address);
+        if(profilePic!=null){
+            editor.putString("USER_PIC", profilePic);
+        }        editor.putString("USER_EMAIL", address);
         editor.putBoolean("LOGGED_IN", true);
         editor.apply();
         return true;
@@ -80,6 +91,7 @@ public class SharedPrefManager {
         SharedPreferences sp= mctx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);
         User lUser=new User(sp.getString("USER_ID",null ),null,sp.getString("USER_NAME",null )
         ,sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null),true);
+        lUser.setUserName(sp.getString("USER_NAME",null ));
         return lUser;
     }
     public static String getLocalUserID(){

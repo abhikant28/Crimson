@@ -29,6 +29,7 @@ import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Chat.ChatActivity;
+import com.akw.crimson.Preferences.SettingsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -92,6 +93,7 @@ public class MainChatList extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.chatList_Menu_Settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.chatList_Menu_NewGroup:
                 break;

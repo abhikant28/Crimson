@@ -61,15 +61,14 @@ public class Message {
         this.local_msg_ID = msg_ID + "_" + user_id;
         this.msg_ID = s[0].substring(1);
         this.user_id = s[1];
-        this.tag = s[2];
+        this.tag = s[2].equals("NULL")?null:s[2];
         String msg = s[3].replaceAll("%c%", ",").replaceAll("%q%", "\"").replaceAll("%u%", "_");
-        ;
         this.msg = msg.substring(1, msg.length() - 1);
         this.time = (time == null) ? "12:00 " : (String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)));
         this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
         this.unread = false;
         this.media = Boolean.parseBoolean(s[4]);
-        this.mediaID = s[5].substring(0, s[5].length() - 1);
+        this.mediaID = s[5].substring(0, s[5].length() - 1).equals("NULL")?null:s[5].substring(0, s[5].length() - 1);
         this.status = 2;
         this.self = false;
     }

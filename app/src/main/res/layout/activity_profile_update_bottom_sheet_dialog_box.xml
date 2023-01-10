@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".Preferences.ProfileUpdate_BottomSheet_DialogBox"
+    android:background="#DC143C"
+    android:paddingHorizontal="20sp"
+    android:paddingVertical="10sp">
+
+    <TextView
+        android:id="@+id/profileEdit_bottomDialog_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter your Name"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/profileEdit_bottomDialog_et_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Type here..."
+        android:textSize="20sp"
+        android:layout_marginTop="10sp"
+        android:textColorHint="@color/white"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="@+id/profileEdit_bottomDialog_tv_title"
+        app:layout_constraintTop_toBottomOf="@+id/profileEdit_bottomDialog_tv_title" />
+
+    <Button
+        android:id="@+id/profileEdit_bottomDialog_b_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:textColor="@color/white"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toStartOf="@+id/profileEdit_bottomDialog_b_save"
+        app:layout_constraintTop_toBottomOf="@+id/profileEdit_bottomDialog_et_input" />
+
+    <Button
+        android:id="@+id/profileEdit_bottomDialog_b_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:textColor="@color/white"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="@+id/profileEdit_bottomDialog_et_input"
+        app:layout_constraintTop_toBottomOf="@+id/profileEdit_bottomDialog_et_input" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+
+
+

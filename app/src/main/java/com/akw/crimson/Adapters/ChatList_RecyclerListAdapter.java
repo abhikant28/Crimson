@@ -74,7 +74,11 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
 
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText(user.getLast_msg());
-        holder.iv_profilePic.setImageBitmap(UsefulFunctions.decodeImage(user.getPic()));
+        if(user.getPic()!=null){
+            holder.iv_profilePic.setImageBitmap(UsefulFunctions.decodeImage(user.getPic()));
+        }else{
+            holder.iv_profilePic.setImageResource(R.drawable.ic_baseline_person_24);
+        }
         holder.tv_unreadCount.setText(String.valueOf((user.getUnread_count())!=0?user.getUnread_count():""));
         holder.tv_time.setText((user.getTime()==null?"12:00":String.valueOf(user.getTime().substring(0,5))));
     }

@@ -39,7 +39,13 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-//    implementation ('com.google.firebase:firebase-iid:21.1.0') {
+
+    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.preference:preference:1.1.+'
+    implementation 'com.google.firebase:firebase-storage:20.1.0'
+    //    implementation ('com.google.firebase:firebase-iid:21.1.0') {
 //        transitive = true
 //    }
     testImplementation 'junit:junit:'

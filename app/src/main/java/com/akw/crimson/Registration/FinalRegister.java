@@ -2,6 +2,7 @@ package com.akw.crimson.Registration;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,27 +27,32 @@ public class FinalRegister extends AppCompatActivity {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance()
             .getReferenceFromUrl(Constants.FIREBASE_REALTIME_DATABASE_MSG_URL);
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_final);
-
+        new SharedPrefManager(getApplicationContext());
         String name = getIntent().getExtras().getString(Constants.KEY_INTENT_USERNAME);
         String email = getIntent().getExtras().getString(Constants.KEY_INTENT_EMAIL);
         String profilePic = getIntent().getExtras().getString(Constants.KEY_INTENT_PIC);
 
+        Log.i("USERNAME_::::",name);
         makeCall(profilePic, name, email);
+
 
     }
 
     private void makeCall(String profilePic, String userName, String email) {
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        String userID = new SharedPrefManager(getApplicationContext()).getLocalUserID();
-        String phone = new SharedPrefManager(getApplicationContext()).getLocalPhoneNumber();
+        String userID = SharedPrefManager.getLocalUserID();
+        String phone = SharedPrefManager.getLocalPhoneNumber();
 
         Hashtable<String, Object> data = new Hashtable<>();
         data.put(Constants.KEY_FIRESTORE_USER_NAME, userName);
-        data.put(Constants.KEY_FIRESTORE_USER_PIC, profilePic);
+        if(profilePic!=null){
+            data.put(Constants.KEY_FIRESTORE_USER_PIC, profilePic);
+        }
         data.put(Constants.KEY_FIRESTORE_USER_EMAIL, email);
         data.put(Constants.KEY_FIRESTORE_USER_PHONE, phone.replaceAll(" ", ""));
 
@@ -54,7 +60,8 @@ public class FinalRegister extends AppCompatActivity {
                 .document(userID).set(data, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(getApplicationContext(), "User Details Registered", Toast.LENGTH_SHORT).show();
-                    new SharedPrefManager(getApplicationContext()).storeUserProfile(profilePic, userName, email);
+                    SharedPrefManager.storeUserProfile(profilePic, userName, email);
+                    Log.i("USERNAME::::",userName);
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
@@ -79,7 +86,7 @@ public class FinalRegister extends AppCompatActivity {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String userID = new SharedPrefManager(getApplicationContext()).getLocalUserID();
+                String userID = SharedPrefManager.getLocalUserID();
                 databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(userID).setValue(userID);
             }
             @Override

@@ -7,14 +7,12 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,16 +25,10 @@ import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
@@ -107,9 +99,8 @@ public class Registration_Profile extends AppCompatActivity {
                         et_pass.setText(name);
                         Bitmap bitmap= UsefulFunctions.decodeImage(profilePic);
                         iv_profilePic.setImageBitmap(bitmap);
+                        tv_ImageText.setVisibility(View.GONE);
 //                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
-                    } else {
-//                        Log.d("TAG", "No such document");
                     }
                 } else {
                     Log.d("TAG", "get failed with ", task.getException());
@@ -130,7 +121,7 @@ public class Registration_Profile extends AppCompatActivity {
 
     private void setViews() {
         et_mail = findViewById(R.id.Registration_Email_EditView_Mail);
-        et_pass = findViewById(R.id.Registration_Email_EditView_Password);
+        et_pass = findViewById(R.id.Registration_Email_EditView_name);
         b_verify = findViewById(R.id.Registration_Email_Button_Verify);
         iv_profilePic=findViewById(R.id.Registration_Email_iv_profilePic);
         tv_ImageText=findViewById(R.id.Registration_Email_tv_addPic);
@@ -143,22 +134,25 @@ public class Registration_Profile extends AppCompatActivity {
                 pickImage.launch(intent);
             }
         });
+        tv_ImageText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                pickImage.launch(intent);
+            }
+        });
 
         b_verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (checkFields()) {
-                    //verifyMail("AZBY_0987654321_AZBY",et_pass.getText().toString(),et_mail.getText().toString());
-                    //checkMail();
                     Intent intent = new Intent(getApplicationContext(), FinalRegister.class);
                     intent.putExtra(Constants.KEY_INTENT_EMAIL, et_mail.getText().toString().toLowerCase().trim());
                     intent.putExtra(Constants.KEY_INTENT_USERNAME, et_pass.getText().toString().trim());
                     if(hasPic){
                         Log.i("HAS PIC:::","TRUE");
                         intent.putExtra(Constants.KEY_INTENT_PIC, encodedImage);
-                    }else{
-                        Log.i("HAS PIC:::","FALSE");
-
                     }
                     startActivity(intent);
                 }

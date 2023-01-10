@@ -76,6 +76,8 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
         holder.tv_lastMsg.setText("");
         if(user.getPic()!=null){
             holder.iv_profilePic.setImageBitmap(UsefulFunctions.decodeImage(user.getPic()));
+        }else{
+            holder.iv_profilePic.setImageResource(R.drawable.ic_baseline_person_24);
         }
         holder.tv_unreadCount.setText("");
         holder.tv_time.setText("");

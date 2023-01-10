@@ -62,7 +62,7 @@ public class Chat_RecyclerAdapter extends RecyclerView.Adapter<Chat_RecyclerAdap
         private TextView tv_sent_msg;
         private TextView tv_sent_time;
         //private TextView tv_unreadMsgs;
-        private LinearLayout ll_message;
+        private LinearLayout ll_message,ll_received,ll_sent;
 //        private TextView tv_unreadCount;
 //        private ImageView iv_userPic;
 
@@ -76,6 +76,8 @@ public class Chat_RecyclerAdapter extends RecyclerView.Adapter<Chat_RecyclerAdap
             tv_sent_msg=itemView.findViewById(R.id.Message_Sent_msgBox);
             tv_sent_time=itemView.findViewById(R.id.Message_Sent_time);
             ll_message=itemView.findViewById(R.id.Message_LinearLayout);
+            ll_received=itemView.findViewById(R.id.Message_Received_LL);
+            ll_sent=itemView.findViewById(R.id.Message_Sent_LL);
             this.onListItemClickListener=onListItemClickListener;
             itemView.setOnClickListener(this);
         }
@@ -118,15 +120,19 @@ public class Chat_RecyclerAdapter extends RecyclerView.Adapter<Chat_RecyclerAdap
             unreadFound=true;
         }
         if (cursor.getInt(cursor.getColumnIndexOrThrow("self"))==0) {
+            holder.ll_received.setVisibility(View.VISIBLE);
             holder.tv_received_msg.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
             holder.tv_received_msg.setPadding(25, 1, 25, 1);
             holder.tv_received_time.setText(cursor.getString(cursor.getColumnIndexOrThrow("time")));
             holder.tv_received_time.setPadding(25, 1, 25, 1);
             holder.tv_sent_msg.setText("");
             holder.tv_sent_time.setText("");
+            holder.ll_sent.setVisibility(View.GONE);
         } else {
             holder.tv_received_msg.setText("");
             holder.tv_received_time.setText("");
+            holder.ll_received.setVisibility(View.GONE);
+            holder.ll_sent.setVisibility(View.VISIBLE);
             holder.tv_sent_msg.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
             holder.tv_sent_msg.setPadding(25, 1, 25, 1);
             holder.tv_sent_time.setPadding(25, 1, 25, 1);

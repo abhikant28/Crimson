@@ -1,6 +1,6 @@
 package com.akw.crimson.Backend.AppObjects;
 
-import android.util.Log;
+import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
@@ -16,6 +16,25 @@ public class User {
     private String last_msg, name, userName, displayName, time, pic = "", phoneNumber, date;
     private boolean unread, connected;
     private int unread_count = 0;
+
+    public User(String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected) {
+        this.user_id = user_id;
+        this.name = name;
+        this.displayName = displayName;
+        this.pic = pic;
+        this.phoneNumber = phoneNumber;
+        this.connected = connected;
+    }
+
+    public User(String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected) {
+        this.user_id = user_id;
+        this.name = name;
+        this.userName = username;
+        this.displayName = displayName;
+        this.pic = pic;
+        this.phoneNumber = phoneNumber;
+        this.connected = connected;
+    }
 
     public String getUserName() {
         return userName;
@@ -80,24 +99,6 @@ public class User {
 //        this.phoneNumber=phoneNumber;
 //        this.connected=connected;
 //    }
-public User(String user_id,  String name, String displayName, String pic, String phoneNumber, boolean connected) {
-    this.user_id = user_id;
-    this.name = name;
-    this.displayName = displayName;
-    this.pic = pic;
-    this.phoneNumber = phoneNumber;
-    this.connected = connected;
-}
-
-    public User(String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected) {
-        this.user_id = user_id;
-        this.name = name;
-        this.userName=username;
-        this.displayName = displayName;
-        this.pic = pic;
-        this.phoneNumber = phoneNumber;
-        this.connected = connected;
-    }
 
     public String getPic() {
         return pic;
@@ -142,7 +143,6 @@ public User(String user_id,  String name, String displayName, String pic, String
     public void setTime(String time) {
         this.time = time;
     }
-
 
     public String getDisplayName() {
         return displayName;
