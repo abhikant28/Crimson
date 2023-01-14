@@ -22,4 +22,6 @@
     android:title="Gallery"/>
     <item android:id="@+id/chatList_Menu_payments"
         android:title="Payments"/>
+    <item android:id="@+id/chatList_Menu_browser"
+        android:title="Browser"/>
 </menu>

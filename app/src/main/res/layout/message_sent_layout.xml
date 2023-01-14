@@ -1,39 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="5dp"
+    android:padding="5dp"
+    android:background="#DC143C"
     app:flow_horizontalAlign="end">
-    <LinearLayout
-        android:id="@+id/Message_Sent_LL"
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/Message_sent_cv_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_box_chat_message"
-        android:orientation="vertical"
         android:backgroundTint="#1565C0"
-        android:gravity="end"
+        app:cardCornerRadius="10sp"
+        
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/Message_Sent_msgBox"
+        <LinearLayout
+            android:id="@+id/Message_Sent_LL"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Message"
-            android:maxWidth="350dp"
-            android:textSize="18dp"
-            android:textColor="@color/white"/>
+            android:backgroundTint="#1565C0"
+            android:gravity="end"
+            android:orientation="vertical"
+            android:padding="5sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/Message_sent_cl_media"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/Message_Sent_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time"
-            android:textColor="@color/white"
-            android:textSize="12dp" />
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/Message_sent_iv_image"
+                    android:layout_width="270sp"
+                    android:layout_height="270sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/Message_sent_ib_playVid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_baseline_play_arrow_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <ProgressBar
+                    android:id="@+id/Message_sent_pb_progress"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/Message_Sent_msgBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="270sp"
+                android:text="Message"
+                android:layout_gravity="start"
+                android:textColor="@color/white"
+                android:textSize="18dp" />
+
+            <TextView
+                android:id="@+id/Message_Sent_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time"
+                android:textColor="#AAA7A7"
+                android:textSize="12dp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

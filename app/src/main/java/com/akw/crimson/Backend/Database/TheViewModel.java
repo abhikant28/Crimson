@@ -8,7 +8,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.akw.crimson.Backend.AppObjects.Message;
-import com.akw.crimson.Backend.AppObjects.Profile;
 import com.akw.crimson.Backend.AppObjects.User;
 
 import java.util.List;
@@ -88,22 +87,6 @@ public class TheViewModel extends AndroidViewModel {
     }
     public boolean checkForUserNum(String userNum){
         return repository.checkForUserNum(userNum);
-    }
-
-    public void insertProfile(Profile profile){
-        repository.insertProfile(profile);
-    }
-    public void deleteProfile(Profile profile){
-        repository.deleteProfile(profile);
-    }
-    public void updateProfile(Profile profile){
-        repository.updateProfile(profile);
-    }
-    public Cursor getAllProfiles(){
-        return repository.getAllProfiles();
-    }
-    public Profile getProfile(String user_id){
-        return repository.getProfile(user_id);
     }
 
 }

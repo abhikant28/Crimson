@@ -7,9 +7,7 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import com.akw.crimson.Backend.AppObjects.Message;
-import com.akw.crimson.Backend.AppObjects.Profile;
 import com.akw.crimson.Backend.AppObjects.User;
-import com.akw.crimson.Backend.Database.DAOs.ProfileDao;
 import com.akw.crimson.Chat.ChatActivity;
 import com.akw.crimson.Backend.Database.DAOs.MessagesDao;
 import com.akw.crimson.Backend.Database.DAOs.UsersDao;
@@ -21,7 +19,6 @@ import java.util.concurrent.ExecutionException;
 
 public class TheRepository {
 
-    private ProfileDao profileDao;
     private UsersDao usersDao;
     private MessagesDao messagesDao;
 
@@ -32,7 +29,6 @@ public class TheRepository {
 
     public TheRepository(Application application) {
         TheDatabase database = TheDatabase.getInstance(application);
-        profileDao = database.profileDao();
         usersDao = database.usersDao();
         messagesDao = database.messagesDao();
 //        chatList= usersDao.getChatList();
@@ -161,39 +157,6 @@ public class TheRepository {
         return false;
     }
 
-    public void insertProfile(Profile profile) {
-        new InsertProfileAsyncTask(profileDao).execute(profile);
-    }
-
-    public void deleteProfile(Profile profile) {
-        new DeleteProfileAsyncTask(profileDao).execute(profile);
-    }
-
-    public void updateProfile(Profile profile) {
-        new UpdateProfileAsyncTask(profileDao).execute(profile);
-    }
-
-    public Cursor getAllProfiles() {
-        try {
-            return new GetAllProfileAsyncTask(profileDao).execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public Profile getProfile(String user_id) {
-        try {
-            return new GetProfileAsyncTask(profileDao).execute(user_id).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     private static class InsertMessageAsyncTask extends AsyncTask<Message, Void, Void> {
         private MessagesDao messagesDao;
@@ -387,73 +350,5 @@ public class TheRepository {
         }
     }
 
-    private static class InsertProfileAsyncTask extends AsyncTask<Profile, Void, Void> {
-        private ProfileDao dao;
-
-        private InsertProfileAsyncTask(ProfileDao dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(Profile... profile) {
-            dao.insert(profile[0]);
-            return null;
-        }
-    }
-
-    private static class UpdateProfileAsyncTask extends AsyncTask<Profile, Void, Void> {
-        private ProfileDao dao;
-
-        private UpdateProfileAsyncTask(ProfileDao dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(Profile... profiles) {
-            dao.insert(profiles[0]);
-            return null;
-        }
-    }
-
-    private static class DeleteProfileAsyncTask extends AsyncTask<Profile, Void, Void> {
-        private ProfileDao dao;
-
-        private DeleteProfileAsyncTask(ProfileDao dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        protected Void doInBackground(Profile... profiles) {
-            dao.delete(profiles[0]);
-            return null;
-        }
-    }
-
-    private static class GetProfileAsyncTask extends AsyncTask<String, Void, Profile> {
-        private ProfileDao dao;
-
-        private GetProfileAsyncTask(ProfileDao dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        protected Profile doInBackground(String... user_id) {
-            return dao.getProfile(user_id[0]);
-        }
-    }
-
-    private static class GetAllProfileAsyncTask extends AsyncTask<Void, Void, Cursor> {
-        private ProfileDao dao;
-
-        private GetAllProfileAsyncTask(ProfileDao dao) {
-            this.dao = dao;
-        }
-
-        @Override
-        protected Cursor doInBackground(Void... voids) {
-            return dao.getAllProfiles();
-        }
-
-    }
 
 }

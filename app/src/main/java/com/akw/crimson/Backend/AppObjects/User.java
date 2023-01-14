@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
+
+import com.akw.crimson.Backend.Database.DAOs.DataConverter;
 
 @Entity(tableName = "user_table")
 public class User {
@@ -13,9 +16,12 @@ public class User {
     @NonNull
     private String user_id;
     private String _id;
-    private String last_msg, name, userName, displayName, time, pic = "", phoneNumber, date;
-    private boolean unread, connected;
+    private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about,wallpaper;
+    private boolean unread, connected, blocked;
     private int unread_count = 0;
+    @TypeConverters(DataConverter.class)
+    private String[] groups;
+    String[] medias;
 
     public User(String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected) {
         this.user_id = user_id;
@@ -34,6 +40,38 @@ public class User {
         this.pic = pic;
         this.phoneNumber = phoneNumber;
         this.connected = connected;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    public String[] getGroups() {
+        return groups;
+    }
+
+    public void setGroups(String[] groups) {
+        this.groups = groups;
+    }
+
+    public String[] getMedias() {
+        return medias;
+    }
+
+    public void setMedias(String[] medias) {
+        this.medias = medias;
     }
 
     public String getUserName() {

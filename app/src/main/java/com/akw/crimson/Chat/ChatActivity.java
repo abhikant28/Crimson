@@ -1,8 +1,7 @@
 package com.akw.crimson.Chat;
 
-import static android.content.ContentValues.TAG;
-
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -14,8 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -40,7 +37,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -60,14 +56,20 @@ import com.akw.crimson.BaseActivity;
 import com.akw.crimson.PrepareMessageActivity;
 import com.akw.crimson.R;
 import com.akw.crimson.ViewProfile;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import java.util.Objects;
 
@@ -151,25 +153,19 @@ public class ChatActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 55 && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
-            Log.i("RESULT:::::", data.getData()+"");
+            Log.i("RESULT:::::", data.getData() + "");
 
-            Bitmap bitmap=UsefulFunctions.resizeAndCompressImage(this,data.getData());
-//            ImageView iv= new ImageView(this);
-//            ConstraintLayout.LayoutParams lparams = new ConstraintLayout.LayoutParams(
-//                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//            lparams.setMargins(0, 0, 0, 15);
-//            iv.setLayoutParams(lparams);
-//            iv.setImageBitmap(bitmap);
-//            ll_full.addView(iv,0);
+            Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
+
             if (ContextCompat.checkSelfPermission(
                     this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_GRANTED) {
 
-                    if(bitmap!=null)UsefulFunctions.saveBitmapAsJpeg(this, bitmap);
-                    Log.i("TAG"+"::::","DONE");
+                if (bitmap != null) postImg(String.valueOf(System.currentTimeMillis()),bitmap,getApplicationContext());
+                Log.i("TAG ::::", "DONE");
 
             } else {
-                Log.i("Permission"+"::::","NOTTTTTTTT");
+                Log.i("Permission ::::", "NOTTTTT");
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         99);
@@ -213,53 +209,45 @@ public class ChatActivity extends BaseActivity {
 
     }
 
-    //    private void uploadImg(Uri imageUri) {
-//        InputStream inputStream= null;
-//        try {
-//            inputStream = getContentResolver().openInputStream(imageUri);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        FirebaseStorage storage = FirebaseStorage.getInstance();
-//        Path outputPath = android.os.Environment.getExternalStorageDirectory();;
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            try {
-//                Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//// Create a storage reference from our app
-//        StorageReference storageRef = storage.getReference();
-//
-//// Create a child reference for the file you want to upload
-//        StorageReference imagesRef = storageRef.child("media/my_image.jpg");
-//
-//// Create a file from the selected image
-//        File file = new File(imagePath);
-//
-//// Convert the file to a byte[]
-////        byte[] fileData = Files.readAllBytes(imagePath);
-//        byte[] fileContent=null;
-//        try (FileInputStream inputStream = new FileInputStream(imagePath)) {
-//            Log.i("ERROR::::::::;;", "1");
-//            fileContent = new byte[inputStream.available()];
-//            Log.i("ERROR::::::::;;","2");
-//            inputStream.read(fileContent);
-//        }catch (Exception e){
-//            Log.i("ERROR::::::::;;",e.toString()+ "");
-//        }
-//// Upload the file to Firebase Storage
-//        UploadTask uploadTask = imagesRef.putBytes(fileContent);
-//        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//            @Override
-//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//            }
-//        });
-//
-//    }
+
+    private boolean postImg(String id, Bitmap image, Context context) {
+            // Create a storage reference
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference().child("images/"+id);
+
+            Log.i("ID:::::", id);
+            // Compress bitmap
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            // Upload image to Firebase Storage
+            UploadTask uploadTask = storageRef.putBytes(data);
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return storageRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        UsefulFunctions.saveBitmapAsJpeg(context,image,true);
+                        Uri downloadUri = task.getResult();
+                        Log.i("DOWNLOAD URI :::::", String.valueOf((downloadUri)));
+                        downloadImageFromFirebase(id);
+                    } else {
+                        Log.e("FIRE STORAGE ERROR :::::", "Error uploading image: " + task.getException().getMessage());
+                    }
+                }
+            });
+            return urlTask.isSuccessful();
+    }
+
+
     private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -272,6 +260,30 @@ public class ChatActivity extends BaseActivity {
                 }
             }
     );
+
+    private Bitmap downloadImageFromFirebase(String id) {
+        // Create a storage reference
+        Log.i("ID:::::", id);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("images/"+id);
+
+        final Bitmap[] bitmap = {null};
+        storageRef.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                UsefulFunctions.saveBitmapAsJpeg(getApplicationContext(),BitmapFactory.decodeByteArray(bytes, 0, bytes.length),false);
+                storageRef.delete();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("DOWNLOAD FAILED :::::", "Error downloading image: " + exception.getMessage());
+            }
+        });
+        return bitmap[0];
+    }
+
+
 
     private void attachmentPopUp() {
         View popupView = getLayoutInflater().inflate(R.layout.chat_attachment_popup, null);
@@ -319,7 +331,7 @@ public class ChatActivity extends BaseActivity {
 //                        break;
 
                 }
-                    startActivityForResult(intent, 55);
+                startActivityForResult(intent, 55);
 //                intent= new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 //                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 //                pickImage.launch(intent);
@@ -330,6 +342,7 @@ public class ChatActivity extends BaseActivity {
         popupWindow.showAtLocation(et_message, Gravity.BOTTOM, 0, 0);
 
     }
+
 
     private void makeSearch(SearchView searchView, Cursor cursor, String query) {
 
@@ -447,6 +460,93 @@ public class ChatActivity extends BaseActivity {
     }
 
 
+    private void listenForOnline() {
+        FirebaseFirestore firestoreDB = FirebaseFirestore.getInstance();
+        firestoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).addSnapshotListener(ChatActivity.this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    return;
+                }
+                if (value != null) {
+                    if (value.get(Constants.KEY_FIRESTORE_USER_ONLINE) != null) {
+                        int online = Integer.parseInt(String.valueOf(Objects.requireNonNull(value.get(Constants.KEY_FIRESTORE_USER_ONLINE))));
+                        isOnline = online == 1;
+                    }
+                }
+                if (isOnline) {
+                    ab.setSubtitle("Online");
+                } else {
+                    ab.setSubtitle("");
+                }
+            }
+        });
+    }
+
+
+    private void setMyActionBar() {
+        ab = getSupportActionBar();
+        ab.setTitle(user.getDisplayName());
+        ab.setSubtitle("Status");
+        ab.setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ImageView iv = new ImageView(getApplicationContext());
+        iv.setPadding(50, 50, 50, 50);
+        if (user.getPic() != null) {
+            iv.setImageBitmap(UsefulFunctions.decodeImage(user.getPic()));
+        } else {
+            iv.setImageResource(R.drawable.ic_baseline_person_24);
+        }
+        Drawable d = iv.getDrawable();
+        getSupportActionBar().setIcon(d);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        ColorDrawable colorDrawable
+                = new ColorDrawable(Color.parseColor("#DC143C"));
+
+        ab.setBackgroundDrawable(colorDrawable);
+    }
+
+
+    private void attachViews() {
+        new SharedPrefManager(getApplicationContext());
+        chatRecyclerView = findViewById(R.id.Chat_RecyclerView);
+        ib_send = findViewById(R.id.Chat_Button_Send);
+        ib_attach = findViewById(R.id.Chat_Button_Attachment);
+        et_message = findViewById(R.id.Chat_EditText_Message);
+        ib_camera = findViewById(R.id.Chat_Button_Camera);
+        ll_full = findViewById(R.id.Chat_ll_Full);
+
+        et_message.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.length() != 0) {
+                    ib_attach.setVisibility(View.GONE);
+                    ib_camera.setVisibility(View.GONE);
+                } else {
+                    ib_attach.setVisibility(View.VISIBLE);
+                    ib_camera.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        ib_attach.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attachmentPopUp();
+            }
+        });
+    }
+
+
     class GetChatMessagesThread implements Runnable {
         String inp;
 
@@ -500,90 +600,4 @@ public class ChatActivity extends BaseActivity {
 
         }
     }
-
-    private void listenForOnline() {
-        FirebaseFirestore firestoreDB = FirebaseFirestore.getInstance();
-        firestoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).addSnapshotListener(ChatActivity.this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    return;
-                }
-                if (value != null) {
-                    if (value.get(Constants.KEY_FIRESTORE_USER_ONLINE) != null) {
-                        int online = Integer.parseInt(String.valueOf(Objects.requireNonNull(value.get(Constants.KEY_FIRESTORE_USER_ONLINE))));
-                        isOnline = online == 1;
-                    }
-                }
-                if (isOnline) {
-                    ab.setSubtitle("Online");
-                } else {
-                    ab.setSubtitle("");
-                }
-            }
-        });
-    }
-
-    private void setMyActionBar() {
-        ab = getSupportActionBar();
-        ab.setTitle(user.getDisplayName());
-        ab.setSubtitle("Status");
-        ab.setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        ImageView iv = new ImageView(getApplicationContext());
-        iv.setPadding(50, 50, 50, 50);
-        if (user.getPic() != null) {
-            iv.setImageBitmap(UsefulFunctions.decodeImage(user.getPic()));
-        } else {
-            iv.setImageResource(R.drawable.ic_baseline_person_24);
-        }
-        Drawable d = iv.getDrawable();
-        getSupportActionBar().setIcon(d);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        ColorDrawable colorDrawable
-                = new ColorDrawable(Color.parseColor("#DC143C"));
-
-        ab.setBackgroundDrawable(colorDrawable);
-    }
-
-
-    private void attachViews() {
-        new SharedPrefManager(getApplicationContext());
-        chatRecyclerView = findViewById(R.id.Chat_RecyclerView);
-        ib_send = findViewById(R.id.Chat_Button_Send);
-        ib_attach = findViewById(R.id.Chat_Button_Attachment);
-        et_message = findViewById(R.id.Chat_EditText_Message);
-        ib_camera = findViewById(R.id.Chat_Button_Camera);
-        ll_full=findViewById(R.id.Chat_ll_Full);
-
-        et_message.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.length() != 0) {
-                    ib_attach.setVisibility(View.GONE);
-                    ib_camera.setVisibility(View.GONE);
-                } else {
-                    ib_attach.setVisibility(View.VISIBLE);
-                    ib_camera.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-        ib_attach.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attachmentPopUp();
-            }
-        });
-    }
-
 }
