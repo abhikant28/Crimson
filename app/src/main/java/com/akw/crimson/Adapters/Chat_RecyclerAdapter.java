@@ -57,10 +57,7 @@ public class Chat_RecyclerAdapter extends RecyclerView.Adapter<Chat_RecyclerAdap
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView tv_received_msg;
-        private TextView tv_received_time;
-        private TextView tv_sent_msg;
-        private TextView tv_sent_time;
+        private TextView tv_received_msg,tv_received_time,tv_sent_msg,tv_sent_time;
         //private TextView tv_unreadMsgs;
         private LinearLayout ll_message,ll_received,ll_sent;
 //        private TextView tv_unreadCount;

@@ -16,18 +16,18 @@ public class Message {
     @PrimaryKey
     @NonNull
     private String msg_ID;
-    private String local_msg_ID, user_id, _id, tag, msg, time, date, mediaID, mediaSize, latitude, longitude;
+    private String user_id, _id, tag, msg, time, date, mediaID;
+    private long mediaSize;
+    private double latitude, longitude;
     private boolean self, unread, media;
     private int status, mediaType;
 
 
-
     @Ignore
-    public Message(@NonNull String msg_ID, String local_msg_ID, String user_id, String tag, String msg, String mediaID
-            , String mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType) {
+    public Message(@NonNull String msg_ID, String user_id, String tag, String msg, String mediaID
+            , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType) {
         Calendar time = Calendar.getInstance();
         this.msg_ID = msg_ID;
-        this.local_msg_ID = local_msg_ID;
         this.user_id = user_id;
         this.tag = tag;
         this.msg = msg;
@@ -44,7 +44,6 @@ public class Message {
 
 
     public Message(String msg_ID, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status, Calendar time) {
-        this.local_msg_ID = msg_ID + "_" + user_id;
         this.msg_ID = msg_ID;
         this.user_id = user_id;
         this.tag = tag;
@@ -57,9 +56,9 @@ public class Message {
         this.status = status;
         this.self = self;
     }
+
     public Message(String msg_ID, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status) {
         Calendar time = Calendar.getInstance();
-        this.local_msg_ID = msg_ID + "_" + user_id;
         this.msg_ID = msg_ID;
         this.user_id = user_id;
         this.tag = tag;
@@ -75,23 +74,21 @@ public class Message {
 
     public Message(String[] s) {
         Calendar time = Calendar.getInstance();
-        this.local_msg_ID = msg_ID + "_" + user_id;
         this.msg_ID = s[0].substring(1);
         this.user_id = s[1];
-        this.tag = s[2].equals("NULL")?null:s[2];
+        this.tag = s[2].equals("NULL") ? null : s[2];
         String msg = s[3].replaceAll("%c%", ",").replaceAll("%q%", "\"").replaceAll("%u%", "_");
         this.msg = msg.substring(1, msg.length() - 1);
         this.time = String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE));
         this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
         this.unread = false;
         this.media = Boolean.parseBoolean(s[4]);
-        this.mediaID = s[5].substring(0, s[5].length() - 1).equals("NULL")?null:s[5].substring(0, s[5].length() - 1);
+        this.mediaID = s[5].substring(0, s[5].length() - 1).equals("NULL") ? null : s[5].substring(0, s[5].length() - 1);
         this.status = 2;
         this.self = false;
     }
 
     public Message(String msg_id, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status, String time, String date) {
-        this.local_msg_ID = msg_ID + "_" + user_id;
         this.msg_ID = msg_id;
         this.user_id = user_id;
         this.tag = tag;
@@ -106,31 +103,31 @@ public class Message {
     }
 
     public String asString(String selfID) {
-        return "[" + msg_ID + "," + selfID + "," + tag + "," + "\"" + msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_", "%u%") + "\"" + "," + media + "," + (mediaID==null?"NULL":mediaID) + "]";
+        return "[" + msg_ID + "," + selfID + "," + tag + "," + "\"" + msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_", "%u%") + "\"" + "," + media + "," + (mediaID == null ? "NULL" : mediaID) + "]";
 
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public String getMediaSize() {
+    public long getMediaSize() {
         return mediaSize;
     }
 
-    public void setMediaSize(String mediaSize) {
+    public void setMediaSize(long mediaSize) {
         this.mediaSize = mediaSize;
     }
 
@@ -148,14 +145,6 @@ public class Message {
 
     public void set_id(String _id) {
         this._id = _id;
-    }
-
-    public String getLocal_msg_ID() {
-        return local_msg_ID;
-    }
-
-    public void setLocal_msg_ID(String local_msg_ID) {
-        this.local_msg_ID = local_msg_ID;
     }
 
     public String getMsg_ID() {

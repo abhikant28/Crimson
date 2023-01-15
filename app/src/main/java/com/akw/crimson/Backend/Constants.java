@@ -52,6 +52,14 @@ public class Constants {
     public static final String KEY_FRAGMENT_TYPE = "fragmentType";
     public static final String KEY_FRAGMENT_TYPE_NAME = "name";
     public static final String KEY_FRAGMENT_TYPE_ABOUT = "about";
+    public static final String KEY_MESSAGE_MEDIA_TYPE = "mediaType";
+    public static final int KEY_MESSAGE_MEDIA_TYPE_IMAGE = 1;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_VIDEO = 2;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_DOCUMENT = 3;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_LOCATION = 4;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_CONTACT = 5;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_CANVAS = 6;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_AUDIO = 7;
 
     public static HashMap<String,String> remoteMsgHeaders=null;
     public static JSONObject FcmJsonObject=null;

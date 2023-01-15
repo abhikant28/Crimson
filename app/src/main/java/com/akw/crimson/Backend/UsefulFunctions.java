@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UsefulFunctions {
     public static String encodeImage(Bitmap bitmap) {
@@ -88,7 +86,7 @@ public class UsefulFunctions {
                     break;
             }
             Bitmap resized = Bitmap.createScaledBitmap(image, width, height, true);
-            resized=Bitmap.createBitmap(resized, 0, 0, resized.getWidth(), resized.getHeight(), matrix, true);
+            resized = Bitmap.createBitmap(resized, 0, 0, resized.getWidth(), resized.getHeight(), matrix, true);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             resized.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             byte[] imageData = outputStream.toByteArray();
@@ -110,7 +108,7 @@ public class UsefulFunctions {
 
 
     public static boolean saveBitmapAsJpeg(Context context, Bitmap bitmap, boolean sent) {
-        File pictureFile = getOutputMediaFile(context,sent);
+        File pictureFile = getOutputMediaFile(context, sent,Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
 
         if (pictureFile == null) {
             Log.d(TAG + "::::",
@@ -133,16 +131,42 @@ public class UsefulFunctions {
         return true;
     }
 
-    private static File getOutputMediaFile(Context context, boolean sent) {
+    public static File getOutputMediaFile(Context context, boolean sent,int type){
+        return getOutputMediaFile(context, sent, type, null);
+    }
+    public static File getOutputMediaFile(Context context, boolean sent,int type, String docName) {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
-        String fol=sent?"/Sent":"";
+        String folder = "";
+        String init="";
+        String format="";
+        switch (type) {
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
+                folder = "Images";
+                init="IMG";
+                format=".jpg";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
+                folder = "Videos";
+                init="VID";
+                format=".mp4";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
+                folder = "Documents";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
+                folder = "Audios";
+                init="AUD";
+                format="";
+                break;
+        }
+        String fol = sent ? "/Sent" : "";
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
                 + "/Android/media" +
                 "" +
                 "/"
                 + context.getApplicationContext().getPackageName()
-                + "/Crimson Images"+fol);
+                + "/Crimson "+ folder+ fol);
 
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
@@ -158,12 +182,43 @@ public class UsefulFunctions {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmSS").format(new Date());
         File mediaFile;
-        String mImageName = "IMG_" + timeStamp + ".jpg";
+        String mImageName = docName==null?init+"_" + timeStamp +format:docName;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
         Log.i(TAG, mImageName);
         return mediaFile;
     }
 
+    public static File getMediaFile(Context context, String id, int type, boolean sent) {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        String folder = "";
+        switch (type) {
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
+                folder = "Images";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
+                folder = "Videos";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
+                folder = "Documents";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
+                folder = "Audios";
+                break;
+        }
+        String subFolder = sent ? "/Sent" : "";
+        String mediaStorageDir = Environment.getExternalStorageDirectory()
+                + "/Android/media" +
+                "" +
+                "/"
+                + context.getApplicationContext().getPackageName()
+                + "/Crimson " + folder + subFolder;
+
+        // This location works best if you want the created images to be shared
+        // between applications and persist after your app has been uninstalled.
+
+        return new File(context.getExternalFilesDir(mediaStorageDir), id);
+    }
 
 //    public static String compressText(String input) {
 //        byte[] decoded = Base64.decode(input, Base64.DEFAULT);
