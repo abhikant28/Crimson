@@ -19,14 +19,14 @@ import com.akw.crimson.R;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class PrepareMessage_List_RecyclerListAdapter extends ListAdapter<PreparedMessage, PrepareMessage_List_RecyclerListAdapter.MyViewHolder> {
+public class PreparedMessage_List_RecyclerListAdapter extends ListAdapter<PreparedMessage, PreparedMessage_List_RecyclerListAdapter.MyViewHolder> {
     private OnItemClickListener listener;
     TheViewModel db;
 
     private static final DiffUtil.ItemCallback<PreparedMessage> DIFF_CALLBACK_PreparedMessage = new DiffUtil.ItemCallback<PreparedMessage>() {
         @Override
         public boolean areItemsTheSame(@NonNull PreparedMessage oldItem, @NonNull PreparedMessage newItem) {
-            return oldItem.getMessage().getLocal_msg_ID().equals(newItem.getMessage().getLocal_msg_ID());
+            return oldItem.getMessage().getMsg_ID().equals(newItem.getMessage().getMsg_ID());
         }
 
         @Override
@@ -35,11 +35,11 @@ public class PrepareMessage_List_RecyclerListAdapter extends ListAdapter<Prepare
         }
     };
 
-    public PrepareMessage_List_RecyclerListAdapter() {
+    public PreparedMessage_List_RecyclerListAdapter() {
         super(DIFF_CALLBACK_PreparedMessage);
     }
 
-    public PrepareMessage_List_RecyclerListAdapter(TheViewModel db) {
+    public PreparedMessage_List_RecyclerListAdapter(TheViewModel db) {
         super(DIFF_CALLBACK_PreparedMessage);
         this.db = db;
     }

@@ -13,6 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,6 +30,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -37,17 +41,21 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.akw.crimson.Adapters.ChatView_RecyclerAdapter;
 import com.akw.crimson.Adapters.Chat_RecyclerAdapter;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
+import com.akw.crimson.Backend.Communications.DownloadFileService;
 import com.akw.crimson.Backend.Communications.Messaging;
+import com.akw.crimson.Backend.Communications.UploadFileService;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
@@ -70,12 +78,14 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Calendar;
 import java.util.Objects;
 
 public class ChatActivity extends BaseActivity {
 
     private Chat_RecyclerAdapter chatAdapter;
+    private ChatView_RecyclerAdapter chatViewAdapter;
     private RecyclerView chatRecyclerView;
     private ImageButton ib_send, ib_attach, ib_camera;
     private EditText et_message;
@@ -128,6 +138,7 @@ public class ChatActivity extends BaseActivity {
 
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (query.length() != 0) {
@@ -155,13 +166,21 @@ public class ChatActivity extends BaseActivity {
 
             Log.i("RESULT:::::", data.getData() + "");
 
-            Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
-
             if (ContextCompat.checkSelfPermission(
                     this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_GRANTED) {
 
-                if (bitmap != null) postImg(String.valueOf(System.currentTimeMillis()),bitmap,getApplicationContext());
+                if (requestCode == 55) {
+                    Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
+                    File file=UsefulFunctions.getOutputMediaFile(this,true,Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                    UsefulFunctions.saveImage(this, bitmap,true,file);
+
+                    Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID,null
+                            ,null, file.getName(),(file.length()/ (1024)),true,false,true, -1,Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+
+
+                    dbViewModel.insertMessage(message);
+                }
                 Log.i("TAG ::::", "DONE");
 
             } else {
@@ -195,6 +214,7 @@ public class ChatActivity extends BaseActivity {
 
         attachViews();
 
+        new SharedPrefManager(this);
         dbViewModel = Communicator.localDB;
         user = dbViewModel.getUser(getIntent().getStringExtra(Constants.KEY_INTENT_USERID));
         userID = user.getUser_id();
@@ -211,41 +231,52 @@ public class ChatActivity extends BaseActivity {
 
 
     private boolean postImg(String id, Bitmap image, Context context) {
-            // Create a storage reference
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference().child("images/"+id);
+        // Create a storage reference
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + id);
 
-            Log.i("ID:::::", id);
-            // Compress bitmap
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] data = baos.toByteArray();
+        Log.i("ID:::::", id);
+        // Compress bitmap
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
 
-            // Upload image to Firebase Storage
-            UploadTask uploadTask = storageRef.putBytes(data);
-            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-                    return storageRef.getDownloadUrl();
+        // Upload image to Firebase Storage
+        UploadTask uploadTask = storageRef.putBytes(data);
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
                 }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        UsefulFunctions.saveBitmapAsJpeg(context,image,true);
-                        Uri downloadUri = task.getResult();
-                        Log.i("DOWNLOAD URI :::::", String.valueOf((downloadUri)));
-                        downloadImageFromFirebase(id);
-                    } else {
-                        Log.e("FIRE STORAGE ERROR :::::", "Error uploading image: " + task.getException().getMessage());
-                    }
+                return storageRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    UsefulFunctions.saveImage(context, image, true);
+                    Uri downloadUri = task.getResult();
+                    Log.i("DOWNLOAD URI :::::", String.valueOf((downloadUri)));
+                    downloadImageFromFirebase(id);
+                } else {
+                    Log.e("FIRE STORAGE ERROR :::::", "Error uploading image: " + task.getException().getMessage());
                 }
-            });
-            return urlTask.isSuccessful();
+            }
+        });
+        return urlTask.isSuccessful();
     }
+
+    private ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            if (resultCode == DownloadFileService.RESULT_SUCCESS) {
+                Log.i("RESULT RECEIVER::::::", "_________");
+
+            } else {
+                // Download failed
+            }
+        }
+    };
 
 
     private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
@@ -256,6 +287,7 @@ public class ChatActivity extends BaseActivity {
                         Uri imageUri = result.getData().getData();
                         Log.i("URI::::", imageUri.getPath());
 //                        uploadImg(imageUri);
+
                     }
                 }
             }
@@ -265,13 +297,13 @@ public class ChatActivity extends BaseActivity {
         // Create a storage reference
         Log.i("ID:::::", id);
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images/"+id);
+        StorageReference storageRef = storage.getReference().child("images/" + id);
 
         final Bitmap[] bitmap = {null};
         storageRef.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-                UsefulFunctions.saveBitmapAsJpeg(getApplicationContext(),BitmapFactory.decodeByteArray(bytes, 0, bytes.length),false);
+                UsefulFunctions.saveImage(getApplicationContext(), BitmapFactory.decodeByteArray(bytes, 0, bytes.length), false);
                 storageRef.delete();
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -282,7 +314,6 @@ public class ChatActivity extends BaseActivity {
         });
         return bitmap[0];
     }
-
 
 
     private void attachmentPopUp() {
@@ -449,14 +480,24 @@ public class ChatActivity extends BaseActivity {
         layoutManager.setStackFromEnd(true);
         chatRecyclerView.setLayoutManager(layoutManager);
         chatRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        chatRecyclerView.setAdapter(chatAdapter);
-        chatAdapter.setOnItemClickListener(new Chat_RecyclerAdapter.OnListItemClickListener() {
+        chatRecyclerView.setAdapter(chatViewAdapter);
+        chatViewAdapter.setOnItemClickListener(new ChatView_RecyclerAdapter.OnItemClickListener() {
             @Override
-            public void onListItemClick(int position) {
-
+            public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
+                Intent intent;
+                Log.i("FIRESTORAGE :::::::", "STARTING");
+                if (upload) {
+                    intent = new Intent(getApplicationContext(), UploadFileService.class);
+                    intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                } else {
+                    intent = new Intent(getApplicationContext(), DownloadFileService.class);
+                    intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
+                }
+                intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
+                startService(intent);
             }
         });
-        chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount());
+        chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
     }
 
 
@@ -563,34 +604,85 @@ public class ChatActivity extends BaseActivity {
                     Log.i(
                             "MAKING ADAPTER CHAT:::::", "MAking.." + chatCursor.getCount() + "..");
 
-                    chatAdapter = new Chat_RecyclerAdapter(getApplicationContext(), chatCursor
-                            , new Chat_RecyclerAdapter.OnListItemClickListener() {
+//                    chatAdapter = new Chat_RecyclerAdapter(getApplicationContext(), chatCursor
+//                            , new Chat_RecyclerAdapter.OnListItemClickListener() {
+//                        @Override
+//                        public void onListItemClick(int position) {
+//
+//                        }
+//                    }, dbViewModel, true);
+                    chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
+                            , new ChatView_RecyclerAdapter.OnItemClickListener() {
                         @Override
-                        public void onListItemClick(int position) {
-
+                        public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
+                            Intent intent;
+                            Log.i("FIRESTORAGE :::::::", "STARTING");
+                            if (upload) {
+                                intent = new Intent(getApplicationContext(), UploadFileService.class);
+                                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                            } else {
+                                intent = new Intent(getApplicationContext(), DownloadFileService.class);
+                                intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
+                            }
+                            intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
+                            startService(intent);
                         }
                     }, dbViewModel, true);
                     loadChat();
-                    chatRecyclerView.scrollToPosition(chatAdapter.getItemCount());
+//                    chatRecyclerView.scrollToPosition(chatAdapter.getItemCount());
+                    chatRecyclerView.scrollToPosition(chatViewAdapter.getItemCount());
                 }
             });
+//            while (true) {
+//                if (updated && chatAdapter != null && updateID.equals(userID)) {
+//                    int l = chatCursor.getCount();
+//                    chatCursor = dbViewModel.getChatMessages(inp);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            chatAdapter = new Chat_RecyclerAdapter(getApplicationContext(), chatCursor
+//                                    , new Chat_RecyclerAdapter.OnListItemClickListener() {
+//                                @Override
+//                                public void onListItemClick(int position) {
+//
+//                                }
+//                            }, dbViewModel, false);
+//                            chatRecyclerView.setAdapter(null);
+//                            loadChat();
+//                            chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount());
+//                        }
+//                    });
+//                    updated = false;
+//                    user = dbViewModel.getUser(userID);
+//                }
+//            }
             while (true) {
-                if (updated && chatAdapter != null && updateID.equals(userID)) {
+                if (updated && chatViewAdapter != null && updateID.equals(userID)) {
                     int l = chatCursor.getCount();
                     chatCursor = dbViewModel.getChatMessages(inp);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            chatAdapter = new Chat_RecyclerAdapter(getApplicationContext(), chatCursor
-                                    , new Chat_RecyclerAdapter.OnListItemClickListener() {
+                            chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
+                                    , new ChatView_RecyclerAdapter.OnItemClickListener() {
                                 @Override
-                                public void onListItemClick(int position) {
-
+                                public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
+                                    Intent intent;
+                                    Log.i("FIRESTORAGE :::::::", "STARTING");
+                                    if (upload) {
+                                        intent = new Intent(getApplicationContext(), UploadFileService.class);
+                                        intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                                    } else {
+                                        intent = new Intent(getApplicationContext(), DownloadFileService.class);
+                                        intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
+                                    }
+                                    intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
+                                    startService(intent);
                                 }
                             }, dbViewModel, false);
                             chatRecyclerView.setAdapter(null);
                             loadChat();
-                            chatRecyclerView.smoothScrollToPosition(chatAdapter.getItemCount());
+                            chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
                         }
                     });
                     updated = false;

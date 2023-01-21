@@ -90,7 +90,7 @@ public class Communicator extends LifecycleService {
                             String element = null;
                             try {
                                 element = value.getString(i);
-                                Message msg = new Message(UsefulFunctions.decodeText(element).split(","));
+                                Message msg = new Message(UsefulFunctions.decodeText(element));
                                 if (localDB.getUser(key) == null) {
                                     fetchUserDetails(key,msg);
                                 }else{
@@ -135,7 +135,7 @@ public class Communicator extends LifecycleService {
                                 // Get the string value of the element
                                 String element = null;
                                 element = value.getString(i);
-                                Message msg = new Message(UsefulFunctions.decodeText(element).split(","));
+                                Message msg = new Message(UsefulFunctions.decodeText(element));
                                 if (localDB.getUser(key) == null) {
                                     fetchUserDetails(key,msg);
                                 }else
@@ -218,7 +218,7 @@ public class Communicator extends LifecycleService {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-                            Log.i("COMMUNICATOR:::", "Cancelled 3");
+                            Log.i("COMMUNICATOR:::", "Cancelled 3: "+ databaseError);
 
                         }
                     });

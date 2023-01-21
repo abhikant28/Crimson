@@ -188,9 +188,9 @@ public class HTTPRequest {
         try {
             JSONArray jsonArray = jsonObject.getJSONObject("messages").getJSONArray("data");
             for (int i = 0; i < jsonArray.length(); i++) {
-                String[] s = jsonArray.getString(i).replaceAll(",_,",",," ).split(",");
+                String s = jsonArray.getString(i).replaceAll(",_,",",," );
                 msgs.add(new Message(s));
-                Log.i(":::::Message Received::::::", Arrays.toString(s));
+                Log.i(":::::Message Received::::::", s);
             }
         } catch (JSONException e) {
             e.printStackTrace();

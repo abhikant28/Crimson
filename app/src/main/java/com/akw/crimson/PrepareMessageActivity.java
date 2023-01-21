@@ -24,7 +24,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.Adapters.PrepareMessage_List_RecyclerListAdapter;
+import com.akw.crimson.Adapters.PreparedMessage_List_RecyclerListAdapter;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.PreparedMessage;
 import com.akw.crimson.Backend.AppObjects.User;
@@ -47,7 +47,7 @@ public class PrepareMessageActivity extends BaseActivity {
     ImageButton b_saveMsg;
     ActionBar ab;
 
-    PrepareMessage_List_RecyclerListAdapter recyclerListAdapter = new PrepareMessage_List_RecyclerListAdapter();
+    PreparedMessage_List_RecyclerListAdapter recyclerListAdapter = new PreparedMessage_List_RecyclerListAdapter();
     ArrayList<PreparedMessage> messageArrayList = new ArrayList<>();
     User msgForUser = null;
     Calendar msgDate;
@@ -80,7 +80,7 @@ public class PrepareMessageActivity extends BaseActivity {
     }
 
     private void clicks() {
-        recyclerListAdapter.setOnItemCLickListener(new PrepareMessage_List_RecyclerListAdapter.OnItemClickListener() {
+        recyclerListAdapter.setOnItemCLickListener(new PreparedMessage_List_RecyclerListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(PreparedMessage preparedMessage, int position, View view) {
                 switch (view.getId()) {

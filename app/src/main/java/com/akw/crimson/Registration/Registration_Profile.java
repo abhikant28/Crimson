@@ -1,6 +1,8 @@
 package com.akw.crimson.Registration;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
@@ -18,6 +20,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
@@ -79,6 +83,18 @@ public class Registration_Profile extends AppCompatActivity {
             );
 
     private void checkFireStoreForProfile(){
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED) {
+
+            Log.i("TAG ::::", "DONE");
+
+        } else {
+            Log.i("Permission ::::", "NOTTTTT");
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    99);
+        }
         FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
         String userID= new SharedPrefManager(getApplicationContext()).getLocalUserID();
 

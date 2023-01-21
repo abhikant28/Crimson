@@ -6,8 +6,12 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.akw.crimson.Backend.Constants;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 @Entity(tableName = "messages_Table")
@@ -22,6 +26,21 @@ public class Message {
     private boolean self, unread, media;
     private int status, mediaType;
 
+
+    public Message(@NonNull String msg_ID, String user_id, String tag, String msg, boolean self,
+                   boolean media, String mediaID, int status, Calendar time) {
+        this.msg_ID = msg_ID;
+        this.user_id = user_id;
+        this.tag = tag;
+        this.msg = msg;
+        this.time = (time == null) ? "12:00 " : (String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)));
+        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+        this.unread = true;
+        this.media = media;
+        this.mediaID = mediaID;
+        this.status = status;
+        this.self = self;
+    }
 
     @Ignore
     public Message(@NonNull String msg_ID, String user_id, String tag, String msg, String mediaID
@@ -42,22 +61,8 @@ public class Message {
         this.mediaType = mediaType;
     }
 
-
-    public Message(String msg_ID, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status, Calendar time) {
-        this.msg_ID = msg_ID;
-        this.user_id = user_id;
-        this.tag = tag;
-        this.msg = msg;
-        this.time = (time == null) ? "12:00 " : (String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
-        this.unread = true;
-        this.media = media;
-        this.mediaID = mediaID;
-        this.status = status;
-        this.self = self;
-    }
-
-    public Message(String msg_ID, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status) {
+    public Message(@NonNull String msg_ID, String user_id, String tag, String msg, boolean self,
+                   boolean media, String mediaID, int status) {
         Calendar time = Calendar.getInstance();
         this.msg_ID = msg_ID;
         this.user_id = user_id;
@@ -88,23 +93,53 @@ public class Message {
         this.self = false;
     }
 
-    public Message(String msg_id, String user_id, String tag, String msg, boolean self, boolean media, String mediaID, int status, String time, String date) {
-        this.msg_ID = msg_id;
-        this.user_id = user_id;
-        this.tag = tag;
-        this.msg = msg;
-        this.time = time;
-        this.date = date;
+    public Message(String s){
+        Gson gson= new Gson();
+        Type type = new TypeToken<Message>() {}.getType();
+        Message message= gson.fromJson(s, type);
+        Calendar time = Calendar.getInstance();
+        this.msg_ID = message.msg_ID;
+        this.user_id = message.user_id;
+        this.tag = message.tag;
+        this.msg = message.msg;
+        this.time = String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE));
+        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+        this.mediaID = message.mediaID;
+        this.mediaSize = message.mediaSize;
+        this.latitude = message.latitude;
+        this.longitude = message.longitude;
+        this.self = false;
         this.unread = true;
-        this.media = media;
-        this.mediaID = mediaID;
-        this.status = status;
-        this.self = self;
+        this.media = message.media;
+        this.status = 2;
+        this.mediaType = message.mediaType;
     }
 
-    public String asString(String selfID) {
-        return "[" + msg_ID + "," + selfID + "," + tag + "," + "\"" + msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_", "%u%") + "\"" + "," + media + "," + (mediaID == null ? "NULL" : mediaID) + "]";
+    public Message(@NonNull Message message) {
+        this.msg_ID = message.msg_ID;
+        this.user_id = message.user_id;
+        this.tag = message.tag;
+        this.msg = message.msg;
+        this.time = message.time;
+        this.date = message.date;
+        this.mediaID = message.mediaID;
+        this.mediaSize = message.mediaSize;
+        this.latitude = message.latitude;
+        this.longitude = message.longitude;
+        this.self = message.self;
+        this.unread = message.unread;
+        this.media = message.media;
+        this.status = message.status;
+        this.mediaType = message.mediaType;
+    }
 
+
+    public String asString(String selfID) {
+        Gson gson= new Gson();
+        Message msg=new Message(this);
+        msg.user_id=selfID;
+        return gson.toJson(msg);
+//        return "[" + msg_ID + "," + selfID + "," + tag + "," + "\"" + msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_", "%u%") + "\"" + "," + media + "," + (mediaID == null ? "NULL" : mediaID) + "]";
     }
 
     public double getLatitude() {

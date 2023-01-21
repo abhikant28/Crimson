@@ -22,7 +22,7 @@ public class ChatList_MessageSearch_RecyclerListAdapter extends ListAdapter<Mess
     private static final DiffUtil.ItemCallback<Message> DIFF_CALLBACK_Message = new DiffUtil.ItemCallback<Message>() {
         @Override
         public boolean areItemsTheSame(@NonNull Message oldItem, @NonNull Message newItem) {
-            return oldItem.getLocal_msg_ID().equals(newItem.getLocal_msg_ID());
+            return oldItem.getMsg_ID().equals(newItem.getMsg_ID());
         }
 
         @Override

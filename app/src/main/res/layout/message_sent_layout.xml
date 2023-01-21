@@ -38,6 +38,7 @@
                     android:id="@+id/Message_iv_image"
                     android:layout_width="270sp"
                     android:layout_height="270sp"
+                    android:background="#D8D6D6"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,8 +46,20 @@
                     android:id="@+id/Message_ib_playVid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:background="@android:color/transparent"
                     android:src="@drawable/ic_baseline_play_arrow_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/Message_iv_mediaCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15sp"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_outline_cancel_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -58,6 +71,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="#A7A8A8"
                     app:cardCornerRadius="20sp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -67,6 +81,7 @@
                         android:id="@+id/Message_tv_imageSize"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:visibility="gone"
                         android:layout_margin="5sp"
                         android:drawableStart="@drawable/ic_baseline_upload_24"
                         android:text=" Media Size"
@@ -74,8 +89,9 @@
                 </androidx.cardview.widget.CardView>
 
                 <ProgressBar
-                    android:id="@+id/Message_pb_progress"
+                    android:id="@+id/Message_pb_progressBar_Media"
                     style="?android:attr/progressBarStyle"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"

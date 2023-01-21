@@ -33,8 +33,8 @@ public interface MessagesDao {
     @Query("SELECT * FROM MESSAGES_TABLE WHERE status=2")
     LiveData<List<Message>> receivedMessages();
 
-    @Query("SELECT * from messages_Table where local_msg_ID=:L_msg_ID LIMIT 1")
-    Message getMessage(String L_msg_ID);
+    @Query("SELECT * from messages_Table where msg_ID=:msgID LIMIT 1")
+    Message getMessage(String msgID);
 
     @Query("SELECT * from messages_Table where user_id= :user_ID")
     Cursor getMessages(String user_ID);

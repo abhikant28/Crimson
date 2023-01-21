@@ -136,7 +136,7 @@ public class Chat_RecyclerAdapter extends RecyclerView.Adapter<Chat_RecyclerAdap
             holder.tv_sent_time.setText(cursor.getString(cursor.getColumnIndexOrThrow("time")));
 
         }
-        Message msg=dbview.getMessage(cursor.getString(cursor.getColumnIndexOrThrow("local_msg_ID")));
+        Message msg=dbview.getMessage(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
         msg.setUnread(false);
         if(!msg.isSelf())msg.setStatus(3);
         dbview.updateMessage(msg);

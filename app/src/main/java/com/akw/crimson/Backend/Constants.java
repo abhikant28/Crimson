@@ -10,6 +10,7 @@ public class Constants {
     public static final String KEY_INTENT_STARTED_BY_SEARCH = "search";
     public static final String KEY_INTENT_LIST_POSITION = "listPosition";
     public static final String KEY_INTENT_USERID = "userID";
+    public static final String KEY_INTENT_MSG_TYPE = "messageType";
     public static final String KEY_INTENT_MESSAGE_ID = "messageID";
     public static final String KEY_INTENT_USERNAME = "username";
     public static final String KEY_INTENT_PREP_MSG_ID = "preparedID";
@@ -60,6 +61,7 @@ public class Constants {
     public static final int KEY_MESSAGE_MEDIA_TYPE_CONTACT = 5;
     public static final int KEY_MESSAGE_MEDIA_TYPE_CANVAS = 6;
     public static final int KEY_MESSAGE_MEDIA_TYPE_AUDIO = 7;
+    public static final String KEY_INTENT_LIST_SIZE = "listSize";
 
     public static HashMap<String,String> remoteMsgHeaders=null;
     public static JSONObject FcmJsonObject=null;

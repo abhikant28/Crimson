@@ -3,6 +3,7 @@ package com.akw.crimson.Backend.Database;
 import android.app.Application;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -171,11 +172,8 @@ public class TheRepository {
         protected Void doInBackground(Message... messages) {
             messagesDao.insert(messages[0]);
             User user = usersDao.getUser(messages[0].getUser_id());
-            try {
-                user.setLast_msg(messages[0].getMsg().substring(0, 15) + "...");
-            } catch (StringIndexOutOfBoundsException e) {
-                user.setLast_msg(messages[0].getMsg().substring(0, messages[0].getMsg().length()));
-            }
+            Log.i("REPO USER ID ::::: ",messages[0].getUser_id());
+            if(messages[0].getMsg()!=null)user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15,messages[0].getMsg().length())));
             Calendar time = Calendar.getInstance();
             user.setTime(String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)) + ":" + String.format("%02d", time.get(Calendar.SECOND)));
             user.setDate(new SimpleDateFormat("yyyy/MM/dd").format(time.getTime()));

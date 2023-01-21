@@ -113,6 +113,16 @@
             android:enabled="true"
             android:exported="true"
             android:permission="TODO" />
+        <service
+        android:name=".Backend.Communications.UploadFileService"
+        android:enabled="true"
+        android:exported="true"
+        android:permission="TODO" />
+        <service
+        android:name=".Backend.Communications.DownloadFileService"
+        android:enabled="true"
+        android:exported="true"
+        android:permission="TODO" />
 
         <receiver
             android:name=".Backend.AlertReceiver"
