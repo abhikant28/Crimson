@@ -89,6 +89,7 @@
         <activity
             android:name=".Chat.ChatActivity"
             android:exported="true"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
             android:parentActivityName=".MainChatList"
             android:windowSoftInputMode="adjustResize" />
         <activity

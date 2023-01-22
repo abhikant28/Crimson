@@ -2,7 +2,9 @@ package com.akw.crimson.Backend;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -10,6 +12,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.OpenableColumns;
 import android.util.Base64;
 import android.util.Log;
 
@@ -200,6 +203,9 @@ public class UsefulFunctions {
     public static File getFile(Context context, String id, int type, boolean sent) {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
+
+        Log.i("TYPE:::::::",type+"");
+
         String folder = "";
         switch (type) {
             case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
@@ -235,6 +241,47 @@ public class UsefulFunctions {
         os.write(bytes);
         os.close();
         return outFile.getName();
+    }
+    public static String saveFile(Context cxt, Uri originalUri, File outputFile) {
+        try {
+            InputStream inputStream = cxt.getContentResolver().openInputStream(originalUri);
+            OutputStream outputStream = new FileOutputStream(outputFile);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            inputStream.close();
+            outputStream.flush();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return outputFile.getName();
+    }
+
+    public static String getFileName(Context context, Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+            int c=cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            try {
+                if (cursor.moveToFirst()) {
+                    result = cursor.getString(c);
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
 }

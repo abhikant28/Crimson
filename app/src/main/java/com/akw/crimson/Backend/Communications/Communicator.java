@@ -299,9 +299,14 @@ public class Communicator extends LifecycleService {
             builder.setSmallIcon(R.drawable.ic_launcher_foreground);
             ArrayList<Message> messages = new ArrayList<>(map.get(key));
             builder.setContentTitle(key);
-            String msg = messages.get(0).getMsg();
-            builder.setContentText(msg.substring(0, Math.min(msg.length(), 8)) + "...");
-            builder.setStyle(new NotificationCompat.BigTextStyle().bigText(msg.substring(0, Math.min(msg.length(), 8)) + "..."));
+            if(messages.get(0).getMsg()!=null){
+                String msg = messages.get(0).getMsg();
+                builder.setContentText(msg.substring(0, Math.min(msg.length(), 8)) + "...");
+                builder.setStyle(new NotificationCompat.BigTextStyle().bigText(msg.substring(0, Math.min(msg.length(), 8)) + "..."));
+            }else{
+                builder.setContentText("Media");
+                builder.setStyle(new NotificationCompat.BigTextStyle().bigText("Image"));
+            }
             builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
             builder.setContentIntent(pendingIntent);
             builder.setAutoCancel(true);

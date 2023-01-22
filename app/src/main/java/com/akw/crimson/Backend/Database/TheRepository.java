@@ -203,6 +203,8 @@ public class TheRepository {
         @Override
         protected Void doInBackground(Message... messages) {
             messagesDao.update(messages[0]);
+            ChatActivity.updated = true;
+            ChatActivity.updateID = messages[0].getUser_id();
             return null;
         }
     }

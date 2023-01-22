@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,6 +25,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -40,6 +42,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
@@ -87,7 +90,7 @@ public class ChatActivity extends BaseActivity {
     private Chat_RecyclerAdapter chatAdapter;
     private ChatView_RecyclerAdapter chatViewAdapter;
     private RecyclerView chatRecyclerView;
-    private ImageButton ib_send, ib_attach, ib_camera;
+    private ImageButton ib_send, ib_attach, ib_camera,ib_emoji;
     private EditText et_message;
     LinearLayout ll_full;
     Button btnPrev, btnNext;
@@ -162,33 +165,46 @@ public class ChatActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 55 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        final int[] code = {55, 66, 77, 88, 99, 44, 33, 22, 11};
+        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
 
             Log.i("RESULT:::::", data.getData() + "");
 
-            if (ContextCompat.checkSelfPermission(
-                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == code[0] || requestCode==code[1]|| requestCode==code[2]|| requestCode==code[3]||requestCode==code[8]) {
+                if (ContextCompat.checkSelfPermission(
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            99);
+                    return;
 
-                if (requestCode == 55) {
-                    Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
-                    File file=UsefulFunctions.getOutputMediaFile(this,true,Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-                    UsefulFunctions.saveImage(this, bitmap,true,file);
-
-                    Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID,null
-                            ,null, file.getName(),(file.length()/ (1024)),true,false,true, -1,Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-
-
-                    dbViewModel.insertMessage(message);
                 }
-                Log.i("TAG ::::", "DONE");
-
-            } else {
-                Log.i("Permission ::::", "NOTTTTT");
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        99);
             }
+            if (requestCode == code[1]) {
+                Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
+                File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                UsefulFunctions.saveImage(this, bitmap, true, file);
+
+                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+
+                dbViewModel.insertMessage(message);
+
+            }else if(requestCode==code[0]){
+                String f=UsefulFunctions.getFileName(this,data.getData());
+                Log.i("DOCUMENT ::::::","_"+data.getData());
+                Log.i("DOCUMENT :::::",f);
+                File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT,f);
+                UsefulFunctions.saveFile(this,data.getData(),file);
+                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT);
+
+                dbViewModel.insertMessage(message);
+            }
+            Log.i("TAG ::::", "DONE");
+
+
         }
     }
 
@@ -318,59 +334,118 @@ public class ChatActivity extends BaseActivity {
 
     private void attachmentPopUp() {
         View popupView = getLayoutInflater().inflate(R.layout.chat_attachment_popup, null);
+        String type = "";
 
 // Create the PopupWindow
         final PopupWindow popupWindow = new PopupWindow(popupView,
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-
-
-// Set an OnClickListener for the camera option
-        popupView.setOnClickListener(new View.OnClickListener() {
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+//                intent.setType("image/* video/*");
+        final int[] code = {55, 66, 77, 88, 99, 44, 33, 22, 11};
+        popupView.findViewById(R.id.attachment_popup_ll_gallery).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("CLICKED::::", view + "");
-                String type = "";
-                // Handle document option selection
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
+                Log.i("CLICKED::::", "GALLERY");
                 intent.setType("image/* video/*");
-                switch (view.getId()) {
-                    case R.id.attachment_popup_ll_audio:
-                        Log.i("CLICKED::::", "AUDIO");
-                        intent.setType("audio/*");
-                        break;
-                    case R.id.attachment_popup_ll_gallery:
-                        Log.i("CLICKED::::", "GALLERY");
-                        intent.setType("image/* video/*");
-                        break;
-                    case R.id.attachment_popup_ll_payment:
-                        type = "";
-                        break;
-                    case R.id.attachment_popup_ll_camera:
-                        break;
-                    case R.id.attachment_popup_ll_contact:
-                        type = "";
-                        break;
-                    case R.id.attachment_popup_ll_document:
-                        intent.setType("*/*");
-                        break;
-                    case R.id.attachment_popup_ll_location:
-                        type = "";
-                        break;
-                    case R.id.attachment_popup_ll_poll:
-                        return;
-//                        break;
-
+                code[0] = 55;
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[1]);
                 }
-                startActivityForResult(intent, 55);
-//                intent= new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                pickImage.launch(intent);
+                popupWindow.dismiss();
+            }
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_audio).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("CLICKED::::", "GALLERY");
+                String[] mimetypes = {"audio/3gp", "audio/AMR", "audio/mp3"};
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                intent.setType("audio/*");
+
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[3]);
+                }
+                popupWindow.dismiss();
+            }
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_camera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.i("CLICKED::::", "GALLERY");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[2]);
+                }
+                popupWindow.dismiss();
+            }
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_poll).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("CLICKED::::", "GALLERY");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[7]);
+                }
+                popupWindow.dismiss();
+            }
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_payment).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("CLICKED::::", "GALLERY");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[4]);
+                }
+                popupWindow.dismiss();
+            }
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_location).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("CLICKED::::", "GALLERY");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[5]);
+                }
+                popupWindow.dismiss();
+            }
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_canvas).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("CLICKED::::", "GALLERY");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[8]);
+                }
+                popupWindow.dismiss();
+            }
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_document).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("CLICKED::::", "GALLERY");
+                intent.setType("*/*");
+
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[0]);
+                }
+                popupWindow.dismiss();
+            }
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_contact).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("CLICKED::::", "GALLERY");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, code[6]);
+                }
                 popupWindow.dismiss();
             }
         });
 
-        popupWindow.showAtLocation(et_message, Gravity.BOTTOM, 0, 0);
+// Set an OnClickListener for the camera option
+
+        popupWindow.showAtLocation(ll_full, Gravity.BOTTOM, et_message.getWidth()/50, et_message.getHeight()*2+10);
 
     }
 
@@ -471,6 +546,28 @@ public class ChatActivity extends BaseActivity {
             }
         });
 
+        ib_emoji.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    if (imm.isActive(et_message)) {
+                        // Hide the keyboard
+//                        imm.hideSoftInputFromWindow(et_message.getWindowToken(), 0);
+                        // Switch to emoji keyboard
+                        et_message.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+                        ib_emoji.setBackground(AppCompatResources.getDrawable(view.getContext(),R.drawable.ic_baseline_keyboard_24));
+                    } else {
+                        // Show the keyboard
+                        imm.showSoftInput(et_message, InputMethodManager.SHOW_FORCED);
+                        // Switch to text keyboard
+                        et_message.setInputType(InputType.TYPE_CLASS_TEXT);
+                        ib_emoji.setBackground(AppCompatResources.getDrawable(view.getContext(),R.drawable.ic_baseline_emoji_emotions_24));
+                    }
+                }
+            }
+        });
+
     }
 
 
@@ -552,6 +649,7 @@ public class ChatActivity extends BaseActivity {
         new SharedPrefManager(getApplicationContext());
         chatRecyclerView = findViewById(R.id.Chat_RecyclerView);
         ib_send = findViewById(R.id.Chat_Button_Send);
+        ib_emoji=findViewById(R.id.Chat_Button_Emoji);
         ib_attach = findViewById(R.id.Chat_Button_Attachment);
         et_message = findViewById(R.id.Chat_EditText_Message);
         ib_camera = findViewById(R.id.Chat_Button_Camera);

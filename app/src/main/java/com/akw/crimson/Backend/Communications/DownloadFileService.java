@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -43,6 +44,7 @@ public class DownloadFileService extends IntentService {
         String pos = intent.getStringExtra(Constants.KEY_INTENT_LIST_POSITION);
         String len = intent.getStringExtra(Constants.KEY_INTENT_LIST_SIZE);
         Message msg = db.getMessage(id);
+        Log.i("DOWNLOAD::::","Started");
 
         String folder="";
         switch (msg.getMediaType()) {
@@ -60,10 +62,9 @@ public class DownloadFileService extends IntentService {
                 break;
         }
         File outFile;
-        final StorageReference fileRef = storageRef.child(folder+"/" + msg.getMediaID());
+        final StorageReference fileRef = storageRef.child(folder+"/" + msg.getMsg_ID());
         if (msg.getMediaType()==Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT){
             String docName = msg.getMediaID().substring(Math.min(msg.getMediaID().length() - 1, msg.getMediaID().indexOf('_') + 1));
-
             outFile = UsefulFunctions.getOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(), docName);
         }else{
             outFile=UsefulFunctions.getOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType());
@@ -72,6 +73,7 @@ public class DownloadFileService extends IntentService {
         fileRef.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
+                Log.i("DOWNLOAD::::","Success");
                 String name = null;
                 try {
                     name = UsefulFunctions.saveFile(bytes, outFile);
@@ -89,13 +91,17 @@ public class DownloadFileService extends IntentService {
                     receiver.send(RESULT_FAIL, resultData);
                     outFile.delete();
                 }
+                fileRef.delete();
+                stopSelf();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                Log.i("DOWNLOAD::::","FAILED- "+e);
                 // Send the result
                 resultData.putInt("result", RESULT_FAIL);
                 receiver.send(RESULT_FAIL, resultData);
+                stopSelf();
             }
         });
 

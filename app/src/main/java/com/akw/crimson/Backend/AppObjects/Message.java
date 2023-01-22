@@ -11,7 +11,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 @Entity(tableName = "messages_Table")
@@ -20,10 +19,13 @@ public class Message {
     @PrimaryKey
     @NonNull
     private String msg_ID;
-    private String user_id, _id, tag, msg, time, date, mediaID;
+    private String user_id, _id, tag, msg, time, date, mediaID, source, reaction;
     private long mediaSize;
     private double latitude, longitude;
-    private boolean self, unread, media;
+    private boolean self, unread, starred;
+    private boolean media;
+
+    private boolean forwarded;
     private int status, mediaType;
 
 
@@ -61,6 +63,7 @@ public class Message {
         this.mediaType = mediaType;
     }
 
+    @Ignore
     public Message(@NonNull String msg_ID, String user_id, String tag, String msg, boolean self,
                    boolean media, String mediaID, int status) {
         Calendar time = Calendar.getInstance();
@@ -93,15 +96,16 @@ public class Message {
         this.self = false;
     }
 
-    public Message(String s){
-        Gson gson= new Gson();
-        Type type = new TypeToken<Message>() {}.getType();
-        Message message= gson.fromJson(s, type);
-        Calendar time = Calendar.getInstance();
+    public Message(String s) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<Message>() {
+        }.getType();
+        Message message = gson.fromJson(s, type);
         this.msg_ID = message.msg_ID;
         this.user_id = message.user_id;
         this.tag = message.tag;
         this.msg = message.msg;
+        Calendar time = Calendar.getInstance();
         this.time = String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE));
         this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
         this.mediaID = message.mediaID;
@@ -135,11 +139,28 @@ public class Message {
 
 
     public String asString(String selfID) {
-        Gson gson= new Gson();
-        Message msg=new Message(this);
-        msg.user_id=selfID;
+        Gson gson = new Gson();
+        Message msg = new Message(this);
+        msg.user_id = selfID;
         return gson.toJson(msg);
 //        return "[" + msg_ID + "," + selfID + "," + tag + "," + "\"" + msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_", "%u%") + "\"" + "," + media + "," + (mediaID == null ? "NULL" : mediaID) + "]";
+    }
+
+    public Message(@NonNull String msg_ID, String user_id, String tag, double latitude, double longitude, boolean self, String msg, int status) {
+        this.msg_ID = msg_ID;
+        this.user_id = user_id;
+        this.tag = tag;
+        this.msg = msg;
+        Calendar c = Calendar.getInstance();
+        this.time = String.format("%02d", c.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", c.get(Calendar.MINUTE));
+        this.date = new SimpleDateFormat("dd/MM/yyyy").format(c.getTime());
+        this.source = user_id;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.self = self;
+        this.unread = false;
+        this.status = status;
+        this.mediaType = Constants.KEY_MESSAGE_MEDIA_TYPE_LOCATION;
     }
 
     public double getLatitude() {
@@ -271,5 +292,35 @@ public class Message {
         this.status = status;
     }
 
+    public boolean isForwarded() {
+        return forwarded;
+    }
 
+    public void setForwarded(boolean forwarded) {
+        this.forwarded = forwarded;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getReaction() {
+        return reaction;
+    }
+
+    public void setReaction(String reaction) {
+        this.reaction = reaction;
+    }
+
+    public boolean isStarred() {
+        return starred;
+    }
+
+    public void setStarred(boolean starred) {
+        this.starred = starred;
+    }
 }

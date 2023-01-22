@@ -32,13 +32,13 @@ import com.akw.crimson.Backend.Communications.UploadFileService;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
+import com.akw.crimson.Chat.ChatActivity;
 import com.akw.crimson.R;
 import com.akw.crimson.databinding.MessageReceivedLayoutBinding;
 import com.akw.crimson.databinding.MessageSentLayoutBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
@@ -108,41 +108,43 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                 Log.i("SENT::::", cursor.getString(cursor.getColumnIndexOrThrow("mediaID")));
 
                 if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
-                    Log.i("Sent::::", "IMAGE FOUND");
-                    Log.i("MEDIA ID:::::", file.getPath() + "___" + file.getName() + "__" + file.exists());
+                    sent.MessageClMedia.setVisibility(View.VISIBLE);
+                    sent.MessageIvImage.setVisibility(View.VISIBLE);
                     if (file.exists()) {
-                        sent.MessageClMedia.setVisibility(View.VISIBLE);
-                        sent.MessageIvImage.setVisibility(View.VISIBLE);
                         sent.MessageIvImage.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
                         if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
                             sent.MessageCvImageSize.setVisibility(View.VISIBLE);
                             sent.MessageTvImageSize.setVisibility(View.VISIBLE);
-                            sent.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))) + " Kb");
+                            sent.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))) + " Kb ");
                             sent.MessageCvImageSize.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+                                    cursor.moveToPosition(holder.getAdapterPosition());
                                     Log.i("CLICKED::::", view + "");
                                     Intent intent;
                                     Log.i("FIRESTORAGE :::::::", "STARTING");
-
+                                    sent.MessageCvImageSize.setVisibility(View.GONE);
+                                    sent.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
+                                    sent.MessageIvMediaCancel.setVisibility(View.VISIBLE);
+                                    Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
                                     intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
 
                                     intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     mContext.startService(intent);
-//                                    if (listener != null)
-//                                        listener.OnItemClick(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")), cursor.getString(cursor.getColumnIndexOrThrow("mediaID")), sent.MessageCvImageSize, sent.MessageTvImageSize, sent.MessagePbProgressBarMedia, sent.MessageIvMediaCancel, view, true);
-                                }
+                                     }
                             });
                         }
                     } else {
-                        checkFirestore(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID"))
-                                , cursor.getString(cursor.getColumnIndexOrThrow("mediaID"))
-                                , sent.MessageCvImageSize, sent.MessageTvImageSize
-                                , sent.MessagePbProgressBarMedia, sent.MessageIvMediaCancel
-                                , sent.MessageIvImage, cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1, cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")));
+                        sent.MessageIvImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                MediaMissingDialog();
+                            }
+                        });
                     }
-                } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
+                }
+                else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
                     sent.MessageCvDoc.setVisibility(View.VISIBLE);
                     Log.i("Sent::::", "DOC FOUND");
                     if (file.exists()) {
@@ -151,49 +153,74 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         int l = cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).lastIndexOf('.');
                         sent.MessageTvDocType.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).substring(l + 1));
                     } else {
-                        checkFirestore(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID"))
-                                , cursor.getString(cursor.getColumnIndexOrThrow("mediaID"))
-                                , sent.MessageCvDoc, sent.MessageTvDocSize
-                                , sent.MessagePbDocDownloadProgress, sent.MessageIvDocCancel
-                                , sent.MessageIvImage, cursor.getInt(cursor.getColumnIndexOrThrow("self")) == 1, cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")));
-                    }
-                } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
-                    if (file.exists()) {
-                        sent.MessageClMedia.setVisibility(View.VISIBLE);
-                        sent.MessageIvImage.setVisibility(View.VISIBLE);
-                        sent.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
-                        sent.MessageIbPlayVid.setVisibility(View.VISIBLE);
-                        sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                //Video
-                            }
-                        });
-                    } else {
-                        checkFirestore(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID"))
-                                , cursor.getString(cursor.getColumnIndexOrThrow("mediaID"))
-                                , sent.MessageCvImageSize, sent.MessageTvImageSize
-                                , sent.MessagePbProgressBarMedia, sent.MessageIvMediaCancel
-                                , sent.MessageIvImage, cursor.getInt(cursor.getColumnIndexOrThrow("self")) == 1, cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")));
+                         }
+                }
+                else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
+                        if (file.exists()) {
+                            sent.MessageClMedia.setVisibility(View.VISIBLE);
+                            sent.MessageIvImage.setVisibility(View.VISIBLE);
+                            sent.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
+                            sent.MessageIbPlayVid.setVisibility(View.VISIBLE);
+                            sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    //Video
+                                }
+                            });
+                            if(cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1){
+                                sent.MessageCvVideoSize.setVisibility(View.VISIBLE);
+                                sent.MessageTvVideoSize.setVisibility(View.VISIBLE);
+                                sent.MessageTvVideoSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))) + " Kb ");
+                                sent.MessageCvImageSize.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        cursor.moveToPosition(holder.getAdapterPosition());
+                                        Log.i("CLICKED::::", view + "");
+                                        Intent intent;
+                                        Log.i("FIRESTORAGE :::::::", "STARTING");
+                                        sent.MessageCvImageSize.setVisibility(View.GONE);
+                                        sent.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
+                                        sent.MessageIvMediaCancel.setVisibility(View.VISIBLE);
+                                        Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                        intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
+                                        intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
 
-                    }
+                                        intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                        mContext.startService(intent);
+                                    }
+                                });
+                            }
+                        } else {
+                            sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    MediaMissingDialog();
+                                }
+                            });
+                        }
+
                 }
             }
-
         } else {
             ReceivedMessageView viewHolder = (ReceivedMessageView) holder;
             MessageReceivedLayoutBinding received = viewHolder.receivedLayoutBinding;
-            received.MessageMsgBox.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
+            if(cursor.getString(cursor.getColumnIndexOrThrow("msg"))!=null){
+                received.MessageMsgBox.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
+            }else{
+                received.MessageMsgBox.setVisibility(View.GONE);
+            }
             received.MessageMsgBox.setPadding(25, 1, 25, 1);
             received.MessageTime.setText(cursor.getString(cursor.getColumnIndexOrThrow("time")));
             received.MessageTime.setPadding(25, 1, 25, 1);
             if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1 && !unreadFound) {
-                received.MessageLL.addView(unreadDialog(), 0);
+                received.MessageLayout.addView(unreadDialog(), 0);
                 unreadFound = true;
             }
             if (cursor.getInt(cursor.getColumnIndexOrThrow("media")) == 1) {
-                Log.i("ACHA::::", "MEDIA FOUND");
-                File file = UsefulFunctions.getFile(mContext, (cursor.getString(cursor.getColumnIndexOrThrow("mediaID"))), cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")), cursor.getInt(cursor.getColumnIndexOrThrow("self")) == 1);
+                Log.i("RECEIVED::::", "MEDIA FOUND");
+                File file = UsefulFunctions.getFile(mContext, (cursor.getString(cursor.getColumnIndexOrThrow("mediaID")))
+                        , cursor.getInt(cursor.getColumnIndexOrThrow("mediaType"))
+                        , cursor.getInt(cursor.getColumnIndexOrThrow("self")) == 1);
                 if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
                     Log.i("MEDIA ID:::::", "fileID");
 
@@ -201,14 +228,28 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                     received.MessageIvImage.setVisibility(View.VISIBLE);
                     if (file.exists()) {
                         received.MessageIvImage.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                    }else{
+                        received.MessageCvImageSize.setVisibility(View.VISIBLE);
+                        received.MessageTvImageSize.setVisibility(View.VISIBLE);
+                        received.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaType"))));
+                        received.MessageCvImageSize.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                received.MessageIvMediaCancel.setVisibility(View.VISIBLE);
+                                received.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
+                                Log.i("CLICKED::::", view + "");
+                                Intent intent;
+                                Log.i("FIRESTORAGE :::::::", "STARTING");
+                                cursor.moveToPosition(holder.getAdapterPosition());
+                                intent = new Intent(mContext.getApplicationContext(), DownloadFileService.class);
+                                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+
+                                intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                mContext.startService(intent);
+                            }
+                        });
                     }
-//                    else {
-//                        checkFirestore(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID"))
-//                                , cursor.getString(cursor.getColumnIndexOrThrow("mediaID"))
-//                                , received.MessageCvImageSize, received.MessageTvImageSize
-//                                , received.MessagePbProgressBarMedia, received.MessageIvMediaCancel
-//                                , received.MessageIvImage, cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1,cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")));
-//                    }
+
                 } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
                     received.MessageCvDoc.setVisibility(View.VISIBLE);
                     if (file.exists()) {
@@ -217,12 +258,8 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         int l = cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).lastIndexOf('.');
                         received.MessageTvDocType.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).substring(l + 1).toUpperCase());
                     } else {
-                        checkFirestore(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID"))
-                                , cursor.getString(cursor.getColumnIndexOrThrow("mediaID"))
-                                , received.MessageCvDoc, received.MessageTvDocSize
-                                , received.MessagePbDocDownloadProgress, received.MessageIvDocCancel
-                                , received.MessageIvImage, cursor.getInt(cursor.getColumnIndexOrThrow("self")) == 1, cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")));
-                    }
+
+                         }
                 } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
                     received.MessageClMedia.setVisibility(View.VISIBLE);
                     received.MessageIvImage.setVisibility(View.VISIBLE);
@@ -245,43 +282,43 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         return cursor.getCount();
     }
 
-    private void checkFirestore(String msgID, String fileName, CardView cvSize, TextView tvSize
-            , ProgressBar progressBar, ImageView ivCancel, View viewView, boolean upload, int type) {
-
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        String fileID = msgID + (type == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT ? "_" + fileName : "");
-        Log.i("MEDIA ID:::::", fileID);
-        StorageReference fileRef = storageRef.child(fileID);
-//        Bitmap b= BitmapFactory.decodeFile(fileName);
-//        ivImage.setImageBitmap(b);
-
-        fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-            @Override
-            public void onSuccess(StorageMetadata storageMetadata) {
-                // File exists
-                long fileSize = storageMetadata.getSizeBytes() / 1024;
-                if (type == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
-                    TextView nameTv = (TextView) viewView;
-                    nameTv.setText(fileName);
-                }
-                cvSize.setVisibility(View.VISIBLE);
-                tvSize.setVisibility(View.VISIBLE);
-                tvSize.setText(String.valueOf(fileSize));
-                tvSize.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (listener != null)
-                            listener.OnItemClick(msgID, fileName, cvSize, tvSize, progressBar, ivCancel, view, upload);
-                    }
-                });
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                MediaMissingDialog();
-            }
-        });
-    }
+//    private void checkFirestore(String msgID, String fileName, CardView cvSize, TextView tvSize
+//            , ProgressBar progressBar, ImageView ivCancel, View viewView, boolean upload, int type) {
+//
+//        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+//        String fileID = msgID + (type == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT ? "_" + fileName : "");
+//        Log.i("MEDIA ID:::::", fileID);
+//        StorageReference fileRef = storageRef.child(fileID);
+////        Bitmap b= BitmapFactory.decodeFile(fileName);
+////        ivImage.setImageBitmap(b);
+//
+//        fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+//            @Override
+//            public void onSuccess(StorageMetadata storageMetadata) {
+//                // File exists
+//                long fileSize = storageMetadata.getSizeBytes() / 1024;
+//                if (type == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
+//                    TextView nameTv = (TextView) viewView;
+//                    nameTv.setText(fileName);
+//                }
+//                cvSize.setVisibility(View.VISIBLE);
+//                tvSize.setVisibility(View.VISIBLE);
+//                tvSize.setText(String.valueOf(fileSize));
+//                tvSize.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+////                        if (listener != null)
+////                            listener.OnItemClick(msgID, fileName, cvSize, tvSize, progressBar, ivCancel, view, upload);
+//                    }
+//                });
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception exception) {
+//                //MediaMissingDialog();
+//            }
+//        });
+//    }
 
     private ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
         @Override
@@ -293,78 +330,78 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             }
         }
     };
-
-    private void beginDownload(String fileName, ImageView ivCancel, ProgressBar progressBar, int mediaType
-            , CardView cvSize, TextView tvSize, ImageView ivImage) {
-        cvSize.setVisibility(View.GONE);
-        tvSize.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        ivCancel.setVisibility(View.VISIBLE);
-
-        File localFile;
-        if (mediaType != Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
-            localFile = UsefulFunctions.getOutputMediaFile(mContext, false, mediaType);
-        } else {
-            localFile = UsefulFunctions.getOutputMediaFile(mContext, false, mediaType, fileName);
-        }
-        String folder = "";
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        switch (mediaType) {
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
-                folder = "images";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
-                folder = "videos";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
-                folder = "documents";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
-                folder = "audios";
-                break;
-        }
-
-        StorageReference fileRef = storageRef.child(folder + "/" + fileName);
-
-        fileRef.getBytes(Long.MAX_VALUE)
-                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        // File downloaded successfully
-                        Log.d("Download", "onSuccess: Downloaded file.");
-                        FileOutputStream fos = null;
-                        try {
-                            fos = new FileOutputStream(localFile);
-                            fos.write(bytes);
-                            fos.close();
-                            // Access the downloaded file
-                            Log.d("Download", "onSuccess: File path: " + localFile.getAbsolutePath());
-                            Log.d("Download", "onSuccess: File size: " + localFile.length() + " bytes");
-                            progressBar.setVisibility(View.GONE);
-                            ivImage.setVisibility(View.VISIBLE);
-                            ivImage.setImageBitmap(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        progressBar.setVisibility(View.GONE);
-                        ivCancel.setVisibility(View.GONE);
-                        fileRef.delete();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle failed download
-                        Log.e("Download", "onFailure: Failed to download file.", e);
-                        localFile.delete();
-                        progressBar.setVisibility(View.GONE);
-                        ivCancel.setVisibility(View.GONE);
-                        cvSize.setVisibility(View.VISIBLE);
-                        tvSize.setVisibility(View.VISIBLE);
-                    }
-                });
-
-    }
+//
+//    private void beginDownload(String fileName, ImageView ivCancel, ProgressBar progressBar, int mediaType
+//            , CardView cvSize, TextView tvSize, ImageView ivImage) {
+//        cvSize.setVisibility(View.GONE);
+//        tvSize.setVisibility(View.GONE);
+//        progressBar.setVisibility(View.VISIBLE);
+//        ivCancel.setVisibility(View.VISIBLE);
+//
+//        File localFile;
+//        if (mediaType != Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
+//            localFile = UsefulFunctions.getOutputMediaFile(mContext, false, mediaType);
+//        } else {
+//            localFile = UsefulFunctions.getOutputMediaFile(mContext, false, mediaType, fileName);
+//        }
+//        String folder = "";
+//        FirebaseStorage storage = FirebaseStorage.getInstance();
+//        StorageReference storageRef = storage.getReference();
+//        switch (mediaType) {
+//            case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
+//                folder = "images";
+//                break;
+//            case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
+//                folder = "videos";
+//                break;
+//            case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
+//                folder = "documents";
+//                break;
+//            case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
+//                folder = "audios";
+//                break;
+//        }
+//
+//        StorageReference fileRef = storageRef.child(folder + "/" + fileName);
+//
+//        fileRef.getBytes(Long.MAX_VALUE)
+//                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
+//                    @Override
+//                    public void onSuccess(byte[] bytes) {
+//                        // File downloaded successfully
+//                        Log.d("Download", "onSuccess: Downloaded file.");
+//                        FileOutputStream fos = null;
+//                        try {
+//                            fos = new FileOutputStream(localFile);
+//                            fos.write(bytes);
+//                            fos.close();
+//                            // Access the downloaded file
+//                            Log.d("Download", "onSuccess: File path: " + localFile.getAbsolutePath());
+//                            Log.d("Download", "onSuccess: File size: " + localFile.length() + " bytes");
+//                            progressBar.setVisibility(View.GONE);
+//                            ivImage.setVisibility(View.VISIBLE);
+//                            ivImage.setImageBitmap(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                        progressBar.setVisibility(View.GONE);
+//                        ivCancel.setVisibility(View.GONE);
+//                        fileRef.delete();
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        // Handle failed download
+//                        Log.e("Download", "onFailure: Failed to download file.", e);
+//                        localFile.delete();
+//                        progressBar.setVisibility(View.GONE);
+//                        ivCancel.setVisibility(View.GONE);
+//                        cvSize.setVisibility(View.VISIBLE);
+//                        tvSize.setVisibility(View.VISIBLE);
+//                    }
+//                });
+//
+//    }
 
     private void MediaMissingDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext.getApplicationContext());

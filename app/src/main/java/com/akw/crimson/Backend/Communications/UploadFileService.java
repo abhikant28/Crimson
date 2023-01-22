@@ -8,14 +8,18 @@ import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -89,14 +93,13 @@ public class UploadFileService extends IntentService {
         ResultReceiver receiver = intent.getParcelableExtra(EXTRA_RECEIVER);
         Bundle resultData = new Bundle();
         String id = intent.getStringExtra(Constants.KEY_INTENT_MESSAGE_ID);
-        fileUri = Uri.parse(id);
 
         Message msg= db.getMessage(id);
         Log.i("UPLOAD::::","onHandleIntent");
 
 
-        if (this.fileUri != null) {
-            String fileName = msg.getMediaID();
+            String fileName = msg.getMsg_ID();
+            Log.i("UPLOAD MSG ID:::::", fileName);
 
             String folder="";
             switch (msg.getMediaType()) {
@@ -118,20 +121,31 @@ public class UploadFileService extends IntentService {
             File file= UsefulFunctions.getFile(this,msg.getMediaID()
                     , msg.getMediaType(), msg.isSelf());
 
-            Log.i("MEDIA TYE:::::", msg.getMediaType()+"");
+            Log.i("MEDIA TYE Upload:::::", msg.getMediaType()+"");
             Uri uri = Uri.fromFile(file);
             fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> {
-                Log.d("FileUploadService", "File successfully uploaded: ");
+                Log.d("FileUploadService:::::::", "File successfully uploaded: ");
                 msg.setStatus(0);
                 db.updateMessage(msg);
                 resultData.putInt("result", RESULT_SUCCESS);
                 receiver.send(RESULT_SUCCESS, resultData);
                 stopSelf();
             }).addOnFailureListener(e -> {
-                Log.e("FileUploadService", "Failed to upload file.", e);
+                Log.e("FileUploadService:::::::::", "Failed to upload file.", e);
                 resultData.putInt("result", RESULT_FAIL);
                 receiver.send(RESULT_FAIL, resultData);
                 stopSelf();
+            }).addOnCanceledListener(new OnCanceledListener() {
+                @Override
+                public void onCanceled() {
+                    Log.e("FileUploadService::::::", "Cancelled to upload file.");
+
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                    Log.i("PROGRESSS:::::::::", snapshot.getBytesTransferred()+"");
+                }
             });
 
 //            Bitmap bitmap = null;
@@ -187,5 +201,4 @@ public class UploadFileService extends IntentService {
         }
 
 
-    }
 }
