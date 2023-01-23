@@ -68,8 +68,6 @@ public class Registration_Profile extends AppCompatActivity {
                         try{
                             InputStream inputStream= getContentResolver().openInputStream(imageUri);
                             Bitmap bitmap= BitmapFactory.decodeStream(inputStream);
-                            int dimension=Math.min(bitmap.getHeight(),bitmap.getWidth());
-                            bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
                             iv_profilePic.setImageBitmap(bitmap);
                             tv_ImageText.setVisibility(View.GONE);
                             hasPic=true;

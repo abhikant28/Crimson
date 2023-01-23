@@ -48,7 +48,7 @@ public class Message {
     public Message(@NonNull String msg_ID, String user_id, String tag, String msg, String mediaID
             , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType) {
         Calendar time = Calendar.getInstance();
-        this.msg_ID = msg_ID;
+        this.msg_ID = msg_ID + time.getTime().getTime();
         this.user_id = user_id;
         this.tag = tag;
         this.msg = msg;
@@ -142,6 +142,7 @@ public class Message {
         Gson gson = new Gson();
         Message msg = new Message(this);
         msg.user_id = selfID;
+        msg.setMediaID(msg_ID+"_"+mediaID);
         return gson.toJson(msg);
 //        return "[" + msg_ID + "," + selfID + "," + tag + "," + "\"" + msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_", "%u%") + "\"" + "," + media + "," + (mediaID == null ? "NULL" : mediaID) + "]";
     }

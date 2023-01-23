@@ -98,7 +98,7 @@ public class UploadFileService extends IntentService {
         Log.i("UPLOAD::::","onHandleIntent");
 
 
-            String fileName = msg.getMsg_ID();
+            String fileName = msg.getMediaID();
             Log.i("UPLOAD MSG ID:::::", fileName);
 
             String folder="";

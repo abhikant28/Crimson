@@ -1,6 +1,7 @@
-package com.akw.crimson.Adapters;
+package com.akw.crimson.Backend.Adapters;
 
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,12 +9,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.AppObjects.User;
+import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.UsefulFunctions;
+import com.akw.crimson.ProfileImageView;
 import com.akw.crimson.R;
 
 public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserList_RecyclerListAdapter.MyViewHolder> {
@@ -79,8 +83,22 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
         }else{
             holder.iv_profilePic.setImageResource(R.drawable.ic_baseline_person_24);
         }
-        holder.tv_unreadCount.setText("");
-        holder.tv_time.setText("");
+        holder.iv_profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+                {
+                    AppCompatActivity activity = (AppCompatActivity) holder.itemView.getContext();
+                    ProfileImageView update = new ProfileImageView();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Constants.KEY_INTENT_USERID, getUser(holder.getAbsoluteAdapterPosition()).getUser_id());
+                    bundle.putString(Constants.KEY_INTENT_PIC, getUser(holder.getAbsoluteAdapterPosition()).getPic());
+                    update.setArguments(bundle);
+                    update.show(activity.getSupportFragmentManager().beginTransaction(), "EXAMPLE");
+                    holder.tv_unreadCount.setText("");
+                    holder.tv_time.setText("");
+                }
+
+        });
     }
 
     public User getUser(int position) {

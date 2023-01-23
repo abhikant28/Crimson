@@ -1,6 +1,8 @@
-package com.akw.crimson.Adapters;
+package com.akw.crimson.Backend.Adapters;
 
 
+import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,16 +10,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.AppObjects.User;
+import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.UsefulFunctions;
+import com.akw.crimson.ProfileImageView;
 import com.akw.crimson.R;
 
 public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_RecyclerListAdapter.MyViewHolder> {
     private OnItemClickListener listener;
+    private Context cxt;
 
     private static final DiffUtil.ItemCallback<User> DIFF_CALLBACK_User = new DiffUtil.ItemCallback<User>() {
         @Override
@@ -34,11 +40,13 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
     public ChatList_RecyclerListAdapter() {
         super(DIFF_CALLBACK_User);
     }
+    public ChatList_RecyclerListAdapter(Context cxt) {
+        super(DIFF_CALLBACK_User);
+        this.cxt=cxt;
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_name;
-        private TextView tv_lastMsg;
-        private TextView tv_unreadCount;
+        private TextView tv_name,tv_lastMsg,tv_unreadCount;
         private ImageView iv_profilePic;
         private TextView tv_time;
 
@@ -56,6 +64,25 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
                 public void onClick(View view) {
                     int p = getAdapterPosition();
                     if (listener != null && p != -1) listener.OnItemClick(getUser(p));
+                }
+            });
+            iv_profilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AppCompatActivity activity = (AppCompatActivity) view.getContext();
+                    ProfileImageView update= new ProfileImageView();
+                    Bundle bundle=new Bundle();
+                    bundle.putString(Constants.KEY_INTENT_USERID,getUser(getLayoutPosition()).getUser_id());
+                    bundle.putString(Constants.KEY_INTENT_PIC,getUser(getLayoutPosition()).getPic());
+                    update.setArguments(bundle);
+                    update.show(activity.getSupportFragmentManager().beginTransaction(), "EXAMPLE");
+//                    DialogFragment fragment = ProfileImageView.newInstance(getUser(getAdapterPosition()).getUser_id(), getUser(getLayoutPosition()).getPic());
+//                    ViewCompat.setTransitionName(iv_profilePic, "item_image");
+//                    activity.getSupportFragmentManager().beginTransaction()
+//                            .addSharedElement(iv_profilePic, "max")
+//                            .replace(R.id.MainChat_frame_profilePic, fragment)
+//                            .addToBackStack(null)
+//                            .commit();
                 }
             });
         }

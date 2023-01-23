@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.Adapters.AllUserList_RecyclerListAdapter;
+import com.akw.crimson.Backend.Adapters.AllUserList_RecyclerListAdapter;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;

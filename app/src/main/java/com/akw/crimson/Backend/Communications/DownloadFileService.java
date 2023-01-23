@@ -62,7 +62,7 @@ public class DownloadFileService extends IntentService {
                 break;
         }
         File outFile;
-        final StorageReference fileRef = storageRef.child(folder+"/" + msg.getMsg_ID());
+        final StorageReference fileRef = storageRef.child(folder+"/" + msg.getMediaID());
         if (msg.getMediaType()==Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT){
             String docName = msg.getMediaID().substring(Math.min(msg.getMediaID().length() - 1, msg.getMediaID().indexOf('_') + 1));
             outFile = UsefulFunctions.getOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(), docName);

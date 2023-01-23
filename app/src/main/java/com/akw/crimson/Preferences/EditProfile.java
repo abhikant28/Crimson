@@ -58,8 +58,6 @@ public class EditProfile extends AppCompatActivity {
                         try{
                             InputStream inputStream= getContentResolver().openInputStream(imageUri);
                             Bitmap bitmap= BitmapFactory.decodeStream(inputStream);
-                            int dimension=Math.min(bitmap.getHeight(),bitmap.getWidth());
-                            bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
                             String encodedImage = UsefulFunctions.encodeImage(bitmap);
                             updateProfilePic(encodedImage,bitmap);
                         }catch (FileNotFoundException e){

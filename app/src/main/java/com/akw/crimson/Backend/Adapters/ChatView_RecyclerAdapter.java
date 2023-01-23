@@ -1,4 +1,4 @@
-package com.akw.crimson.Adapters;
+package com.akw.crimson.Backend.Adapters;
 
 
 import android.content.Context;
@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.Communications.DownloadFileService;
@@ -32,17 +33,11 @@ import com.akw.crimson.Backend.Communications.UploadFileService;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
-import com.akw.crimson.Chat.ChatActivity;
 import com.akw.crimson.R;
 import com.akw.crimson.databinding.MessageReceivedLayoutBinding;
 import com.akw.crimson.databinding.MessageSentLayoutBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.io.FileOutputStream;
 
 
 public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
@@ -89,8 +84,13 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         if (holder instanceof SentMessageView) {
             SentMessageView viewHolder = (SentMessageView) holder;
             MessageSentLayoutBinding sent = viewHolder.sentMsgBinding;
-            sent.MessageMsgBox.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
-            sent.MessageMsgBox.setPadding(25, 1, 25, 1);
+            if (cursor.getString(cursor.getColumnIndexOrThrow("msg")) != null) {
+                sent.MessageMsgBox.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
+                sent.MessageMsgBox.setPadding(25, 1, 25, 1);
+//                setMessageAndTimeView(holder, sent.MessageTime, sent.MessageMsgBox);
+            } else {
+                sent.MessageMsgBox.setVisibility(View.GONE);
+            }
             sent.MessageTime.setText(cursor.getString(cursor.getColumnIndexOrThrow("time")));
             sent.MessageTime.setPadding(25, 1, 25, 1);
             sent.MessageClMedia.setVisibility(View.GONE);
@@ -101,6 +101,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             }
             if (cursor.getInt(cursor.getColumnIndexOrThrow("media")) == 1) {
                 Log.i("SENt::::", "MEDIA FOUND");
+                sent.MessageLL.setPadding(20, 20, 20, 20);
                 File file = UsefulFunctions.getFile(mContext, cursor.getString(cursor.getColumnIndexOrThrow("mediaID"))
                         , cursor.getInt(cursor.getColumnIndexOrThrow("mediaType"))
                         , cursor.getInt(cursor.getColumnIndexOrThrow("self")) == 1);
@@ -132,7 +133,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
 
                                     intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     mContext.startService(intent);
-                                     }
+                                }
                             });
                         }
                     } else {
@@ -143,70 +144,88 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                             }
                         });
                     }
-                }
-                else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
+                } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
                     sent.MessageCvDoc.setVisibility(View.VISIBLE);
                     Log.i("Sent::::", "DOC FOUND");
                     if (file.exists()) {
                         sent.MessageTvDocName.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")));
-                        sent.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))));
+                        sent.MessageTvDocSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))));
                         int l = cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).lastIndexOf('.');
                         sent.MessageTvDocType.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).substring(l + 1));
-                    } else {
-                         }
-                }
-                else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
-                        if (file.exists()) {
-                            sent.MessageClMedia.setVisibility(View.VISIBLE);
-                            sent.MessageIvImage.setVisibility(View.VISIBLE);
-                            sent.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
-                            sent.MessageIbPlayVid.setVisibility(View.VISIBLE);
-                            sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
+                        if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
+                            sent.MessageIvDocUpload.setVisibility(View.VISIBLE);
+                            sent.MessageIvDocUpload.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    //Video
-                                }
-                            });
-                            if(cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1){
-                                sent.MessageCvVideoSize.setVisibility(View.VISIBLE);
-                                sent.MessageTvVideoSize.setVisibility(View.VISIBLE);
-                                sent.MessageTvVideoSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))) + " Kb ");
-                                sent.MessageCvImageSize.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        cursor.moveToPosition(holder.getAdapterPosition());
-                                        Log.i("CLICKED::::", view + "");
-                                        Intent intent;
-                                        Log.i("FIRESTORAGE :::::::", "STARTING");
-                                        sent.MessageCvImageSize.setVisibility(View.GONE);
-                                        sent.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
-                                        sent.MessageIvMediaCancel.setVisibility(View.VISIBLE);
-                                        Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
-                                        intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
-                                        intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-
-                                        intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
-                                        mContext.startService(intent);
-                                    }
-                                });
-                            }
-                        } else {
-                            sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    MediaMissingDialog();
+                                    cursor.moveToPosition(holder.getAdapterPosition());
+                                    Log.i("CLICKED::::", view + "");
+                                    Intent intent;
+                                    Log.i("FIRESTORAGE :::::::", "STARTING");
+                                    sent.MessageIvDocUpload.setVisibility(View.GONE);
+                                    sent.MessagePbDocDownloadProgress.setVisibility(View.VISIBLE);
+                                    sent.MessageIvDocCancel.setVisibility(View.VISIBLE);
+                                    Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                    intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
+                                    intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                                    intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                    mContext.startService(intent);
                                 }
                             });
                         }
+                    } else {
+
+                    }
+                } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
+                    if (file.exists()) {
+                        sent.MessageClMedia.setVisibility(View.VISIBLE);
+                        sent.MessageIvImage.setVisibility(View.VISIBLE);
+                        sent.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
+                        sent.MessageIbPlayVid.setVisibility(View.VISIBLE);
+                        sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                //Video
+                            }
+                        });
+                        if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
+                            sent.MessageCvVideoSize.setVisibility(View.VISIBLE);
+                            sent.MessageTvVideoSize.setVisibility(View.VISIBLE);
+                            sent.MessageTvVideoSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))) + " Kb ");
+                            sent.MessageCvVideoSize.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    cursor.moveToPosition(holder.getAdapterPosition());
+                                    Intent intent;
+                                    Log.i("FIRESTORAGE :::::::", "STARTING");
+                                    sent.MessageCvVideoSize.setVisibility(View.GONE);
+                                    sent.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
+                                    sent.MessageIvMediaCancel.setVisibility(View.VISIBLE);
+                                    Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                    intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
+                                    intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+
+                                    intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                    mContext.startService(intent);
+                                }
+                            });
+                        }
+                    } else {
+                        sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                MediaMissingDialog();
+                            }
+                        });
+                    }
 
                 }
             }
         } else {
             ReceivedMessageView viewHolder = (ReceivedMessageView) holder;
             MessageReceivedLayoutBinding received = viewHolder.receivedLayoutBinding;
-            if(cursor.getString(cursor.getColumnIndexOrThrow("msg"))!=null){
+            if (cursor.getString(cursor.getColumnIndexOrThrow("msg")) != null) {
                 received.MessageMsgBox.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
-            }else{
+            } else {
                 received.MessageMsgBox.setVisibility(View.GONE);
             }
             received.MessageMsgBox.setPadding(25, 1, 25, 1);
@@ -218,7 +237,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             }
             if (cursor.getInt(cursor.getColumnIndexOrThrow("media")) == 1) {
                 Log.i("RECEIVED::::", "MEDIA FOUND");
-                File file = UsefulFunctions.getFile(mContext, (cursor.getString(cursor.getColumnIndexOrThrow("mediaID")))
+                File file = UsefulFunctions.getFile(mContext, cursor.getString(cursor.getColumnIndexOrThrow("mediaID"))
                         , cursor.getInt(cursor.getColumnIndexOrThrow("mediaType"))
                         , cursor.getInt(cursor.getColumnIndexOrThrow("self")) == 1);
                 if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
@@ -228,7 +247,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                     received.MessageIvImage.setVisibility(View.VISIBLE);
                     if (file.exists()) {
                         received.MessageIvImage.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
-                    }else{
+                    } else {
                         received.MessageCvImageSize.setVisibility(View.VISIBLE);
                         received.MessageTvImageSize.setVisibility(View.VISIBLE);
                         received.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaType"))));
@@ -254,23 +273,60 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                     received.MessageCvDoc.setVisibility(View.VISIBLE);
                     if (file.exists()) {
                         received.MessageTvDocName.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")));
-                        received.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))));
+                        received.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))) + "KB");
                         int l = cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).lastIndexOf('.');
                         received.MessageTvDocType.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).substring(l + 1).toUpperCase());
                     } else {
+                        received.MessageIvDocDownload.setVisibility(View.VISIBLE);
+                        received.MessageIvDocDownload.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                received.MessageIvDocDownload.setVisibility(View.GONE);
+                                received.MessagePbDocDownloadProgress.setVisibility(View.VISIBLE);
+                                received.MessageIvDocCancel.setVisibility(View.VISIBLE);
 
-                         }
+                                Intent intent;
+                                Log.i("FIRESTORAGE :::::::", "STARTING");
+                                cursor.moveToPosition(holder.getAdapterPosition());
+                                intent = new Intent(mContext.getApplicationContext(), DownloadFileService.class);
+                                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+
+                                intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                mContext.startService(intent);
+                            }
+                        });
+                    }
                 } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
                     received.MessageClMedia.setVisibility(View.VISIBLE);
                     received.MessageIvImage.setVisibility(View.VISIBLE);
-                    received.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
-                    received.MessageIbPlayVid.setVisibility(View.VISIBLE);
-                    received.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            //Video
-                        }
-                    });
+                    if (file.exists()) {
+                        Log.i("VIDEO::::::", file.getName());
+                        received.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
+                        received.MessageIbPlayVid.setVisibility(View.VISIBLE);
+                        received.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                //Video
+                            }
+                        });
+                    } else {
+                        Log.i("VIDEO::::::", cursor.getString(cursor.getColumnIndexOrThrow("mediaID")));
+                        received.MessageIbPlayVid.setVisibility(View.GONE);
+                        received.MessageCvVideoSize.setVisibility(View.VISIBLE);
+                        received.MessageTvVideoSize.setVisibility(View.VISIBLE);
+                        received.MessageCvVideoSize.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent;
+                                Log.i("FIRESTORAGE :::::::", "STARTING");
+                                cursor.moveToPosition(holder.getAdapterPosition());
+                                intent = new Intent(mContext.getApplicationContext(), DownloadFileService.class);
+                                intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
+                                intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                mContext.startService(intent);
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -402,6 +458,29 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
 //                });
 //
 //    }
+
+    private void setMessageAndTimeView(RecyclerView.ViewHolder holder, TextView timeTv, TextView msgTv) {
+        Log.i("TIME VIEW:::::", msgTv.getText().toString());
+        ConstraintLayout constraintLayout = holder.itemView.findViewById(R.id.Message_cl);
+        int msgLen = msgTv.getText().toString().length();
+        int maxWid = msgTv.getMaxWidth();
+        if (timeTv.getText().toString().length() + (msgLen) - 1 <= 23) {
+            Log.i("TIME VIEW:::::", "<= 25");
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.connect(timeTv.getId(), ConstraintSet.LEFT,msgTv.getId(), ConstraintSet.LEFT,  2);
+            constraintSet.connect(timeTv.getId(), ConstraintSet.TOP,R.id.Message_cl,ConstraintSet.TOP,  5);
+            constraintSet.applyTo(constraintLayout);
+        } else if (timeTv.getText().toString().length() + (msgLen % 23) - 1 >= 20) {
+            Log.i("TIME VIEW:::::", ">= 25");
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.connect(timeTv.getId(), ConstraintSet.TOP, msgTv.getId(), ConstraintSet.BOTTOM, 2);
+            constraintSet.applyTo(constraintLayout);
+        }else {
+
+        }
+    }
 
     private void MediaMissingDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext.getApplicationContext());

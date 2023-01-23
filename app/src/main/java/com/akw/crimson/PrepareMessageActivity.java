@@ -24,7 +24,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.Adapters.PreparedMessage_List_RecyclerListAdapter;
+import com.akw.crimson.Backend.Adapters.PreparedMessage_List_RecyclerListAdapter;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.PreparedMessage;
 import com.akw.crimson.Backend.AppObjects.User;

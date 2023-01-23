@@ -113,10 +113,10 @@ public class UsefulFunctions {
 
     public static String saveImage(Context context, Bitmap bitmap, boolean sent) {
         File pictureFile = getOutputMediaFile(context, sent, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-        return saveImage(context, bitmap, sent, pictureFile);
+        return saveImage(bitmap, sent, pictureFile);
     }
 
-    public static String saveImage(Context context, Bitmap bitmap, boolean sent, File file) {
+    public static String saveImage(Bitmap bitmap, boolean sent, File file) {
         File pictureFile=file;
         if (pictureFile == null) {
             Log.d(TAG + "::::",

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.akw.crimson.Adapters.AllUserList_RecyclerListAdapter;
+import com.akw.crimson.Backend.Adapters.AllUserList_RecyclerListAdapter;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;

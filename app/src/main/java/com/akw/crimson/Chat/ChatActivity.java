@@ -1,6 +1,7 @@
 package com.akw.crimson.Chat;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -51,8 +53,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.Adapters.ChatView_RecyclerAdapter;
-import com.akw.crimson.Adapters.Chat_RecyclerAdapter;
+import com.akw.crimson.Backend.Adapters.ChatView_RecyclerAdapter;
+import com.akw.crimson.Backend.Adapters.Chat_RecyclerAdapter;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
@@ -166,10 +168,10 @@ public class ChatActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         final int[] code = {55, 66, 77, 88, 99, 44, 33, 22, 11};
+        Log.i("CAMERA:::::",data.getData()+"");
         if (resultCode == RESULT_OK && data != null && data.getData() != null) {
 
             Log.i("RESULT:::::", data.getData() + "");
-
             if (requestCode == code[0] || requestCode==code[1]|| requestCode==code[2]|| requestCode==code[3]||requestCode==code[8]) {
                 if (ContextCompat.checkSelfPermission(
                         this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
@@ -182,12 +184,25 @@ public class ChatActivity extends BaseActivity {
                 }
             }
             if (requestCode == code[1]) {
-                Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
-                File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-                UsefulFunctions.saveImage(this, bitmap, true, file);
+                Uri uri = data.getData();
+                ContentResolver cR = this.getContentResolver();
+                File file;
+                Message message;
+                if(cR.getType(uri).startsWith("video/")){
+                    file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
+                    UsefulFunctions.saveFile(this,data.getData(), file);
 
-                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                    message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                            , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
+
+                } else{
+                    file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                    Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
+                    UsefulFunctions.saveImage( bitmap, true, file);
+
+                message = new Message(SharedPrefManager.getLocalUserID(), userID, null
                         , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                }
 
                 dbViewModel.insertMessage(message);
 
@@ -201,10 +216,26 @@ public class ChatActivity extends BaseActivity {
                         , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT);
 
                 dbViewModel.insertMessage(message);
+            }else if(requestCode==code[3]){
+                File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
+                UsefulFunctions.saveFile(this,data.getData(),file);
+                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
+
+                dbViewModel.insertMessage(message);
             }
             Log.i("TAG ::::", "DONE");
 
 
+        }
+        else if(requestCode==code[2]){
+            File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
+            UsefulFunctions.saveImage((Bitmap) data.getExtras().get("data"),true,file);
+            Log.i("CAMERA:::::",data.getData()+"");
+            Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                    , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
+
+            dbViewModel.insertMessage(message);
         }
     }
 
@@ -681,6 +712,13 @@ public class ChatActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 attachmentPopUp();
+            }
+        });
+        ib_camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent camera_intent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(camera_intent, 77);
             }
         });
     }

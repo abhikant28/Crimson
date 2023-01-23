@@ -19,9 +19,9 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.akw.crimson.Adapters.AllUserList_RecyclerListAdapter;
-import com.akw.crimson.Adapters.ChatList_MessageSearch_RecyclerListAdapter;
-import com.akw.crimson.Adapters.ChatList_RecyclerListAdapter;
+import com.akw.crimson.Backend.Adapters.AllUserList_RecyclerListAdapter;
+import com.akw.crimson.Backend.Adapters.ChatList_MessageSearch_RecyclerListAdapter;
+import com.akw.crimson.Backend.Adapters.ChatList_RecyclerListAdapter;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;

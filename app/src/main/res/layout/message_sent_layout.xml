@@ -19,6 +19,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/Message_cl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -29,7 +30,8 @@
                 android:backgroundTint="#1565C0"
                 android:gravity="end"
                 android:orientation="vertical"
-                android:padding="5sp"
+                android:paddingHorizontal="5sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -44,6 +46,7 @@
                         android:layout_width="270sp"
                         android:layout_height="270sp"
                         android:background="#D8D6D6"
+                        android:scaleType="centerCrop"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -93,6 +96,7 @@
                             android:textStyle="bold"
                             android:visibility="gone" />
                     </androidx.cardview.widget.CardView>
+
                     <androidx.cardview.widget.CardView
                         android:id="@+id/Message_cv_videoSize"
                         android:layout_width="wrap_content"
@@ -159,6 +163,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20sp"
                             android:text="File Name"
+                            android:maxEms="10"
+                            android:maxLines="1"
                             android:textColor="@color/white"
                             app:layout_constraintStart_toEndOf="@+id/Message_iv_docIcon"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -188,6 +194,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="15sp"
+                            android:visibility="gone"
                             android:src="@drawable/ic_baseline_upload_24"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -196,6 +203,7 @@
                         <ProgressBar
                             android:id="@+id/Message_pb_docDownloadProgress"
                             style="?android:attr/progressBarStyle"
+                            android:visibility="gone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             app:layout_constraintBottom_toBottomOf="@+id/Message_iv_docCancel"
@@ -208,6 +216,7 @@
                             android:id="@+id/Message_iv_docCancel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:visibility="gone"
                             android:layout_marginEnd="15sp"
                             android:src="@drawable/ic_outline_cancel_24"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -217,18 +226,21 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/Message_msgBox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:maxWidth="270sp"
-                    android:text="Message"
-                    android:textIsSelectable="true"
-                    android:textColor="@color/white"
-                    android:textSize="18dp" />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/Message_msgBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:maxWidth="270sp"
+                android:text="Message"
+                android:textColor="@color/white"
+                android:textIsSelectable="true"
+                android:textSize="18dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/Message_LL" />
 
             <TextView
                 android:id="@+id/Message_time"
@@ -238,7 +250,8 @@
                 android:textColor="#AAA7A7"
                 android:textSize="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/Message_msgBox" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
