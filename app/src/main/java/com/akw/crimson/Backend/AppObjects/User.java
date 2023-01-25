@@ -7,7 +7,11 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.DAOs.DataConverter;
+import com.akw.crimson.Backend.UsefulFunctions;
+
+import java.util.ArrayList;
 
 @Entity(tableName = "user_table")
 public class User {
@@ -16,14 +20,13 @@ public class User {
     @NonNull
     private String user_id;
     private String _id;
-    private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about,wallpaper;
-    private boolean unread, connected, blocked;
+    private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about, wallpaper;
+    private boolean unread, connected, blocked, mute;
     private int unread_count = 0;
     @TypeConverters(DataConverter.class)
-    private String[] groups;
-    String[] medias;
+    private ArrayList<String> groups, medias, links, docs;
 
-    public User(String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected) {
+    public User(@NonNull String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected) {
         this.user_id = user_id;
         this.name = name;
         this.displayName = displayName;
@@ -32,7 +35,7 @@ public class User {
         this.connected = connected;
     }
 
-    public User(String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected) {
+    public User(@NonNull String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected) {
         this.user_id = user_id;
         this.name = name;
         this.userName = username;
@@ -42,35 +45,59 @@ public class User {
         this.connected = connected;
     }
 
-    public String getAbout() {
-        return about;
+    public int getGroupCount() {
+        return getGroups().size();
     }
 
-    public void setAbout(String about) {
-        this.about = about;
+    public int getMediaCount() {
+        return getMedias().size() + getDocs().size() + getLinks().size();
     }
 
-    public boolean isBlocked() {
-        return blocked;
+    public int getDocCount() {
+        return docs.size();
     }
 
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
+    public int getLinksCount() {
+        return links.size();
     }
 
-    public String[] getGroups() {
-        return groups;
+    public int getPicMediaCount() {
+        return links.size();
     }
 
-    public void setGroups(String[] groups) {
-        this.groups = groups;
+    public boolean addMedia(String id) {
+        return medias.add(id);
     }
 
-    public String[] getMedias() {
-        return medias;
+    public boolean removeMedia(String id) {
+        return medias.remove(id);
     }
 
-    public void setMedias(String[] medias) {
+    public boolean addDoc(String id) {
+        return docs.add(id);
+    }
+
+    public boolean removeDoc(String id) {
+        return docs.remove(id);
+    }
+
+    public boolean addLink(String id) {
+        return links.add(id);
+    }
+
+    public boolean removeLink(String id) {
+        return links.remove(id);
+    }
+
+    public boolean addGroup(String id) {
+        return groups.add(id);
+    }
+
+    public boolean removeGroup(String id) {
+        return groups.remove(id);
+    }
+
+    public void setMedias(ArrayList<String> medias) {
         this.medias = medias;
     }
 
@@ -96,6 +123,38 @@ public class User {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getAbout() {
+        return about;
+    }
+
+    public void setAbout(String about) {
+        this.about = about;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    public ArrayList<String> getGroups() {
+        if(groups==null)
+            groups=new ArrayList<>();
+        return groups;
+    }
+
+    public void setGroups(ArrayList<String> groups) {
+        this.groups = groups;
+    }
+
+    public ArrayList<String> getMedias() {
+        if(medias==null)
+            medias= new ArrayList<>();
+        return medias;
     }
 
     public boolean isConnected() {
@@ -126,20 +185,16 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-//
-//
-//    @Ignore
-//    public User(String user_id, String last_msg, String name, String pic, String phoneNumber,boolean connected) {
-//        this.user_id = user_id;
-//        this.last_msg = last_msg;
-//        this.name = name;
-//        this.pic=pic;
-//        this.phoneNumber=phoneNumber;
-//        this.connected=connected;
-//    }
-
     public String getPic() {
+        if (pic == null)
+            return Constants.DEFAULT_PROFILE_PIC;
         return pic;
+    }
+
+    public Bitmap getPicBitmap() {
+        if (pic == null)
+            return UsefulFunctions.decodeImage(Constants.DEFAULT_PROFILE_PIC);
+        return UsefulFunctions.decodeImage(pic);
     }
 
     public String getUser_id() {
@@ -148,6 +203,16 @@ public class User {
 
     public void setUser_id(String user_id) {
         this.user_id = user_id;
+    }
+
+    public ArrayList<String> getLinks() {
+        if(links==null)
+            links=new ArrayList<>();
+        return links;
+    }
+
+    public void setLinks(ArrayList<String> links) {
+        this.links = links;
     }
 
     public String getLast_msg() {
@@ -182,6 +247,16 @@ public class User {
         this.time = time;
     }
 
+    public ArrayList<String> getDocs() {
+        if(docs==null)
+            docs=new ArrayList<>();
+        return docs;
+    }
+
+    public void setDocs(ArrayList<String> docs) {
+        this.docs = docs;
+    }
+
     public String getDisplayName() {
         return displayName;
     }
@@ -196,5 +271,13 @@ public class User {
 
     public void setWallpaper(String wallpaper) {
         this.wallpaper = wallpaper;
+    }
+
+    public boolean isMute() {
+        return mute;
+    }
+
+    public void setMute(boolean mute) {
+        this.mute = mute;
     }
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DF1C43"
+    android:background="@color/black"
     tools:context=".Chat.ChatActivity">
 
     <LinearLayout
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="#DF1C43"
+            android:background="@color/black"
             app:stackFromEnd="true"
             tools:listitem="@layout/message_layout" />
 

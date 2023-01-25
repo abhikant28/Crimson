@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context=".Preferences.ProfileUpdate_BottomSheet_DialogBox"
-    android:background="#DC143C"
+    android:background="@color/black"
     android:paddingHorizontal="20sp"
     android:paddingVertical="10sp">
 

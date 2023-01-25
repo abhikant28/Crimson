@@ -7,7 +7,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -52,6 +57,37 @@ public class UsefulFunctions {
         return new String(Base64.decode(input, Base64.DEFAULT));
     }
 
+    public static Bitmap getCircularBitmap(Bitmap bitmap) {
+        Bitmap output;
+
+        if (bitmap.getWidth() > bitmap.getHeight()) {
+            output = Bitmap.createBitmap(bitmap.getHeight(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        } else {
+            output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getWidth(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        float r = 0;
+
+        if (bitmap.getWidth() > bitmap.getHeight()) {
+            r = bitmap.getHeight() / 2;
+        } else {
+            r = bitmap.getWidth() / 2;
+        }
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawCircle(r, r, r, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return output;
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static Bitmap resizeAndCompressImage(Context context, Uri uri) {
@@ -103,6 +139,43 @@ public class UsefulFunctions {
                 imageData = outputStream.toByteArray();
                 size = imageData.length / 1024;
             }
+            return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static Bitmap getImageFromUri(Context context, Uri uri) {
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(uri);
+            Bitmap image = BitmapFactory.decodeStream(inputStream);
+            ExifInterface exifIn = new ExifInterface(context.getContentResolver().openInputStream(uri));
+            int orientation = exifIn.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            int width = image.getWidth();
+            int height = image.getHeight();
+            int side= Math.min(width,height);
+            float ratio = (float) width / height;
+
+            Matrix matrix = new Matrix();
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    matrix.setRotate(90);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    matrix.setRotate(180);
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    matrix.setRotate(270);
+                    break;
+                default:
+                    break;
+            }
+            Bitmap resized=image;
+            resized = Bitmap.createBitmap(resized, 0, 0, side,side, matrix, true);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            resized.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            byte[] imageData = outputStream.toByteArray();
             return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
         } catch (Exception e) {
             e.printStackTrace();
@@ -167,6 +240,11 @@ public class UsefulFunctions {
                 init = "AUD";
                 format = ".mp3";
                 break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_WALLPAPER:
+                folder = "Wallpapers";
+                init = "IMG";
+                format = ".jpg";
+                break;
         }
         String fol = sent ? "/Sent" : "";
         File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
@@ -227,7 +305,7 @@ public class UsefulFunctions {
                 "" +
                 "/"
                 + context.getApplicationContext().getPackageName()
-                + "/Crimson " + folder + subFolder;
+                + "/Media/Crimson " + folder + subFolder;
 
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
@@ -283,5 +361,6 @@ public class UsefulFunctions {
         }
         return result;
     }
+
 
 }

@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.Constants;
+import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.google.android.gms.tasks.OnCanceledListener;
@@ -86,6 +87,7 @@ public class UploadFileService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        new SharedPrefManager(getApplicationContext());
         storageRef = FirebaseStorage.getInstance().getReference();
         db=Communicator.localDB;
         assert intent != null;
@@ -98,7 +100,7 @@ public class UploadFileService extends IntentService {
         Log.i("UPLOAD::::","onHandleIntent");
 
 
-            String fileName = msg.getMediaID();
+            String fileName = SharedPrefManager.getLocalUserID() +"_"+msg.getMediaID();
             Log.i("UPLOAD MSG ID:::::", fileName);
 
             String folder="";

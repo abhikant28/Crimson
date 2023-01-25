@@ -2,8 +2,10 @@ package com.akw.crimson.Backend.Database;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Environment;
 
 import androidx.annotation.NonNull;
+import androidx.room.AutoMigration;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.Database;
@@ -16,7 +18,18 @@ import com.akw.crimson.Backend.Database.DAOs.DataConverter;
 import com.akw.crimson.Backend.Database.DAOs.UsersDao;
 import com.akw.crimson.Backend.Database.DAOs.MessagesDao;
 
-@Database(entities = {User.class, Message.class}, version=1)
+import java.io.File;
+
+@Database(
+        version = 1,
+        entities = {User.class, Message.class},
+        exportSchema = true)
+//        autoMigrations = {
+//                @AutoMigration(from = 1, to = 2)
+//
+//        }
+
+
 @TypeConverters({DataConverter.class})
 abstract class TheDatabase extends RoomDatabase{
 
@@ -25,10 +38,17 @@ abstract class TheDatabase extends RoomDatabase{
     public abstract MessagesDao messagesDao();
     public abstract UsersDao usersDao();
 
-
     public static synchronized TheDatabase getInstance(Context context){
         if(instance==null){
-            instance = Room.databaseBuilder(context.getApplicationContext(),TheDatabase.class,"AppDatabase")
+            String mediaStorageDir = Environment.getExternalStorageDirectory()
+                    + "/Android/media" +
+                    "" +
+                    "/"
+                    + context.getApplicationContext().getPackageName()
+                    + "/Databases";
+            new File(mediaStorageDir).mkdirs();
+            instance = Room.databaseBuilder(context.getApplicationContext()
+                            ,TheDatabase.class,"AppDatabase")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallBack)
                     .build();
@@ -57,8 +77,6 @@ abstract class TheDatabase extends RoomDatabase{
         }
         @Override
         protected Void doInBackground(Void... voids) {
-
-
 
             return null;
         }

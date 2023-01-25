@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DC143C"
+    android:background="@color/black"
     tools:context=".Registration.Registration_Profile">
 
     <TextView
@@ -12,8 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:textColor="@color/white"
         android:text="Registration "
+        android:textColor="@color/white"
         android:textSize="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,12 +51,12 @@
                 android:id="@+id/Registration_Email_tv_addPic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:elevation="2dp"
                 android:text="Add Profile Picture"
                 android:textAlignment="center"
                 android:textColor="#9E4242"
                 android:textSize="10dp"
                 android:textStyle="bold"
-                android:elevation="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -71,10 +71,10 @@
         android:layout_marginTop="40dp"
         android:background="@drawable/round_box_chat_message"
         android:backgroundTint="#FFFFFF"
-        android:paddingVertical="10dp"
-        android:paddingHorizontal="10dp"
-        android:textColor="#C31034"
         android:hint="Your Name                             "
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:textColor="#C31034"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/Registration_Email_cv_profilePic" />
@@ -86,24 +86,38 @@
         android:layout_marginTop="44dp"
         android:background="@drawable/round_box_chat_message"
         android:backgroundTint="#FFFFFF"
-        android:paddingVertical="10dp"
-        android:paddingHorizontal="10dp"
-        android:textColor="#C31034"
         android:hint="Email                                      "
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:textColor="#C31034"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_name" />
+
+    <EditText
+        android:id="@+id/Registration_Email_EditView_about"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_box_chat_message"
+        android:backgroundTint="#FFFFFF"
+        android:hint="About you                                "
+        android:layout_marginTop="44dp"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:textColor="#C31034"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_Mail" />
 
     <Button
         android:id="@+id/Registration_Email_Button_Verify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:backgroundTint="#857E7E"
         android:text="  Submit  "
-
-        android:backgroundTint="#FA1644"
+        android:layout_marginTop="44dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/Registration_Email_EditView_Mail" />
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_about" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

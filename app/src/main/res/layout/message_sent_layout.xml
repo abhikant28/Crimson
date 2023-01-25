@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp"
     android:id="@+id/Message_layout"
-    android:background="#DC143C"
+    android:background="@color/black"
     app:flow_horizontalAlign="end">
 
     <androidx.cardview.widget.CardView
@@ -33,7 +34,22 @@
                 android:paddingHorizontal="5sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="WebViewLayout">
+                
+                <WebView
+                    android:id="@+id/Message_wv_LinkView"
+                    android:layout_width="match_parent"
+                    android:layout_height="400sp"
+                    android:visibility="gone"/>
+                <Button
+                    android:id="@+id/Message_b_viewLink"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="View Post"
+                    android:visibility="gone"
+                    android:background="@color/white"
+                    android:drawableStart="@drawable/ic_baseline_attach_file_24"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/Message_cl_media"
@@ -112,7 +128,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="5sp"
-                            android:drawableStart="@drawable/ic_baseline_download_24"
+                            android:drawableStart="@drawable/ic_baseline_upload_24"
                             android:text=" Video Size"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -125,10 +141,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintBottom_toBottomOf="@id/Message_iv_mediaCancel"
+                        app:layout_constraintEnd_toEndOf="@id/Message_iv_mediaCancel"
+                        app:layout_constraintStart_toStartOf="@id/Message_iv_mediaCancel"
+                        app:layout_constraintTop_toTopOf="@id/Message_iv_mediaCancel" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

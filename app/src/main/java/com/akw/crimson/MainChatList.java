@@ -191,7 +191,7 @@ public class MainChatList extends AppCompatActivity {
         searchUserList_rvAdapter.setOnItemCLickListener(new AllUserList_RecyclerListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(User User) {
-                Intent intent = new Intent(getApplicationContext(), ViewProfile.class);
+                Intent intent = new Intent(getApplicationContext(), ProfileView.class);
                 intent.putExtra(Constants.KEY_INTENT_USERID, User.getUser_id());
                 startActivity(intent);
             }
@@ -214,7 +214,7 @@ public class MainChatList extends AppCompatActivity {
 
     private void setView() {
         ab = getSupportActionBar();
-        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#DC143C"));
+        ColorDrawable colorDrawable = new ColorDrawable(Color.BLACK);
         ab.setBackgroundDrawable(colorDrawable);
 
         tv_noResults = findViewById(R.id.MainChat_tv_Search_noResultsFound);

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DF1C43"
+    android:background="@color/black"
     tools:context=".StartNew">
 
     <LinearLayout
@@ -18,7 +18,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#DC143C"
+            android:background="@color/black"
             android:padding="10dp">
 
             <androidx.cardview.widget.CardView
@@ -49,11 +49,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:layout_marginLeft="15dp"
                 android:text="Start a New Group"
                 android:textColor="@color/white"
                 android:textSize="20dp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/startNew_cv_createGroup"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -61,7 +61,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#DC143C"
+            android:background="@color/black"
             android:padding="10dp">
 
             <androidx.cardview.widget.CardView
@@ -92,11 +92,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:layout_marginLeft="15dp"
                 android:text="Create new Contact"
                 android:textColor="@color/white"
                 android:textSize="20dp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/startNew_cv_createContact"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -106,7 +106,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#DC143C"
+            android:background="@color/black"
             android:padding="10dp">
 
             <androidx.cardview.widget.CardView
@@ -137,11 +137,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:layout_marginLeft="15dp"
                 android:text="Start a New Bot"
                 android:textColor="@color/white"
                 android:textSize="20dp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/MainChatList_Item_CardView_UserPic"
                 app:layout_constraintTop_toTopOf="parent" />
 

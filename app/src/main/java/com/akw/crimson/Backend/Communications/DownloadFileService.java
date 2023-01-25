@@ -62,7 +62,7 @@ public class DownloadFileService extends IntentService {
                 break;
         }
         File outFile;
-        final StorageReference fileRef = storageRef.child(folder+"/" + msg.getMediaID());
+        final StorageReference fileRef = storageRef.child(folder+"/" + msg.getUser_id()+"_"+msg.getMediaID());
         if (msg.getMediaType()==Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT){
             String docName = msg.getMediaID().substring(Math.min(msg.getMediaID().length() - 1, msg.getMediaID().indexOf('_') + 1));
             outFile = UsefulFunctions.getOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(), docName);
@@ -97,7 +97,7 @@ public class DownloadFileService extends IntentService {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.i("DOWNLOAD::::","FAILED- "+e);
+                Log.i("DOWNLOAD::::", msg.getUser_id()+"_"+msg.getMediaID()+"FAILED- "+e);
                 // Send the result
                 resultData.putInt("result", RESULT_FAIL);
                 receiver.send(RESULT_FAIL, resultData);

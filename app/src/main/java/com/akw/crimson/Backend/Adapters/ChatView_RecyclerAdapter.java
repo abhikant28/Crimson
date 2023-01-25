@@ -12,14 +12,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -38,6 +41,10 @@ import com.akw.crimson.databinding.MessageReceivedLayoutBinding;
 import com.akw.crimson.databinding.MessageSentLayoutBinding;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
@@ -85,8 +92,26 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             SentMessageView viewHolder = (SentMessageView) holder;
             MessageSentLayoutBinding sent = viewHolder.sentMsgBinding;
             if (cursor.getString(cursor.getColumnIndexOrThrow("msg")) != null) {
-                sent.MessageMsgBox.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
+                String msg=cursor.getString(cursor.getColumnIndexOrThrow("msg"));
+                msg.replaceAll("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "<a href='$0'>$0</a>")
+                        .replaceAll("[^\\s]+@[^\\s]+", "<a href='mailto:$0'>$0</a>")
+                        .replaceAll("(\\d{3}[-\\.\\s]??\\d{3}[-\\.\\s]??\\d{4}|\\(\\d{3}\\)\\s*\\d{3}[-\\.\\s]??\\d{4}|\\d{3}[-\\.\\s]??\\d{4})", "<a href='tel:$0'>$0</a>");
+                sent.MessageMsgBox.setText(msg);
                 sent.MessageMsgBox.setPadding(25, 1, 25, 1);
+                sent.MessageMsgBox.setMovementMethod(LinkMovementMethod.getInstance());
+
+                List<String> igLinks = getInstagramLinks(msg);
+                if(igLinks.size()!=0){
+                 sent.MessageBViewLink.setVisibility(View.VISIBLE);
+                 sent.MessageBViewLink.setOnClickListener(new View.OnClickListener() {
+                     @Override
+                     public void onClick(View view) {
+                         sent.MessageBViewLink.setVisibility(View.GONE);
+                         sent.MessageWvLinkView.setVisibility(View.VISIBLE);
+                         openInstagramPostInWebView(igLinks.get(0),sent.MessageWvLinkView);
+                     }
+                 });
+                }
 //                setMessageAndTimeView(holder, sent.MessageTime, sent.MessageMsgBox);
             } else {
                 sent.MessageMsgBox.setVisibility(View.GONE);
@@ -96,7 +121,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             sent.MessageClMedia.setVisibility(View.GONE);
             sent.MessageCvDoc.setVisibility(View.GONE);
             if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1 && !unreadFound) {
-                sent.MessageLL.addView(unreadDialog(), 0);
+                sent.MessageLayout.addView(unreadDialog(), 0);
                 unreadFound = true;
             }
             if (cursor.getInt(cursor.getColumnIndexOrThrow("media")) == 1) {
@@ -224,7 +249,14 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             ReceivedMessageView viewHolder = (ReceivedMessageView) holder;
             MessageReceivedLayoutBinding received = viewHolder.receivedLayoutBinding;
             if (cursor.getString(cursor.getColumnIndexOrThrow("msg")) != null) {
-                received.MessageMsgBox.setText(cursor.getString(cursor.getColumnIndexOrThrow("msg")));
+                String msg=cursor.getString(cursor.getColumnIndexOrThrow("msg"));
+                msg.replaceAll("(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]", "<a href='$0'>$0</a>")
+                        .replaceAll("[^\\s]+@[^\\s]+", "<a href='mailto:$0'>$0</a>")
+                        .replaceAll("(\\d{3}[-\\.\\s]??\\d{3}[-\\.\\s]??\\d{4}|\\(\\d{3}\\)\\s*\\d{3}[-\\.\\s]??\\d{4}|\\d{3}[-\\.\\s]??\\d{4})", "<a href='tel:$0'>$0</a>");
+                received.MessageMsgBox.setText(msg);
+                received.MessageMsgBox.setPadding(25, 1, 25, 1);
+                received.MessageMsgBox.setMovementMethod(LinkMovementMethod.getInstance());
+//                setMessageAndTimeView(holder, sent.MessageTime, sent.MessageMsgBox);
             } else {
                 received.MessageMsgBox.setVisibility(View.GONE);
             }
@@ -277,11 +309,11 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         int l = cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).lastIndexOf('.');
                         received.MessageTvDocType.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).substring(l + 1).toUpperCase());
                     } else {
-                        received.MessageIvDocDownload.setVisibility(View.VISIBLE);
-                        received.MessageIvDocDownload.setOnClickListener(new View.OnClickListener() {
+                        received.MessageIvDocUpload.setVisibility(View.VISIBLE);
+                        received.MessageIvDocUpload.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                received.MessageIvDocDownload.setVisibility(View.GONE);
+                                received.MessageIvDocUpload.setVisibility(View.GONE);
                                 received.MessagePbDocDownloadProgress.setVisibility(View.VISIBLE);
                                 received.MessageIvDocCancel.setVisibility(View.VISIBLE);
 
@@ -314,7 +346,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         received.MessageIbPlayVid.setVisibility(View.GONE);
                         received.MessageCvVideoSize.setVisibility(View.VISIBLE);
                         received.MessageTvVideoSize.setVisibility(View.VISIBLE);
-                        received.MessageCvVideoSize.setOnClickListener(new View.OnClickListener() {
+                        received.MessageTvVideoSize.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Intent intent;
@@ -338,43 +370,6 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         return cursor.getCount();
     }
 
-//    private void checkFirestore(String msgID, String fileName, CardView cvSize, TextView tvSize
-//            , ProgressBar progressBar, ImageView ivCancel, View viewView, boolean upload, int type) {
-//
-//        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-//        String fileID = msgID + (type == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT ? "_" + fileName : "");
-//        Log.i("MEDIA ID:::::", fileID);
-//        StorageReference fileRef = storageRef.child(fileID);
-////        Bitmap b= BitmapFactory.decodeFile(fileName);
-////        ivImage.setImageBitmap(b);
-//
-//        fileRef.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-//            @Override
-//            public void onSuccess(StorageMetadata storageMetadata) {
-//                // File exists
-//                long fileSize = storageMetadata.getSizeBytes() / 1024;
-//                if (type == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
-//                    TextView nameTv = (TextView) viewView;
-//                    nameTv.setText(fileName);
-//                }
-//                cvSize.setVisibility(View.VISIBLE);
-//                tvSize.setVisibility(View.VISIBLE);
-//                tvSize.setText(String.valueOf(fileSize));
-//                tvSize.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-////                        if (listener != null)
-////                            listener.OnItemClick(msgID, fileName, cvSize, tvSize, progressBar, ivCancel, view, upload);
-//                    }
-//                });
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception exception) {
-//                //MediaMissingDialog();
-//            }
-//        });
-//    }
 
     private ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
         @Override
@@ -386,78 +381,35 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             }
         }
     };
-//
-//    private void beginDownload(String fileName, ImageView ivCancel, ProgressBar progressBar, int mediaType
-//            , CardView cvSize, TextView tvSize, ImageView ivImage) {
-//        cvSize.setVisibility(View.GONE);
-//        tvSize.setVisibility(View.GONE);
-//        progressBar.setVisibility(View.VISIBLE);
-//        ivCancel.setVisibility(View.VISIBLE);
-//
-//        File localFile;
-//        if (mediaType != Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
-//            localFile = UsefulFunctions.getOutputMediaFile(mContext, false, mediaType);
-//        } else {
-//            localFile = UsefulFunctions.getOutputMediaFile(mContext, false, mediaType, fileName);
-//        }
-//        String folder = "";
-//        FirebaseStorage storage = FirebaseStorage.getInstance();
-//        StorageReference storageRef = storage.getReference();
-//        switch (mediaType) {
-//            case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
-//                folder = "images";
-//                break;
-//            case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
-//                folder = "videos";
-//                break;
-//            case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
-//                folder = "documents";
-//                break;
-//            case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
-//                folder = "audios";
-//                break;
-//        }
-//
-//        StorageReference fileRef = storageRef.child(folder + "/" + fileName);
-//
-//        fileRef.getBytes(Long.MAX_VALUE)
-//                .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-//                    @Override
-//                    public void onSuccess(byte[] bytes) {
-//                        // File downloaded successfully
-//                        Log.d("Download", "onSuccess: Downloaded file.");
-//                        FileOutputStream fos = null;
-//                        try {
-//                            fos = new FileOutputStream(localFile);
-//                            fos.write(bytes);
-//                            fos.close();
-//                            // Access the downloaded file
-//                            Log.d("Download", "onSuccess: File path: " + localFile.getAbsolutePath());
-//                            Log.d("Download", "onSuccess: File size: " + localFile.length() + " bytes");
-//                            progressBar.setVisibility(View.GONE);
-//                            ivImage.setVisibility(View.VISIBLE);
-//                            ivImage.setImageBitmap(BitmapFactory.decodeFile(localFile.getAbsolutePath()));
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                        progressBar.setVisibility(View.GONE);
-//                        ivCancel.setVisibility(View.GONE);
-//                        fileRef.delete();
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        // Handle failed download
-//                        Log.e("Download", "onFailure: Failed to download file.", e);
-//                        localFile.delete();
-//                        progressBar.setVisibility(View.GONE);
-//                        ivCancel.setVisibility(View.GONE);
-//                        cvSize.setVisibility(View.VISIBLE);
-//                        tvSize.setVisibility(View.VISIBLE);
-//                    }
-//                });
-//
-//    }
+    public void openInstagramPostInWebView(String link, WebView webView) {
+        // Use a regular expression to extract the post ID from the link
+        String postId = getInstagramPostId(link);
+        String postUrl = null;
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl(postUrl);
+        if(postId != null) {
+             postUrl = "https://www.instagram.com/p/" + postId + "/";
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.loadUrl(postUrl);
+        } else {
+            Log.i("LINK:::::::", link+"___"+postId+"____"+postUrl);
+            Toast.makeText(webView.getContext(), "Invalid Instagram post link", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public String getInstagramPostId(String url) {
+        // Use a regular expression to match the post ID in the URL
+        Pattern pattern = Pattern.compile("instagram://(?:[a-z]+)/(?:[0-9]+)/([0-9]+)");
+        Matcher matcher = pattern.matcher(url);
+
+        // Check if the URL matches the pattern
+        if (matcher.find()) {
+            // Return the post ID if the pattern matches
+            return matcher.group(1);
+        } else {
+            // Return null if the pattern does not match
+            return null;
+        }
+    }
 
     private void setMessageAndTimeView(RecyclerView.ViewHolder holder, TextView timeTv, TextView msgTv) {
         Log.i("TIME VIEW:::::", msgTv.getText().toString());
@@ -480,6 +432,22 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         }else {
 
         }
+    }
+    public List<String> getInstagramLinks(String text) {
+        List<String> links = new ArrayList<>();
+        // Regular expression to match Instagram links
+        String pattern = "https?:\\/\\/(www\\.)?instagram\\.com\\/[A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\\.(?!\\.))){0,28}(?:[A-Za-z0-9_]))?";
+
+        // Use the regular expression to find all matches in the text
+        Pattern linkPattern = Pattern.compile(pattern);
+        Matcher matcher = linkPattern.matcher(text);
+
+        // Add each match to the list of links
+        while (matcher.find()) {
+            links.add(matcher.group());
+        }
+
+        return links;
     }
 
     private void MediaMissingDialog() {

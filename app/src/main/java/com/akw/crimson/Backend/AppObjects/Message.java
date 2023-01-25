@@ -142,7 +142,7 @@ public class Message {
         Gson gson = new Gson();
         Message msg = new Message(this);
         msg.user_id = selfID;
-        msg.setMediaID(msg_ID+"_"+mediaID);
+//        msg.setMediaID(msg_ID+"_"+mediaID);
         return gson.toJson(msg);
 //        return "[" + msg_ID + "," + selfID + "," + tag + "," + "\"" + msg.replaceAll("\"", "%q%").replaceAll(",", "%c%").replaceAll("_", "%u%") + "\"" + "," + media + "," + (mediaID == null ? "NULL" : mediaID) + "]";
     }

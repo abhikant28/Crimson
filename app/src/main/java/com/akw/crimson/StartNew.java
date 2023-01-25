@@ -216,7 +216,7 @@ public class StartNew extends BaseActivity {
         });
         ab = getSupportActionBar();
         ab.setTitle("Select Contact");
-        ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#DC143C"));
+        ColorDrawable colorDrawable = new ColorDrawable(Color.BLACK);
         ab.setBackgroundDrawable(colorDrawable);
     }
 }

@@ -9,9 +9,10 @@ import androidx.lifecycle.LiveData;
 
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
-import com.akw.crimson.Chat.ChatActivity;
+import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.DAOs.MessagesDao;
 import com.akw.crimson.Backend.Database.DAOs.UsersDao;
+import com.akw.crimson.Chat.ChatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,7 +37,7 @@ public class TheRepository {
         getChatList = usersDao.getChatList();
         getAllUsers = usersDao.getAllUsersList();
         pendingMessagesList = messagesDao.pendingMessages();
-        receivedMessagesList=messagesDao.receivedMessages();
+        receivedMessagesList = messagesDao.receivedMessages();
     }
 
     public void insertMessage(Message msg) {
@@ -44,10 +45,11 @@ public class TheRepository {
     }
 
     public void updateMessage(Message msg) {
-        new UpdateMessageAsyncTask(messagesDao).execute(msg);
+        new UpdateMessageAsyncTask(usersDao,messagesDao).execute(msg);
     }
+
     public void updateAllMessage(List<Message> msg) {
-        if(!msg.isEmpty()){
+        if (!msg.isEmpty()) {
             new UpdateMessageAllAsyncTask(messagesDao).execute(msg);
         }
     }
@@ -66,6 +68,7 @@ public class TheRepository {
         }
         return null;
     }
+
     public List<Message> searchInMessage(String query) {
         try {
             return new SearchInMessageAsyncTask(messagesDao).execute(query).get();
@@ -76,9 +79,10 @@ public class TheRepository {
         }
         return null;
     }
+
     public List<Message> searchInUserMessage(String query, String id) {
         try {
-            return new SearchInUserMessageAsyncTask(messagesDao).execute(new String[]{query,id}).get();
+            return new SearchInUserMessageAsyncTask(messagesDao).execute(new String[]{query, id}).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -86,6 +90,7 @@ public class TheRepository {
         }
         return null;
     }
+
     public LiveData<List<Message>> getPendingMessagesList() {
         return pendingMessagesList;
     }
@@ -172,8 +177,9 @@ public class TheRepository {
         protected Void doInBackground(Message... messages) {
             messagesDao.insert(messages[0]);
             User user = usersDao.getUser(messages[0].getUser_id());
-            Log.i("REPO USER ID ::::: ",messages[0].getUser_id());
-            if(messages[0].getMsg()!=null)user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15,messages[0].getMsg().length())));
+            Log.i("REPO USER ID ::::: ", messages[0].getUser_id());
+            if (messages[0].getMsg() != null)
+                user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15, messages[0].getMsg().length())));
             Calendar time = Calendar.getInstance();
             user.setTime(String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)) + ":" + String.format("%02d", time.get(Calendar.SECOND)));
             user.setDate(new SimpleDateFormat("yyyy/MM/dd").format(time.getTime()));
@@ -195,19 +201,31 @@ public class TheRepository {
 
     private static class UpdateMessageAsyncTask extends AsyncTask<Message, Void, Void> {
         private MessagesDao messagesDao;
+        private UsersDao usersDao;
 
-        private UpdateMessageAsyncTask(MessagesDao msgDao) {
+        private UpdateMessageAsyncTask(UsersDao usersDao, MessagesDao msgDao) {
             this.messagesDao = msgDao;
+            this.usersDao = usersDao;
         }
 
         @Override
         protected Void doInBackground(Message... messages) {
             messagesDao.update(messages[0]);
+            User user = usersDao.getUser(messages[0].getUser_id());
+            if(messages[0].isMedia()){
+                if(messages[0].getMediaType()== Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE || messages[0].getMediaType()==Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO || messages[0].getMediaType()==Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO)
+                    user.addMedia(messages[0].getMediaID());
+                else if(messages[0].getMediaType()== Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT)
+                    user.addDoc(messages[0].getMediaID());
+
+            }
+
             ChatActivity.updated = true;
             ChatActivity.updateID = messages[0].getUser_id();
             return null;
         }
     }
+
     private static class UpdateMessageAllAsyncTask extends AsyncTask<List<Message>, Void, Void> {
         private MessagesDao messagesDao;
 
@@ -221,6 +239,7 @@ public class TheRepository {
             return null;
         }
     }
+
     private static class GetMessageAsyncTask extends AsyncTask<String, Void, Message> {
         private MessagesDao messagesDao;
 
@@ -233,6 +252,7 @@ public class TheRepository {
             return messagesDao.getMessage(L_msg_ID[0]);
         }
     }
+
     private static class SearchInMessageAsyncTask extends AsyncTask<String, Void, List<Message>> {
         private MessagesDao messagesDao;
 
@@ -245,6 +265,7 @@ public class TheRepository {
             return messagesDao.searchInMessage(L_msg_ID[0]);
         }
     }
+
     private static class SearchInUserMessageAsyncTask extends AsyncTask<String, Void, List<Message>> {
         private MessagesDao messagesDao;
 
@@ -254,9 +275,10 @@ public class TheRepository {
 
         @Override
         protected List<Message> doInBackground(String... query) {
-            return messagesDao.searchInUserMessages(query[0],query[1]);
+            return messagesDao.searchInUserMessages(query[0], query[1]);
         }
     }
+
     private static class InsertUserAsyncTask extends AsyncTask<User, Void, Void> {
         private UsersDao dao;
 
@@ -313,6 +335,7 @@ public class TheRepository {
             return dao.getUser(strings[0]);
         }
     }
+
     private static class GetUserByNumAsyncTask extends AsyncTask<String, Void, User> {
         private UsersDao dao;
 
@@ -325,6 +348,7 @@ public class TheRepository {
             return dao.getUserByNum(strings[0]);
         }
     }
+
     private static class GetSearchUsersAsyncTask extends AsyncTask<String, Void, List<User>> {
         private UsersDao dao;
 
@@ -337,6 +361,7 @@ public class TheRepository {
             return dao.searchUserByText(strings[0]);
         }
     }
+
     private static class CheckForUserNumAsyncTask extends AsyncTask<String, Void, Boolean> {
         private UsersDao dao;
 
