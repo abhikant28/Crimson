@@ -252,7 +252,7 @@ public class UsefulFunctions {
                 "" +
                 "/"
                 + context.getApplicationContext().getPackageName()
-                + "/Crimson " + folder + fol);
+                + "/Media/Crimson " + folder + fol);
 
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
@@ -361,6 +361,5 @@ public class UsefulFunctions {
         }
         return result;
     }
-
 
 }

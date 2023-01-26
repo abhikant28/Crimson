@@ -31,10 +31,8 @@ import java.io.IOException;
 public class UploadFileService extends IntentService {
     private StorageReference storageRef;
     private TheViewModel db;
-    private Uri fileUri;
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_FAIL = 0;
-    public static final String EXTRA_URL = "extra_url";
     public static final String EXTRA_RECEIVER = "extra_receiver";
 
 
@@ -42,43 +40,6 @@ public class UploadFileService extends IntentService {
         super("UploadFileService");
     }
 
-
-//    public UploadFileService(Context context, String msgId, ProgressBar pb, TextView tv, CardView cv) {
-//        super("UploadFileService");
-//        this.db = Communicator.localDB;
-//        this.msg = db.getMessage(msgId);
-//        this.cxt = context;
-//        this.pb = pb;
-//        this.outFile = UsefulFunctions.getOutputMediaFile(cxt, msg.isSelf(), msg.getMediaType());
-//        this.tv = tv;
-//        this.cv = cv;
-//    }
-
-
-
-    private byte[] readFileToByteArray(File file) {
-        byte[] fileData = new byte[(int) file.length()];
-        DataInputStream dis = null;
-        try {
-            dis = new DataInputStream(new FileInputStream(file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
-            assert dis != null;
-            dis.readFully(fileData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return fileData;
-    }
-
-
-//    private String getFileExtension(Uri uri) {
-//        ContentResolver cR = getContentResolver();
-//        MimeTypeMap mime = MimeTypeMap.getSingleton();
-//        return mime.getExtensionFromMimeType(cR.getType(uri));
-//    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -137,69 +98,8 @@ public class UploadFileService extends IntentService {
                 resultData.putInt("result", RESULT_FAIL);
                 receiver.send(RESULT_FAIL, resultData);
                 stopSelf();
-            }).addOnCanceledListener(new OnCanceledListener() {
-                @Override
-                public void onCanceled() {
-                    Log.e("FileUploadService::::::", "Cancelled to upload file.");
-
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                    Log.i("PROGRESSS:::::::::", snapshot.getBytesTransferred()+"");
-                }
-            });
-
-//            Bitmap bitmap = null;
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            byte[] data;
-//            if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                    bitmap = UsefulFunctions.resizeAndCompressImage(this, fileUri);
-//                }
-//                assert bitmap != null;
-//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-//                data = baos.toByteArray();
-//
-//            } else {
-//                data = readFileToByteArray(new File(String.valueOf(fileUri)));
-//            }
-//
-//            File outFile;
-//            if (msg.getMediaType()==Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT){
-//                String docName = msg.getMediaID().substring(Math.min(msg.getMediaID().length() - 1, msg.getMediaID().indexOf('_') + 1));
-//
-//                outFile = UsefulFunctions.getOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(), docName);
-//            }else{
-//                outFile=UsefulFunctions.getOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType());
-//            }
-//            Bitmap finalBitmap = bitmap;
-//            fileRef.putBytes(data)
-//                    .addOnSuccessListener(taskSnapshot -> {
-//                        if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE && finalBitmap != null) {
-//                            String name = UsefulFunctions.saveImage(getApplicationContext(), finalBitmap, true, outFile);
-//                            if (name == null) {
-//                                //permission Missing
-//                                return;
-//                            } else {
-//                                msg.setMediaID(name);
-//                                msg.setStatus(0);
-//                            }
-//                            db.updateMessage(msg);
-//                        } else if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
-////                                        UsefulFunctions.saveVideo();
-//                        } else {
-////                                        UsefulFunctions.saveFile();
-//                        }
-//                        Log.d("FileUploadService", "File successfully uploaded: ");
-//                        stopSelf();
-//                    })
-//                    .addOnFailureListener(e -> {
-//                        resultData.putInt("result", RESULT_FAIL);
-//                        receiver.send(RESULT_FAIL, resultData);
-//                        Log.e("FileUploadService", "Failed to upload file.", e);
-//                        stopSelf();
-//                    });
+            }).addOnCanceledListener(() -> Log.e("FileUploadService::::::", "Cancelled to upload file."))
+                    .addOnProgressListener(snapshot -> Log.i("PROGRESSS:::::::::", snapshot.getBytesTransferred()+""));
         }
 
 

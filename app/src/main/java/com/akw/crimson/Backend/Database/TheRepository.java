@@ -14,7 +14,9 @@ import com.akw.crimson.Backend.Database.DAOs.MessagesDao;
 import com.akw.crimson.Backend.Database.DAOs.UsersDao;
 import com.akw.crimson.Chat.ChatActivity;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -120,15 +122,20 @@ public class TheRepository {
     }
 
     public User getUser(String user_ID) {
-        try {
-            return new GetUserAsyncTask(usersDao).execute(user_ID).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        int retryCount = 0;
+        while (retryCount < 3) {
+            try {
+                return new GetUserAsyncTask(usersDao).execute(user_ID).get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                Log.i("InterruptedException", e.toString());
+                retryCount++;
+            }
         }
         return null;
     }
+
 
     public User getUserByNum(String num) {
         try {
@@ -147,6 +154,22 @@ public class TheRepository {
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public List<Message> getUserMedia(String id) {
+        try {
+            return new GetUserMediaAsyncTask(usersDao).execute(id).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public List<Message> getUserMediaByType(String id, int[] types) {
+        try {
+            return new GetUserMediaByTypeAsyncTask(usersDao,types).execute(id).get();
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;
@@ -179,7 +202,7 @@ public class TheRepository {
             User user = usersDao.getUser(messages[0].getUser_id());
             Log.i("REPO USER ID ::::: ", messages[0].getUser_id());
             if (messages[0].getMsg() != null)
-                user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15, messages[0].getMsg().length())));
+                user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15, messages[0].getMsg().length())),messages[0].isMedia()?messages[0].getMediaType():Constants.KEY_MESSAGE_MEDIA_TYPE_NONE);
             Calendar time = Calendar.getInstance();
             user.setTime(String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)) + ":" + String.format("%02d", time.get(Calendar.SECOND)));
             user.setDate(new SimpleDateFormat("yyyy/MM/dd").format(time.getTime()));
@@ -360,6 +383,33 @@ public class TheRepository {
         protected List<User> doInBackground(String... strings) {
             return dao.searchUserByText(strings[0]);
         }
+    }
+    private static class GetUserMediaAsyncTask extends AsyncTask<String, Void, List<Message>> {
+        private UsersDao dao;
+
+        private GetUserMediaAsyncTask(UsersDao dao) {
+            this.dao = dao;
+        }
+
+        @Override
+        protected List<Message> doInBackground(String... strings) {
+            return dao.getUserMedia(strings[0]);
+        }
+    }
+    private static class GetUserMediaByTypeAsyncTask extends AsyncTask<String, Void, List<Message>> {
+        private UsersDao dao;
+        private int[] types;
+
+        public GetUserMediaByTypeAsyncTask(UsersDao dao, int[] types) {
+            this.dao = dao;
+            this.types = types;
+        }
+
+        @Override
+        protected List<Message> doInBackground(String... strings) {
+            return dao.getUserMediaByType(strings[0], types);
+        }
+
     }
 
     private static class CheckForUserNumAsyncTask extends AsyncTask<String, Void, Boolean> {

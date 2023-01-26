@@ -82,7 +82,9 @@ public class StartNew extends BaseActivity {
 
     private void connectToDb() {
         dbViewModel = ViewModelProviders.of(this).get(TheViewModel.class);
+        Log.i("DB:::::", "Acha");
         allUserList_recyclerListAdapter.submitList(dbViewModel.getAllUsersList().getValue());
+        Log.i("DB:::::", "Achaaaa");
         dbViewModel.getAllUsersList().observe(this, new Observer<List<User>>() {
             @Override
             public void onChanged(List<User> users) {

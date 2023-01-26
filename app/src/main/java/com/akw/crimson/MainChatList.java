@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -101,6 +102,8 @@ public class MainChatList extends AppCompatActivity {
                 startActivity(new Intent(this, PrepareMessageActivity.class));
                 break;
             case R.id.chatList_Menu_camera:
+                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(camera_intent, 77);
                 break;
             case R.id.chatList_Menu_payments:
                 break;

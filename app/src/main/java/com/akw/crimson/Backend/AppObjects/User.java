@@ -22,7 +22,7 @@ public class User {
     private String _id;
     private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about, wallpaper;
     private boolean unread, connected, blocked, mute;
-    private int unread_count = 0;
+    private int unread_count, last_msg_type = 0;
     @TypeConverters(DataConverter.class)
     private ArrayList<String> groups, medias, links, docs;
 
@@ -49,52 +49,52 @@ public class User {
         return getGroups().size();
     }
 
-    public int getMediaCount() {
+    public int getTotalMediaCount() {
         return getMedias().size() + getDocs().size() + getLinks().size();
     }
 
     public int getDocCount() {
-        return docs.size();
+        return getDocs().size();
     }
 
     public int getLinksCount() {
-        return links.size();
+        return getLinks().size();
     }
 
     public int getPicMediaCount() {
-        return links.size();
+        return getMedias().size();
     }
 
     public boolean addMedia(String id) {
-        return medias.add(id);
+        return getMedias().add(id);
     }
 
     public boolean removeMedia(String id) {
-        return medias.remove(id);
+        return getMedias().remove(id);
     }
 
     public boolean addDoc(String id) {
-        return docs.add(id);
+        return getDocs().add(id);
     }
 
     public boolean removeDoc(String id) {
-        return docs.remove(id);
+        return getDocs().remove(id);
     }
 
     public boolean addLink(String id) {
-        return links.add(id);
+        return getLinks().add(id);
     }
 
     public boolean removeLink(String id) {
-        return links.remove(id);
+        return getLinks().remove(id);
     }
 
     public boolean addGroup(String id) {
-        return groups.add(id);
+        return getGroups().add(id);
     }
 
     public boolean removeGroup(String id) {
-        return groups.remove(id);
+        return getGroups().remove(id);
     }
 
     public void setMedias(ArrayList<String> medias) {
@@ -142,8 +142,8 @@ public class User {
     }
 
     public ArrayList<String> getGroups() {
-        if(groups==null)
-            groups=new ArrayList<>();
+        if (groups == null)
+            groups = new ArrayList<>();
         return groups;
     }
 
@@ -152,8 +152,8 @@ public class User {
     }
 
     public ArrayList<String> getMedias() {
-        if(medias==null)
-            medias= new ArrayList<>();
+        if (medias == null)
+            medias = new ArrayList<>();
         return medias;
     }
 
@@ -206,8 +206,8 @@ public class User {
     }
 
     public ArrayList<String> getLinks() {
-        if(links==null)
-            links=new ArrayList<>();
+        if (links == null)
+            links = new ArrayList<>();
         return links;
     }
 
@@ -219,7 +219,8 @@ public class User {
         return last_msg;
     }
 
-    public void setLast_msg(String last_msg) {
+    public void setLast_msg(String last_msg, int last_msg_type) {
+        this.last_msg_type = last_msg_type;
         this.last_msg = last_msg;
     }
 
@@ -248,8 +249,8 @@ public class User {
     }
 
     public ArrayList<String> getDocs() {
-        if(docs==null)
-            docs=new ArrayList<>();
+        if (docs == null)
+            docs = new ArrayList<>();
         return docs;
     }
 
@@ -271,6 +272,18 @@ public class User {
 
     public void setWallpaper(String wallpaper) {
         this.wallpaper = wallpaper;
+    }
+
+    public int getLast_msg_type() {
+        return last_msg_type;
+    }
+
+    public void setLast_msg_type(int last_msg_type) {
+        this.last_msg_type = last_msg_type;
+    }
+
+    public void setLast_msg(String last_msg) {
+        this.last_msg = last_msg;
     }
 
     public boolean isMute() {

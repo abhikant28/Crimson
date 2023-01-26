@@ -63,6 +63,7 @@ public class Constants {
     public static final int KEY_MESSAGE_MEDIA_TYPE_WALLPAPER = 8;
     public static final String KEY_INTENT_LIST_SIZE = "listSize";
     public static final String KEY_FIRESTORE_USER_ABOUT = "about";
+    public static final int KEY_MESSAGE_MEDIA_TYPE_NONE = 0;
 
     public static HashMap<String, String> remoteMsgHeaders = null;
     public static JSONObject FcmJsonObject = null;

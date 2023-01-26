@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="10sp"
+    android:layout_marginStart="2sp"
+    android:backgroundTint="@color/black">
+<ImageView
+    android:id="@+id/mediaListItem_iv_media"
+    android:layout_width="80sp"
+    android:layout_height="80sp"
+    android:src="@drawable/ic_twotone_insert_photo_24"/>
+</androidx.cardview.widget.CardView>

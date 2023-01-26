@@ -43,7 +43,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -52,7 +51,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.Adapters.ChatView_RecyclerAdapter;
-import com.akw.crimson.Backend.Adapters.Chat_RecyclerAdapter;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
@@ -79,7 +77,6 @@ import java.util.Objects;
 
 public class ChatActivity extends BaseActivity {
 
-    private Chat_RecyclerAdapter chatAdapter;
     private ChatView_RecyclerAdapter chatViewAdapter;
     private RecyclerView chatRecyclerView;
     private ImageButton ib_send, ib_attach, ib_camera, ib_emoji;
@@ -158,10 +155,9 @@ public class ChatActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         final int[] code = {55, 66, 77, 88, 99, 44, 33, 22, 11};
-        Log.i("CAMERA:::::", data.getData() + "");
-        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+        Message message = null;
+        if (resultCode == RESULT_OK && data.getData() != null) {
 
-            Log.i("RESULT:::::", data.getData() + "");
             if (requestCode == code[0] || requestCode == code[1] || requestCode == code[2] || requestCode == code[3] || requestCode == code[8]) {
                 if (ContextCompat.checkSelfPermission(
                         this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
@@ -177,7 +173,6 @@ public class ChatActivity extends BaseActivity {
                 Uri uri = data.getData();
                 ContentResolver cR = this.getContentResolver();
                 File file;
-                Message message;
                 if (cR.getType(uri).startsWith("video/")) {
                     file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
                     UsefulFunctions.saveFile(this, data.getData(), file);
@@ -194,37 +189,40 @@ public class ChatActivity extends BaseActivity {
                             , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
                 }
 
-                dbViewModel.insertMessage(message);
 
             } else if (requestCode == code[0]) {
                 String f = UsefulFunctions.getFileName(this, data.getData());
-                Log.i("DOCUMENT ::::::", "_" + data.getData());
-                Log.i("DOCUMENT :::::", f);
+
                 File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, f);
                 UsefulFunctions.saveFile(this, data.getData(), file);
-                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
                         , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT);
 
-                dbViewModel.insertMessage(message);
             } else if (requestCode == code[3]) {
                 File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
                 UsefulFunctions.saveFile(this, data.getData(), file);
-                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
                         , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
 
+            } else if (requestCode == code[2]) {
+                File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                UsefulFunctions.saveImage(imageBitmap, true, file);
+                Log.i("CAMERA:::::", data.getData() + "");
+                message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+
+            }
+            if (message != null) {
+                if (message.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
+                    user.addDoc(message.getMediaID());
+                } else {
+                    user.addMedia(message.getMediaID());
+                }
+                dbViewModel.updateUser(user);
                 dbViewModel.insertMessage(message);
             }
-            Log.i("TAG ::::", "DONE");
-
-
-        } else if (requestCode == code[2]) {
-            File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
-            UsefulFunctions.saveImage((Bitmap) data.getExtras().get("data"), true, file);
-            Log.i("CAMERA:::::", data.getData() + "");
-            Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
-                    , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
-
-            dbViewModel.insertMessage(message);
         }
     }
 
@@ -241,7 +239,9 @@ public class ChatActivity extends BaseActivity {
                 startActivity(new Intent(this, PrepareMessageActivity.class));
                 break;
             case R.id.chat_menu_profile:
-                startActivity(new Intent(this, ProfileView.class));
+                Intent i = new Intent(this, ProfileView.class);
+                i.putExtra(Constants.KEY_INTENT_USERID, userID);
+                startActivity(i);
 
         }
         return true;
@@ -259,7 +259,6 @@ public class ChatActivity extends BaseActivity {
         user = dbViewModel.getUser(getIntent().getStringExtra(Constants.KEY_INTENT_USERID));
         userID = user.getUser_id();
 
-        //Log.i("USER_ID", user.get_id());
         setMyActionBar();
         setClicks();
 
@@ -275,7 +274,6 @@ public class ChatActivity extends BaseActivity {
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             if (resultCode == DownloadFileService.RESULT_SUCCESS) {
                 Log.i("RESULT RECEIVER::::::", "_________");
-
             } else {
                 // Download failed
             }
@@ -290,7 +288,6 @@ public class ChatActivity extends BaseActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_GET_CONTENT);
-//                intent.setType("image/* video/*");
         final int[] code = {55, 66, 77, 88, 99, 44, 33, 22, 11};
         popupView.findViewById(R.id.attachment_popup_ll_gallery).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,7 +304,6 @@ public class ChatActivity extends BaseActivity {
         popupView.findViewById(R.id.attachment_popup_ll_audio).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("CLICKED::::", "GALLERY");
                 String[] mimetypes = {"audio/3gp", "audio/AMR", "audio/mp3"};
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
                 intent.setType("audio/*");
@@ -321,8 +317,6 @@ public class ChatActivity extends BaseActivity {
         popupView.findViewById(R.id.attachment_popup_ll_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Log.i("CLICKED::::", "GALLERY");
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, code[2]);
                 }
@@ -332,7 +326,6 @@ public class ChatActivity extends BaseActivity {
         popupView.findViewById(R.id.attachment_popup_ll_poll).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("CLICKED::::", "GALLERY");
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, code[7]);
                 }
@@ -342,7 +335,6 @@ public class ChatActivity extends BaseActivity {
         popupView.findViewById(R.id.attachment_popup_ll_payment).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("CLICKED::::", "GALLERY");
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, code[4]);
                 }
@@ -352,7 +344,6 @@ public class ChatActivity extends BaseActivity {
         popupView.findViewById(R.id.attachment_popup_ll_location).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("CLICKED::::", "GALLERY");
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, code[5]);
                 }
@@ -362,7 +353,6 @@ public class ChatActivity extends BaseActivity {
         popupView.findViewById(R.id.attachment_popup_ll_canvas).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("CLICKED::::", "GALLERY");
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, code[8]);
                 }
@@ -372,7 +362,6 @@ public class ChatActivity extends BaseActivity {
         popupView.findViewById(R.id.attachment_popup_ll_document).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("CLICKED::::", "GALLERY");
                 intent.setType("*/*");
 
                 if (intent.resolveActivity(getPackageManager()) != null) {
@@ -561,6 +550,7 @@ public class ChatActivity extends BaseActivity {
                         isOnline = online == 1;
                     }
                     if (value.get(Constants.KEY_FIRESTORE_USER_PIC) != null) {
+                        Log.i("User:::::", user.getDisplayName());
                         user.setPic(String.valueOf(value.get(Constants.KEY_FIRESTORE_USER_PIC)));
                     }
                     if (value.get(Constants.KEY_FIRESTORE_USER_NAME) != null) {
@@ -585,9 +575,7 @@ public class ChatActivity extends BaseActivity {
         ab.setTitle(user.getDisplayName());
         ab.setSubtitle("Status");
         ab.setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
         ImageView iv = new ImageView(getApplicationContext());
-        CardView cc = new CardView(getApplicationContext());
         iv.setPadding(50, 50, 50, 50);
         iv.setImageBitmap(UsefulFunctions.getCircularBitmap(user.getPicBitmap()));
 
@@ -599,13 +587,13 @@ public class ChatActivity extends BaseActivity {
 
         ab.setBackgroundDrawable(colorDrawable);
         findViewById(R.id.action_bar).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(getApplicationContext(),ProfileView.class);
-                    i.putExtra(Constants.KEY_INTENT_USERID, userID);
-                    startActivity(i);
-                }
-            });
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), ProfileView.class);
+                i.putExtra(Constants.KEY_INTENT_USERID, userID);
+                startActivity(i);
+            }
+        });
 
     }
 
@@ -699,6 +687,7 @@ public class ChatActivity extends BaseActivity {
             while (true) {
                 if (updated && chatViewAdapter != null && updateID.equals(userID)) {
                     int l = chatCursor.getCount();
+                    chatCursor.close();
                     chatCursor = dbViewModel.getChatMessages(inp);
                     runOnUiThread(new Runnable() {
                         @Override

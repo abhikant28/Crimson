@@ -85,6 +85,12 @@ public class TheViewModel extends AndroidViewModel {
     public List<User> searchUserByText(String query){
         return repository.searchUserByText(query);
     }
+    public List<Message> getUserMedia(String id){
+        return repository.getUserMedia(id);
+    }
+    public List<Message> getUserMediaByType(String id, int[] type){
+        return repository.getUserMediaByType(id,type);
+    }
     public boolean checkForUserNum(String userNum){
         return repository.checkForUserNum(userNum);
     }

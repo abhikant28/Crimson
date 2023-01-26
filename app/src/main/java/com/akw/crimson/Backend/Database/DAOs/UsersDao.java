@@ -10,12 +10,14 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
 
 import java.util.List;
 
 @Dao
 public interface UsersDao {
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(User user);
@@ -47,5 +49,11 @@ public interface UsersDao {
 
     @Query("SELECT COUNT(*) > 0 FROM user_table WHERE phoneNumber = :value")
     boolean checkForNumber(String value);
+
+    @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 ORDER BY date desc, lower(time) desc")
+    List<Message> getUserMedia(String user_ID);
+
+    @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 AND mediaType IN(:type) ORDER BY date desc, lower(time) desc")
+    List<Message> getUserMediaByType(String user_ID, int[] type);
 
 }

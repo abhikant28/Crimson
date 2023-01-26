@@ -32,7 +32,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
 
         @Override
         public boolean areContentsTheSame(@NonNull User oldItem, @NonNull User newItem) {
-            return oldItem.getUnread_count() == newItem.getUnread_count() && oldItem.getDisplayName().equals(newItem.getDisplayName()) && oldItem.getTime().equals(newItem.getTime()) && oldItem.getPicBitmap().sameAs(newItem.getPicBitmap());
+            return oldItem.getUnread_count() == newItem.getUnread_count() && oldItem.getTime().equals(newItem.getTime()) && oldItem.getDisplayName().equals(newItem.getDisplayName()) && oldItem.getPicBitmap().sameAs(newItem.getPicBitmap());
         }
     };
 
@@ -46,9 +46,8 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView tv_name, tv_lastMsg, tv_unreadCount;
-        private ImageView iv_profilePic;
-        private TextView tv_time;
+        private final TextView tv_name, tv_lastMsg, tv_unreadCount, tv_time;
+        private final ImageView iv_profilePic;
 
         public MyViewHolder(@NonNull View view) {
             super(view);
@@ -105,6 +104,26 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
 
         holder.tv_unreadCount.setText(String.valueOf((user.getUnread_count()) != 0 ? user.getUnread_count() : ""));
         holder.tv_time.setText((user.getTime() == null ? "12:00" : String.valueOf(user.getTime().substring(0, 5))));
+        if (user.getLast_msg_type() != Constants.KEY_MESSAGE_MEDIA_TYPE_NONE) {
+            switch (user.getLast_msg_type()) {
+                case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
+                    holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_videocam_24, 0, 0, 0);
+                    if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Video");
+                    break;
+                case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
+                    holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_insert_photo_24, 0, 0, 0);
+                    if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Photo");
+                    break;
+                case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
+                    holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_headphones_24, 0, 0, 0);
+                    if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Audio");
+                    break;
+                case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
+                    holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_insert_drive_file_24, 0, 0, 0);
+                    if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Document");
+                    break;
+            }
+        }
     }
 
     public User getUser(int position) {
