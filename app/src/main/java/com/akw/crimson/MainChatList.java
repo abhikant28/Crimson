@@ -30,6 +30,7 @@ import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Chat.ChatActivity;
+import com.akw.crimson.Gallery.MainGalleryActivity;
 import com.akw.crimson.Preferences.SettingsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -93,6 +94,9 @@ public class MainChatList extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.chatList_Menu_gallery:
+                startActivity(new Intent(this, MainGalleryActivity.class));
+                break;
             case R.id.chatList_Menu_Settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;

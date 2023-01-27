@@ -86,13 +86,13 @@
         android:layout_marginTop="44dp"
         android:background="@drawable/round_box_chat_message"
         android:backgroundTint="#FFFFFF"
-        android:hint="Email                                      "
+        android:hint="Email                                       "
         android:paddingHorizontal="10dp"
         android:paddingVertical="10dp"
         android:textColor="#C31034"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_name" />
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_about" />
 
     <EditText
         android:id="@+id/Registration_Email_EditView_about"
@@ -107,7 +107,7 @@
         android:textColor="#C31034"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_Mail" />
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_name" />
 
     <Button
         android:id="@+id/Registration_Email_Button_Verify"
@@ -118,6 +118,6 @@
         android:layout_marginTop="44dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_about" />
+        app:layout_constraintTop_toBottomOf="@+id/Registration_Email_EditView_Mail" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

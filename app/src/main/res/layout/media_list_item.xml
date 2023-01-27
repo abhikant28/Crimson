@@ -10,5 +10,6 @@
     android:id="@+id/mediaListItem_iv_media"
     android:layout_width="80sp"
     android:layout_height="80sp"
+    android:scaleType="centerCrop"
     android:src="@drawable/ic_twotone_insert_photo_24"/>
 </androidx.cardview.widget.CardView>

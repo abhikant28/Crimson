@@ -14,14 +14,19 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+
+
+import com.akw.crimson.Backend.AppObjects.FolderFacer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class UsefulFunctions {
@@ -145,6 +151,7 @@ public class UsefulFunctions {
             return null;
         }
     }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static Bitmap getImageFromUri(Context context, Uri uri) {
         try {
@@ -268,11 +275,12 @@ public class UsefulFunctions {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmSS").format(new Date());
         File mediaFile;
-        String mImageName = docName == null ? init + "_" + timeStamp + format : docName;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName);
+        String mImageName = docName == null ? init + "_" + timeStamp + format : docName.substring(0,docName.lastIndexOf('.'));
+        format = docName == null ? format : docName.substring(docName.lastIndexOf('.'));
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName+format);
         int i = 1;
         while (mediaFile.exists()) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName + " (" + (i++) + ")");
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName + " (" + (i++) + ")"+format);
         }
         Log.i(TAG, mImageName);
         return mediaFile;
@@ -281,8 +289,6 @@ public class UsefulFunctions {
     public static File getFile(Context context, String id, int type, boolean sent) {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
-
-        Log.i("TYPE:::::::",type+"");
 
         String folder = "";
         switch (type) {
@@ -320,6 +326,7 @@ public class UsefulFunctions {
         os.close();
         return outFile.getName();
     }
+
     public static String saveFile(Context cxt, Uri originalUri, File outputFile) {
         try {
             InputStream inputStream = cxt.getContentResolver().openInputStream(originalUri);
@@ -360,6 +367,191 @@ public class UsefulFunctions {
             }
         }
         return result;
+    }
+
+
+
+    //Gallery Functions
+
+    public static ArrayList<FolderFacer> getImageFolders(Context context){
+        ArrayList<FolderFacer> imageFolders = new ArrayList<>();
+        ArrayList<String> imagePaths= new ArrayList<>();
+        Uri allImagesuri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        //Log.i("ALL IMAGE URIs :::", allImagesuri.toString());
+        String[] projection = { MediaStore.Images.ImageColumns.DATA ,MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,MediaStore.Images.Media.BUCKET_ID};
+        Cursor cursor = context.getContentResolver().query(allImagesuri, projection, null, null, MediaStore.Images.Media.DATE_ADDED + " DESC");
+        try {
+            cursor.moveToFirst();
+            do{
+
+                FolderFacer folds = new FolderFacer();
+
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                //Log.i("IMAGE NAME:::",name);
+                String folder = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                //Log.i("IMAGE FOLDER:::",folder );
+                String bID = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_ID));
+                //Log.i("IMAGE BUCKET ID:::", bID);
+                String datapath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                //Log.i("IMAGE DATAPATH:::", datapath);
+
+
+                String folderPaths =  datapath.replace(name,"");
+                //Log.i("IMAGE FOLDER PATH:::", folderPaths);
+
+
+                if (!imagePaths.contains(folderPaths)) {
+                    imagePaths.add(folderPaths);
+
+                    folds.setPath(folderPaths);
+                    folds.setFolderName(folder);
+                    //Log.i("IMAGE DATA_PATH:::", datapath);
+                    folds.setIcon(datapath);
+                    imageFolders.add(folds);
+
+                }
+
+            }while(cursor.moveToNext());
+
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        for(int i = 0;i < imageFolders.size();i++){
+//
+//            Log.d("Image folders",imageFolders.get(i).getFolderName()+" and path = "+imageFolders.get(i).getPath());
+//
+//        }
+
+        return imageFolders;
+    }
+
+    public static Cursor getImagePaths(Context context){
+        ArrayList<FolderFacer> imageFolders = new ArrayList<>();
+        ArrayList<String> imagePaths = new ArrayList<>();
+        Uri allImagesuri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.Images.ImageColumns.DATA ,MediaStore.Images.Media.DISPLAY_NAME,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME,MediaStore.Images.Media.BUCKET_ID};
+        Cursor cursor = context.getContentResolver().query(allImagesuri, projection, null, null, MediaStore.Images.Media.DATE_ADDED + " DESC");
+
+        try {
+            cursor.moveToFirst();
+            do{
+
+                FolderFacer folds = new FolderFacer();
+
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                String folder = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+                String datapath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+
+                String folderpaths =  datapath.replace(name,"");
+                if (!imagePaths.contains(folderpaths)) {
+                    imagePaths.add(folderpaths);
+
+                    folds.setPath(folderpaths);
+                    folds.setFolderName(folder);
+                    imageFolders.add(folds);
+                }
+
+            }while(cursor.moveToNext());
+
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        for(int i = 0;i < imageFolders.size();i++){
+//
+//            Log.d("Image folders",imageFolders.get(i).getFolderName()+" and path = "+imageFolders.get(i).getPath());
+//
+//        }
+
+        return cursor;
+    }
+
+
+    public ArrayList<FolderFacer> getVideoFolders(Context context){
+        ArrayList<FolderFacer> videoFolders = new ArrayList<>();
+        ArrayList<String> videoPaths = new ArrayList<>();
+        Uri allVideosUri = android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = { MediaStore.Video.VideoColumns.DATA ,MediaStore.Video.Media.DISPLAY_NAME,
+                MediaStore.Video.Media.BUCKET_DISPLAY_NAME,MediaStore.Video.Media.BUCKET_ID};
+        Cursor cursor = context.getContentResolver().query(allVideosUri, projection, null, null, MediaStore.Images.Media.DATE_ADDED + " DESC");
+
+        try {
+            cursor.moveToFirst();
+            do{
+
+                FolderFacer folds = new FolderFacer();
+
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME));
+                String folder = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.BUCKET_DISPLAY_NAME));
+                String datapath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
+
+                String folderPaths =  datapath.replace(name,"");
+                if (!videoPaths.contains(folderPaths)) {
+                    videoPaths.add(folderPaths);
+
+                    folds.setPath(folderPaths);
+                    folds.setFolderName(folder);
+                    videoFolders.add(folds);
+                }
+
+            }while(cursor.moveToNext());
+
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        for(int i = 0;i < videoFolders.size();i++){
+//
+//            Log.d("video folders",videoFolders.get(i).getFolderName()+" and path = "+videoFolders.get(i).getPath());
+//
+//        }
+
+        return videoFolders;
+    }
+
+    public static Bitmap getResizedBitmapFromUri(Context cxt, Uri uri, int targetWidth, int targetHeight) {
+        Bitmap bitmap = null;
+        try {
+            InputStream inputStream = cxt.getContentResolver().openInputStream(uri);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(inputStream, null, options);
+            inputStream.close();
+
+            int imageWidth = options.outWidth;
+            int imageHeight = options.outHeight;
+
+            int scaleFactor = Math.min(imageWidth / targetWidth, imageHeight / targetHeight);
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = scaleFactor;
+            inputStream = cxt.getContentResolver().openInputStream(uri);
+            bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+            inputStream.close();
+        } catch (IOException e) {
+            return null;
+        }
+
+        return bitmap;
+    }
+
+
+    public static Bitmap getThumbnail(Uri uri) {
+        Bitmap thumbnail;
+        try{
+            thumbnail = ThumbnailUtils.createVideoThumbnail(uri.getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
+            if (thumbnail == null) {
+                thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(uri.getPath()), 720, 1080);
+            }
+        }catch (Exception e){
+            return null;
+        }
+        return thumbnail;
     }
 
 }

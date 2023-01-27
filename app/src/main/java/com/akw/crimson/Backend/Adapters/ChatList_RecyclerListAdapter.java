@@ -1,8 +1,8 @@
 package com.akw.crimson.Backend.Adapters;
 
 
-import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +22,7 @@ import com.akw.crimson.R;
 
 public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_RecyclerListAdapter.MyViewHolder> {
     private OnItemClickListener listener;
-    private Context cxt;
+
 
     private static final DiffUtil.ItemCallback<User> DIFF_CALLBACK_User = new DiffUtil.ItemCallback<User>() {
         @Override
@@ -40,10 +40,6 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
         super(DIFF_CALLBACK_User);
     }
 
-    public ChatList_RecyclerListAdapter(Context cxt) {
-        super(DIFF_CALLBACK_User);
-        this.cxt = cxt;
-    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_name, tv_lastMsg, tv_unreadCount, tv_time;
@@ -102,27 +98,36 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
         holder.tv_lastMsg.setText(user.getLast_msg());
         holder.iv_profilePic.setImageBitmap(user.getPicBitmap());
 
-        holder.tv_unreadCount.setText(String.valueOf((user.getUnread_count()) != 0 ? user.getUnread_count() : ""));
+        if (user.getUnread_count() > 0) {
+            holder.tv_unreadCount.setVisibility(View.VISIBLE);
+            holder.tv_unreadCount.setText(String.valueOf(user.getUnread_count()));
+        }
         holder.tv_time.setText((user.getTime() == null ? "12:00" : String.valueOf(user.getTime().substring(0, 5))));
         if (user.getLast_msg_type() != Constants.KEY_MESSAGE_MEDIA_TYPE_NONE) {
             switch (user.getLast_msg_type()) {
                 case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
+                    Log.e("VID:::::", user.getLast_msg_type() + "");
                     holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_videocam_24, 0, 0, 0);
                     if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Video");
                     break;
                 case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
+                    Log.e("IMG:::::", user.getLast_msg_type() + "");
                     holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_insert_photo_24, 0, 0, 0);
                     if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Photo");
                     break;
                 case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
+                    Log.i("AUD:::::", user.getLast_msg_type() + "");
                     holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_headphones_24, 0, 0, 0);
                     if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Audio");
                     break;
                 case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
+                    Log.i("DOC:::::", user.getLast_msg_type() + "");
                     holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_insert_drive_file_24, 0, 0, 0);
                     if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Document");
                     break;
             }
+        } else {
+            holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         }
     }
 

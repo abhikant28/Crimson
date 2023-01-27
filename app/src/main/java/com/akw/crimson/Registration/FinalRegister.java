@@ -36,14 +36,14 @@ public class FinalRegister extends AppCompatActivity {
         String name = getIntent().getExtras().getString(Constants.KEY_INTENT_USERNAME);
         String email = getIntent().getExtras().getString(Constants.KEY_INTENT_EMAIL);
         String profilePic = getIntent().getExtras().getString(Constants.KEY_INTENT_PIC);
+        String about = getIntent().getExtras().getString(Constants.KEY_INTENT_ABOUT);
 
         Log.i("USERNAME_::::",name);
-        makeCall(profilePic, name, email);
-
+        makeCall(profilePic, name, email, about);
 
     }
 
-    private void makeCall(String profilePic, String userName, String email) {
+    private void makeCall(String profilePic, String userName, String email, String about) {
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         String userID = SharedPrefManager.getLocalUserID();
         String phone = SharedPrefManager.getLocalPhoneNumber();
@@ -54,13 +54,14 @@ public class FinalRegister extends AppCompatActivity {
             data.put(Constants.KEY_FIRESTORE_USER_PIC, profilePic);
         }
         data.put(Constants.KEY_FIRESTORE_USER_EMAIL, email);
+        data.put(Constants.KEY_FIRESTORE_USER_ABOUT, about);
         data.put(Constants.KEY_FIRESTORE_USER_PHONE, phone.replaceAll(" ", ""));
 
         firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS)
                 .document(userID).set(data, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(getApplicationContext(), "User Details Registered", Toast.LENGTH_SHORT).show();
-                    SharedPrefManager.storeUserProfile(profilePic, userName, email);
+                    SharedPrefManager.storeUserProfile(profilePic, userName, email,about);
                     Log.i("USERNAME::::",userName);
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -70,12 +71,6 @@ public class FinalRegister extends AppCompatActivity {
                 .addOnFailureListener(documentReference -> {
                     Toast.makeText(getApplicationContext(), "Data Insert Failed", Toast.LENGTH_SHORT).show();
                 });
-//        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
-//                    @Override
-//                    public void onSuccess(String token) {
-//                        new SharedPrefManager(getApplicationContext()).storeUserToken(token);
-//                    }
-//                });
 
         makefireReatimeDbCall(profilePic,userName,email);
     }

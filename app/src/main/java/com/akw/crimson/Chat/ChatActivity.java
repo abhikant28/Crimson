@@ -220,6 +220,8 @@ public class ChatActivity extends BaseActivity {
                 } else {
                     user.addMedia(message.getMediaID());
                 }
+                user.setLast_msg(null);
+                user.setLast_msg_type(message.getMediaType());
                 dbViewModel.updateUser(user);
                 dbViewModel.insertMessage(message);
             }

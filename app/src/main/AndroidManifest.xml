@@ -108,7 +108,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".Gallery.MediaView"
+            android:exported="false" />
+        <activity
+            android:name=".Gallery.AlbumView"
+            android:exported="false" />
+        <activity
+            android:name=".Gallery.AlbumsList_Fragment"
+            android:exported="false" />
+        <activity
+            android:name=".Gallery.AllPhotos_fragment"
+            android:exported="false" />
+        <activity
+            android:name=".Gallery.MainGalleryActivity"
+            android:exported="true"/>
         <service
             android:name=".Backend.Communications.FireBaseCloudMessaging"
             android:exported="false">
