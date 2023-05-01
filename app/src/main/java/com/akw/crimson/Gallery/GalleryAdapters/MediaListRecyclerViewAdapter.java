@@ -2,6 +2,7 @@ package com.akw.crimson.Gallery.GalleryAdapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -73,10 +74,14 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
             // Passing the binding operation to cursor loader
             mCursorAdapter.getCursor().moveToPosition(position);
             mCursorAdapter.bindView(holder.itemView, mContext, mCursorAdapter.getCursor());
+            int i=mCursorAdapter.getCursor().getColumnIndex(MediaStore.Images.Media._ID);
+            int imageId = mCursorAdapter.getCursor().getInt(i);
+            Bitmap thumbnail = MediaStore.Images.Thumbnails.getThumbnail(mContext.getContentResolver(), imageId, MediaStore.Images.Thumbnails.MINI_KIND, null);
 
             //Log.i("ALL ::::", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
-            holder.v1.setImageURI(Uri.parse(mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndexOrThrow(MediaStore.Images.Media.DATA))));
+//            holder.v1.setImageURI(Uri.parse(mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndexOrThrow(MediaStore.Images.Media.DATA))));
 
+            holder.v1.setImageBitmap(thumbnail);
         }
 
         @Override

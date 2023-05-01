@@ -1,7 +1,6 @@
 package com.akw.crimson.Chat;
 
 import android.Manifest;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,8 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -39,7 +36,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
@@ -72,7 +68,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class ChatActivity extends BaseActivity {
@@ -84,8 +84,10 @@ public class ChatActivity extends BaseActivity {
     LinearLayout ll_full;
     Button btnPrev, btnNext;
 
+
     private TheViewModel dbViewModel;
     private Cursor chatCursor;
+    public static List<Message> mediaList;
     private Thread chatThread;
     private ActionBar ab;
 
@@ -110,6 +112,7 @@ public class ChatActivity extends BaseActivity {
 
     @Override
     public void finish() {
+        chatCursor.close();
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
@@ -150,15 +153,22 @@ public class ChatActivity extends BaseActivity {
         return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        final int[] code = {55, 66, 77, 88, 99, 44, 33, 22, 11};
         Message message = null;
+        ArrayList<String> uri= new ArrayList<>();
+        if (data.getClipData() != null) { // Multiple images selected
+            int count = data.getClipData().getItemCount();
+            for (int i = 0; i < count; i++) {
+                uri.add(data.getClipData().getItemAt(i).getUri().toString());
+            }
+        }
+        Log.i("URIs:_:_:::", Arrays.deepToString(new ArrayList[]{uri})+"00");
         if (resultCode == RESULT_OK && data.getData() != null) {
-
-            if (requestCode == code[0] || requestCode == code[1] || requestCode == code[2] || requestCode == code[3] || requestCode == code[8]) {
+            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_DOCUMENT || requestCode == Constants.KEY_INTENT_REQUEST_CODE_MEDIA || requestCode == Constants.KEY_INTENT_REQUEST_CODE_CAMERA || requestCode == Constants.KEY_INTENT_REQUEST_CODE_AUDIO || requestCode == Constants.KEY_INTENT_REQUEST_CODE_CANVAS) {
                 if (ContextCompat.checkSelfPermission(
                         this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                         PackageManager.PERMISSION_GRANTED) {
@@ -169,51 +179,64 @@ public class ChatActivity extends BaseActivity {
 
                 }
             }
-            if (requestCode == code[1]) {
-                Uri uri = data.getData();
-                ContentResolver cR = this.getContentResolver();
-                File file;
-                if (cR.getType(uri).startsWith("video/")) {
-                    file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
-                    UsefulFunctions.saveFile(this, data.getData(), file);
+            Log.i("URIs_:::::", data.getData().getPath());
 
-                    message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
-                            , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
-
-                } else {
-                    file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-                    Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
-                    UsefulFunctions.saveImage(bitmap, true, file);
-
-                    message = new Message(SharedPrefManager.getLocalUserID(), userID, null
-                            , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+            if (data.getClipData() != null) { // Multiple images selected
+                int count = data.getClipData().getItemCount();
+                for (int i = 0; i < count; i++) {
+                    uri.add(data.getClipData().getItemAt(i).getUri().toString());
                 }
-
-
-            } else if (requestCode == code[0]) {
-                String f = UsefulFunctions.getFileName(this, data.getData());
-
-                File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, f);
-                UsefulFunctions.saveFile(this, data.getData(), file);
-                message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
-                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT);
-
-            } else if (requestCode == code[3]) {
-                File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
-                UsefulFunctions.saveFile(this, data.getData(), file);
-                message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
-                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
-
-            } else if (requestCode == code[2]) {
-                File file = UsefulFunctions.getOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+            } else if (data.getData() != null) { // Single image selected
+                 uri.add(data.getData().toString());
+            }
+//            Log.i("URIs::_:::", Arrays.deepToString(uri));
+            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_CAMERA) {
+                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
                 Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 UsefulFunctions.saveImage(imageBitmap, true, file);
                 Log.i("CAMERA:::::", data.getData() + "");
+                uri.add(file.getPath());
+            }
+
+            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_MEDIA) {
+
+
+                Intent intent = new Intent(this, MessageAttachment.class);
+                intent.putExtra(Constants.KEY_INTENT_URI, uri);
+//                intent.putExtra(Constants.KEY_INTENT_RESULT_CODE, new ArrayList<Integer>((Integer)resultCode));
+                ArrayList<Integer> codes = new ArrayList<>();
+                codes.add(requestCode);
+                intent.putExtra(Constants.KEY_INTENT_REQUEST_CODE, codes);
+                Log.i("CODESSS:::::", codes.toString());
+                intent.putExtra(Constants.KEY_INTENT_USERID, new ArrayList<String>(Collections.singleton(userID)));
+                startActivity(intent);
+
+            } else if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_DOCUMENT) {
+                String f = UsefulFunctions.getFileName(this, data.getData());
+
+                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, f);
+                UsefulFunctions.saveFile(this, data.getData(), file);
                 message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
-                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT);
+
+            } else if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_AUDIO) {
+                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
+                UsefulFunctions.saveFile(this, data.getData(), file);
+                message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
 
             }
+//            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_CAMERA) {
+//                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+//                Bundle extras = data.getExtras();
+//                Bitmap imageBitmap = (Bitmap) extras.get("data");
+//                UsefulFunctions.saveImage(imageBitmap, true, file);
+//                Log.i("CAMERA:::::", data.getData() + "");
+//                message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
+//                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+//
+//            }
             if (message != null) {
                 if (message.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
                     user.addDoc(message.getMediaID());
@@ -264,9 +287,15 @@ public class ChatActivity extends BaseActivity {
         setMyActionBar();
         setClicks();
 
-        GetChatMessagesThread gcmt = new GetChatMessagesThread(user.getUser_id());
-        chatThread = new Thread(gcmt);
-        chatThread.start();
+//        GetChatMessagesThread gcmt = new GetChatMessagesThread(user.getUser_id());
+//        chatThread = new Thread(gcmt);
+//        chatThread.start();
+
+        dbViewModel.getLiveMessagesList(userID).observe(this, messages -> {
+            GetChatLiveMessagesThread gcmt = new GetChatLiveMessagesThread(user.getUser_id());
+            chatThread = new Thread(gcmt);
+            chatThread.start();
+        });
 
     }
 
@@ -290,97 +319,70 @@ public class ChatActivity extends BaseActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        final int[] code = {55, 66, 77, 88, 99, 44, 33, 22, 11};
-        popupView.findViewById(R.id.attachment_popup_ll_gallery).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i("CLICKED::::", "GALLERY");
-                intent.setType("image/* video/*");
-                code[0] = 55;
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[1]);
-                }
-                popupWindow.dismiss();
-            }
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_audio).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String[] mimetypes = {"audio/3gp", "audio/AMR", "audio/mp3"};
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-                intent.setType("audio/*");
+        popupView.findViewById(R.id.attachment_popup_ll_gallery).setOnClickListener(view -> {
+            Log.i("CLICKED::::", "GALLERY");
+            Intent intent1 = new Intent(Intent.ACTION_GET_CONTENT);
+            intent1.setType("image/* video/*");
 
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[3]);
-                }
-                popupWindow.dismiss();
+            if (intent1.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(Intent.createChooser(intent1, "Select Picture"), Constants.KEY_INTENT_REQUEST_CODE_MEDIA);
             }
+            popupWindow.dismiss();
         });
-        popupView.findViewById(R.id.attachment_popup_ll_camera).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[2]);
-                }
-                popupWindow.dismiss();
-            }
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_poll).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[7]);
-                }
-                popupWindow.dismiss();
-            }
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_payment).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[4]);
-                }
-                popupWindow.dismiss();
-            }
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_location).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[5]);
-                }
-                popupWindow.dismiss();
-            }
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_canvas).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[8]);
-                }
-                popupWindow.dismiss();
-            }
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_document).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                intent.setType("*/*");
+        popupView.findViewById(R.id.attachment_popup_ll_audio).setOnClickListener(view -> {
+            String[] mimetypes = {"audio/3gp", "audio/AMR", "audio/mp3"};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+            intent.setType("audio/*");
 
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[0]);
-                }
-                popupWindow.dismiss();
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(Intent.createChooser(intent, "Select Audio"), Constants.KEY_INTENT_REQUEST_CODE_AUDIO);
             }
+            popupWindow.dismiss();
         });
-        popupView.findViewById(R.id.attachment_popup_ll_contact).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i("CLICKED::::", "GALLERY");
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, code[6]);
-                }
-                popupWindow.dismiss();
+        popupView.findViewById(R.id.attachment_popup_ll_camera).setOnClickListener(view -> {
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, Constants.KEY_INTENT_REQUEST_CODE_CAMERA);
             }
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_poll).setOnClickListener(view -> {
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, Constants.KEY_INTENT_REQUEST_CODE_POLL);
+            }
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_payment).setOnClickListener(view -> {
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, Constants.KEY_INTENT_REQUEST_CODE_PAYMENT);
+            }
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_location).setOnClickListener(view -> {
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, Constants.KEY_INTENT_REQUEST_CODE_LOCATION);
+            }
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_canvas).setOnClickListener(view -> {
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, Constants.KEY_INTENT_REQUEST_CODE_CANVAS);
+            }
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_document).setOnClickListener(view -> {
+            intent.setType("*/*");
+
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, Constants.KEY_INTENT_REQUEST_CODE_DOCUMENT);
+            }
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.attachment_popup_ll_contact).setOnClickListener(view -> {
+            Log.i("CLICKED::::", "GALLERY");
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, Constants.KEY_INTENT_REQUEST_CODE_CONTACT);
+            }
+            popupWindow.dismiss();
         });
 
 // Set an OnClickListener for the camera option
@@ -476,8 +478,8 @@ public class ChatActivity extends BaseActivity {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTag(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
-//                                Messaging.sendMessageRetroNotification(new SharedPrefManager(getApplicationContext()).getLocalUserID(), userToken, message.getTag(), message.getMsg_ID(),userID);
+                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
+//                                Messaging.sendMessageRetroNotification(new SharedPrefManager(getApplicationContext()).getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(),userID);
                             }
                         });
 
@@ -638,15 +640,64 @@ public class ChatActivity extends BaseActivity {
                 attachmentPopUp();
             }
         });
-        ib_camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(camera_intent, 77);
-            }
+        ib_camera.setOnClickListener(view -> {
+            Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+
+
+            startActivityForResult(camera_intent, 77);
+
         });
     }
 
+
+    public void updateChat(String inp) {
+//            int l = chatCursor.getCount();
+        chatCursor = dbViewModel.getChatMessages(inp);
+        mediaList = dbViewModel.getUserMedia(userID);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
+                        , new ChatView_RecyclerAdapter.OnItemClickListener() {
+                    @Override
+                    public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
+                        Intent intent;
+                        Log.i("FIRESTORAGE :::::::", "STARTING");
+                        if (upload) {
+                            intent = new Intent(getApplicationContext(), UploadFileService.class);
+                            intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                        } else {
+                            intent = new Intent(getApplicationContext(), DownloadFileService.class);
+                            intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
+                        }
+                        intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
+                        startService(intent);
+                    }
+                }, dbViewModel, false);
+                chatRecyclerView.setAdapter(null);
+                loadChat();
+                chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
+            }
+        });
+        updated = false;
+        user = dbViewModel.getUser(userID);
+    }
+
+    class GetChatLiveMessagesThread implements Runnable {
+        String inp;
+        Context cxt;
+
+        GetChatLiveMessagesThread(String inp) {
+            this.inp = inp;
+        }
+
+        @Override
+        public void run() {
+            updateChat(inp);
+            chatThread.interrupt();
+        }
+    }
 
     class GetChatMessagesThread implements Runnable {
         String inp;
@@ -658,6 +709,7 @@ public class ChatActivity extends BaseActivity {
         @Override
         public void run() {
             chatCursor = dbViewModel.getChatMessages(inp);
+            mediaList = dbViewModel.getUserMedia(userID);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -689,8 +741,9 @@ public class ChatActivity extends BaseActivity {
             while (true) {
                 if (updated && chatViewAdapter != null && updateID.equals(userID)) {
                     int l = chatCursor.getCount();
-                    chatCursor.close();
+                    //chatCursor.close();
                     chatCursor = dbViewModel.getChatMessages(inp);
+                    mediaList = dbViewModel.getUserMedia(userID);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

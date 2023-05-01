@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#DF1C43"
     android:layout_height="match_parent"
-    tools:context=".SelectContact">
+    android:background="#DF1C43"
+    tools:context=".Utilities.SelectContact">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/SelectContact_rv_contactList"
@@ -13,5 +13,39 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/main_chatlist_item" />
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/SelectContact_ll_userList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingVertical="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/SelectContact_tv_userList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" "
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/SelectContact_fb_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/ic_baseline_check_24"
+        app:layout_constraintBottom_toTopOf="@+id/SelectContact_ll_userList"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/SelectContact_ll_userList" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

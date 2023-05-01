@@ -25,8 +25,10 @@ public class TheRepository {
 
     private UsersDao usersDao;
     private MessagesDao messagesDao;
+    public String userID;
 
     private LiveData<List<User>> getChatList;
+    private LiveData<List<Message>> getLiveMessages;
     private LiveData<List<Message>> pendingMessagesList;
     private LiveData<List<Message>> receivedMessagesList;
     private LiveData<List<User>> getAllUsers;
@@ -40,6 +42,13 @@ public class TheRepository {
         getAllUsers = usersDao.getAllUsersList();
         pendingMessagesList = messagesDao.pendingMessages();
         receivedMessagesList = messagesDao.receivedMessages();
+//        getLiveMessages=messagesDao.getLiveMessages(userID);
+        getLiveMessages=null;
+    }
+
+    public LiveData<List<Message>> getLiveMessages(String userId){
+        getLiveMessages=messagesDao.getLiveMessages(userId);
+        return getLiveMessages;
     }
 
     public void insertMessage(Message msg) {

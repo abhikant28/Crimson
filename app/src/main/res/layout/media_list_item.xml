@@ -3,13 +3,28 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="10sp"
-    android:layout_marginStart="2sp"
+    app:cardCornerRadius="3sp"
+    android:layout_margin="0.1sp"
     android:backgroundTint="@color/black">
-<ImageView
-    android:id="@+id/mediaListItem_iv_media"
-    android:layout_width="80sp"
-    android:layout_height="80sp"
-    android:scaleType="centerCrop"
-    android:src="@drawable/ic_twotone_insert_photo_24"/>
+    <ImageView
+        android:id="@+id/mediaListItem_iv_media"
+        android:layout_width="80sp"
+        android:layout_height="80sp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_twotone_insert_photo_24"/>
+    <View
+        android:id="@+id/mediaListItem_v_selectedFrame"
+        android:layout_width="80sp"
+        android:layout_height="80sp"
+        android:visibility="gone"
+        android:alpha="0.8"
+        android:backgroundTint="#30B136"
+        android:background="@android:drawable/gallery_thumb"/>
+    <VideoView
+        android:id="@+id/mediaListItem_vv_media"
+        android:layout_width="80sp"
+        android:layout_height="80sp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:src="@drawable/ic_twotone_insert_photo_24"/>
 </androidx.cardview.widget.CardView>

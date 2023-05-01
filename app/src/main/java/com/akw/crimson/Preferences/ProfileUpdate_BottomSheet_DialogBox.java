@@ -1,6 +1,7 @@
 package com.akw.crimson.Preferences;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
@@ -35,6 +37,7 @@ public class ProfileUpdate_BottomSheet_DialogBox extends BottomSheetDialogFragme
     EditText et_input;
     EditProfile act;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,18 +52,19 @@ public class ProfileUpdate_BottomSheet_DialogBox extends BottomSheetDialogFragme
 
         setValue();
 
+        FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
+        User user=SharedPrefManager.getLocalUser();
+        Hashtable<String, Object> data = new Hashtable<>();
 
         b_save.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
                 if(!et_input.getText().toString().trim().equals("")){
                     switch (getArguments().getString(Constants.KEY_FRAGMENT_TYPE)){
                         case Constants.KEY_FRAGMENT_TYPE_NAME:
-                            User user=SharedPrefManager.getLocalUser();
                             user.setName(et_input.getText().toString().trim());
                             SharedPrefManager.storeUser(user);
-                            FirebaseFirestore firebaseFirestore= FirebaseFirestore.getInstance();
-                            Hashtable<String, Object> data = new Hashtable<>();
                             data.put(Constants.KEY_FIRESTORE_USER_NAME, et_input.getText().toString().trim());
                             firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS)
                                     .document(SharedPrefManager.getLocalUserID()).set(data, SetOptions.merge())
@@ -73,6 +77,17 @@ public class ProfileUpdate_BottomSheet_DialogBox extends BottomSheetDialogFragme
                             break;
                         case Constants.KEY_FRAGMENT_TYPE_ABOUT:
                             tv_title.setText("Something about yourself");
+                            user.setAbout(et_input.getText().toString().trim());
+                            SharedPrefManager.storeUser(user);
+                            data.put(Constants.KEY_FIRESTORE_USER_ABOUT, et_input.getText().toString().trim());
+                            firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS)
+                                    .document(SharedPrefManager.getLocalUserID()).set(data, SetOptions.merge())
+                                    .addOnSuccessListener(documentReference -> {
+                                        if(act != null)act.tv_status.setText(et_input.getText().toString());
+                                        dismiss();
+                                    })
+                                    .addOnFailureListener(documentReference -> {
+                                    });
                             break;
                     }
                 }
@@ -89,6 +104,7 @@ public class ProfileUpdate_BottomSheet_DialogBox extends BottomSheetDialogFragme
         return v;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void setValue() {
         switch (getArguments().getString(Constants.KEY_FRAGMENT_TYPE)){
             case Constants.KEY_FRAGMENT_TYPE_NAME:

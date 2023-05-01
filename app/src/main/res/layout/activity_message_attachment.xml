@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:padding="1sp"
+    tools:context=".Chat.MessageAttachment">
+
+    <LinearLayout
+        android:id="@+id/messageAttachment_ll_utilityButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/messageAttachment_btn_close"
+            android:layout_width="35sp"
+            android:layout_height="35sp"
+            android:background="#0000"
+            android:src="@drawable/ic_baseline_close_24" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/messageAttachment_btn_remove"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#0000"
+            android:src="@drawable/ic_baseline_delete_outline_24" />
+
+        <ImageButton
+            android:id="@+id/messageAttachment_btn_cropRotate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#0000"
+            android:src="@drawable/ic_baseline_crop_rotate_24" />
+
+        <ImageButton
+            android:id="@+id/messageAttachment_btn_addArt"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#0000"
+            android:src="@drawable/ic_baseline_emoji_emotions_24" />
+
+        <ImageButton
+            android:id="@+id/messageAttachment_btn_addText"
+            android:layout_width="35sp"
+            android:layout_height="35sp"
+            android:background="#0000"
+            android:src="@drawable/ic_baseline_text_format_24" />
+
+        <ImageButton
+            android:id="@+id/messageAttachment_btn_draw"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#0000"
+            android:src="@drawable/ic_baseline_edit_24" />
+
+    </LinearLayout>
+
+    <VideoView
+        android:id="@+id/messageAttachment_vv_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:backgroundTint="#6A1B9A"
+        android:elevation="-2sp"
+        android:src="@drawable/ic_baseline_search_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/messageAttachment_iv_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:backgroundTint="#6A1B9A"
+        android:elevation="-2sp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_baseline_search_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messageAttachment_rv_media"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/messageAttachment_cv_msgBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/messageAttachment_cv_msgBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:backgroundTint="#636363"
+        app:cardCornerRadius="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/messageAttachment_ll_usersAndSend"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/messageAttachment_ll_msgBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="7dp"
+            android:weightSum="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageButton
+                android:id="@+id/messageAttachment_btn_Emoji"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="1dp"
+                android:background="@drawable/ic_baseline_emoji_emotions_24"
+                android:backgroundTint="#B3B2B2"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/messageAttachment_btn_addMoreMedia"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/ic_twotone_insert_photo_24"
+                android:backgroundTint="#B3B2B2" />
+
+            <EditText
+                android:id="@+id/messageAttachment_et_msgText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_box_chat_input"
+                android:backgroundTint="#636363"
+                android:hint="Caption...."
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="10"
+                android:scrollHorizontally="false"
+                android:singleLine="false"
+                android:textColor="@color/white"
+                android:textColorHint="#B3B2B2"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/messageAttachment_btn_viewOnce"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/ic_outline_auto_delete_24"
+                android:backgroundTint="#B3B2B2" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:id="@+id/messageAttachment_ll_usersAndSend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:animateLayoutChanges="true"
+        android:orientation="horizontal"
+        android:paddingHorizontal="5dp"
+        android:paddingVertical="7dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/messageAttachment_ll_users"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <!--            <TextView-->
+                <!--                android:layout_width="wrap_content"-->
+                <!--                android:layout_height="wrap_content"-->
+                <!--                android:text=" "-->
+                <!--                android:textSize="28sp"/>-->
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <ImageButton
+            android:id="@+id/messageAttachment_btn_send"
+            android:layout_width="44sp"
+            android:layout_height="44sp"
+            android:layout_marginLeft="2dp"
+            android:background="@drawable/circle_box"
+            android:src="@drawable/ic_baseline_send_24" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

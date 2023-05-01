@@ -25,14 +25,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.Adapters.PreparedMessage_List_RecyclerListAdapter;
+import com.akw.crimson.Backend.AlertReceiver;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.PreparedMessage;
 import com.akw.crimson.Backend.AppObjects.User;
-import com.akw.crimson.Backend.AlertReceiver;
 import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
+import com.akw.crimson.Chat.MessageAttachment;
+import com.akw.crimson.Utilities.SelectContact;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,7 +46,7 @@ public class PrepareMessageActivity extends BaseActivity {
     RecyclerView rv_preparedMessages;
     TextView tv_selectContact, tv_selectDate, tv_selectTime;
     EditText et_messageText;
-    ImageButton b_saveMsg;
+    ImageButton b_saveMsg, b_attachment;
     ActionBar ab;
 
     PreparedMessage_List_RecyclerListAdapter recyclerListAdapter = new PreparedMessage_List_RecyclerListAdapter();
@@ -52,6 +54,7 @@ public class PrepareMessageActivity extends BaseActivity {
     User msgForUser = null;
     Calendar msgDate;
     TheViewModel db;
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -70,64 +73,62 @@ public class PrepareMessageActivity extends BaseActivity {
         setContentView(R.layout.activity_prepare_message);
 
         messageArrayList = SharedPrefManager.getPreparedMessages();
-        db=Communicator.localDB;
-        Log.i("ONCREATE:::::",(db==null)+"");
+        db = Communicator.localDB;
+        Log.i("CREATE:::::", (db == null) + "");
         inti();
 
         clicks();
-
-
     }
 
     private void clicks() {
-        recyclerListAdapter.setOnItemCLickListener(new PreparedMessage_List_RecyclerListAdapter.OnItemClickListener() {
-            @Override
-            public void OnItemClick(PreparedMessage preparedMessage, int position, View view) {
-                switch (view.getId()) {
-                    case R.id.PrepareMessage_Item_ib_edit:
-                        msgDate = preparedMessage.getDate();
-                        msgForUser=db.getUser(preparedMessage.getToID());
-                        Log.i("EDIT::::::::", (msgForUser==null)+"");
-                        et_messageText.setText(preparedMessage.getMessage().getMsg());
-                        tv_selectContact.setText(preparedMessage.getToName());
-                        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
-                        tv_selectDate.setText(preparedMessage.getDate().get(Calendar.DAY_OF_MONTH) + " " + month_date.format(msgDate.get(Calendar.MONTH)).substring(0,3));
-                        tv_selectTime.setText("At: " + DateFormat.getTimeInstance(DateFormat.SHORT).format(preparedMessage.getDate().getTime()));
-                        messageArrayList.remove(position);
-                        SharedPrefManager.putPreparedMessages(messageArrayList);
-                        recyclerListAdapter.submitList(messageArrayList);
+        recyclerListAdapter.setOnItemCLickListener((preparedMessage, position, view) -> {
+            switch (view.getId()) {
+                case R.id.PrepareMessage_Item_ib_edit:
+                    msgDate = preparedMessage.getDate();
+                    msgForUser = db.getUser(preparedMessage.getToID());
+                    Log.i("EDIT::::::::", (msgForUser == null) + "");
+                    et_messageText.setText(preparedMessage.getMessage().getMsg());
+                    tv_selectContact.setText(preparedMessage.getToName());
+                    SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+                    tv_selectDate.setText(preparedMessage.getDate().get(Calendar.DAY_OF_MONTH) + " " + month_date.format(msgDate.get(Calendar.MONTH)).substring(0, 3));
+                    tv_selectTime.setText("At: " + DateFormat.getTimeInstance(DateFormat.SHORT).format(preparedMessage.getDate().getTime()));
+                    messageArrayList.remove(position);
+                    SharedPrefManager.putPreparedMessages(messageArrayList);
+                    recyclerListAdapter.submitList(messageArrayList);
 
-                        break;
-                    case R.id.PrepareMessage_Item_ib_delete:
-                        createDeleteDialog(position);
-                        Log.i("DELETED::::", messageArrayList.size()+"");
-                        break;
-                }
+                    break;
+                case R.id.PrepareMessage_Item_ib_delete:
+                    createDeleteDialog(position);
+                    Log.i("DELETED::::", messageArrayList.size() + "");
+                    break;
             }
         });
 
-        b_saveMsg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        b_attachment.setOnClickListener(view -> {
+            Intent intent = new Intent(this, MessageAttachment.class);
+//            intent.putExtra(Constants.INTENT_, );
+//            startActivityForResult(intent, Constants.KEY_INTENT_REQUEST_CODE_MEDIA);
+        });
+
+        b_saveMsg.setOnClickListener(view -> {
 //                Log.i("SAVING::::::::",(!et_messageText.getText().toString().equals("")) +"_"+ (msgDate != null) +"_"+ (msgForUser != null));
-                if (!et_messageText.getText().toString().equals("") && msgDate != null && msgForUser != null) {
-                    Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), msgForUser.getUser_id(), null, et_messageText.getText().toString().trim(), true, false, null, 0, msgDate);
-                    PreparedMessage prep=new PreparedMessage(message, msgDate, msgForUser.getDisplayName(), msgForUser.getUser_id());
-                    messageArrayList.add(0, prep);
-                    setAlarm(prep);
-                    SharedPrefManager.putPreparedMessages(messageArrayList);
-                    recyclerListAdapter.submitList(SharedPrefManager.getPreparedMessages());
-                    msgDate = null;
-                    et_messageText.setText("");
-                    tv_selectContact.setText("Select Contact");
-                    tv_selectTime.setText("Select Time");
-                    tv_selectDate.setText("Select Day");
-                    msgForUser = null;
-                } else {
-                    Toast.makeText(getBaseContext(), "Enter Message", Toast.LENGTH_SHORT).show();
-                    tv_selectDate.setText("Select Day");
-                    tv_selectTime.setText("Select Time");
-                }
+            if (!et_messageText.getText().toString().equals("") && msgDate != null && msgForUser != null) {
+                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), msgForUser.getUser_id(), null, et_messageText.getText().toString().trim(), true, false, null, 0, msgDate);
+                PreparedMessage prep = new PreparedMessage(message, msgDate, msgForUser.getDisplayName(), msgForUser.getUser_id());
+                messageArrayList.add(0, prep);
+                setAlarm(prep);
+                SharedPrefManager.putPreparedMessages(messageArrayList);
+                recyclerListAdapter.submitList(SharedPrefManager.getPreparedMessages());
+                msgDate = null;
+                et_messageText.setText("");
+                tv_selectContact.setText("Select Contact");
+                tv_selectTime.setText("Select Time");
+                tv_selectDate.setText("Select Day");
+                msgForUser = null;
+            } else {
+                Toast.makeText(getBaseContext(), "Enter Message", Toast.LENGTH_SHORT).show();
+                tv_selectDate.setText("Select Day");
+                tv_selectTime.setText("Select Time");
             }
         });
 
@@ -152,18 +153,20 @@ public class PrepareMessageActivity extends BaseActivity {
         tv_selectContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(getApplicationContext(), SelectContact.class), Constants.KEY_ACTIVITY_RESULT_CONTACT_SELECT);
+                Intent intent = new Intent(getApplicationContext(), SelectContact.class);
+                intent.putExtra(Constants.KEY_INTENT_TYPE,Constants.KEY_INTENT_TYPE_SINGLE_SELECT);
+                startActivityForResult(intent, Constants.KEY_ACTIVITY_RESULT_CONTACT_SELECT);
             }
         });
     }
 
     private void setAlarm(PreparedMessage preparedMessage) {
-        AlarmManager alarmManager= (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent=new Intent(this, AlertReceiver.class);
-        intent.putExtra(Constants.KEY_INTENT_PREP_MSG_ID,preparedMessage.getId());
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReceiver.class);
+        intent.putExtra(Constants.KEY_INTENT_PREP_MSG_ID, preparedMessage.getId());
         intent.putExtra(Constants.KEY_INTENT_USERNAME, preparedMessage.getToName());
-        PendingIntent pi=PendingIntent.getBroadcast(this,preparedMessage.getId(), intent, PendingIntent.FLAG_MUTABLE);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP,preparedMessage.getDate().getTimeInMillis(),pi);
+        PendingIntent pi = PendingIntent.getBroadcast(this, preparedMessage.getId(), intent, PendingIntent.FLAG_MUTABLE);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, preparedMessage.getDate().getTimeInMillis(), pi);
     }
 
     private void pickTime() {
@@ -240,9 +243,9 @@ public class PrepareMessageActivity extends BaseActivity {
     }
 
     private void deleteSendIntent(PreparedMessage prepMsg) {
-        AlarmManager alarmManager= (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent=new Intent(this, AlertReceiver.class);
-        PendingIntent pi=PendingIntent.getBroadcast(this,prepMsg.getId(), intent, PendingIntent.FLAG_MUTABLE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(this, prepMsg.getId(), intent, PendingIntent.FLAG_MUTABLE);
         alarmManager.cancel(pi);
     }
 
@@ -253,7 +256,8 @@ public class PrepareMessageActivity extends BaseActivity {
         tv_selectTime = findViewById(R.id.PrepareMessage_tv_setTime);
         et_messageText = findViewById(R.id.PrepareMessage_EditText_Message);
         b_saveMsg = findViewById(R.id.PrepareMessage_Button_Send);
-        ab=getSupportActionBar();
+        b_attachment = findViewById(R.id.PrepareMessage_Button_Attachment);
+        ab = getSupportActionBar();
         ab.setTitle("Prepare Message");
 
         new SharedPrefManager(this);

@@ -2,10 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/nav_crimson"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="Crimson"/>
+
+    <item
         android:id="@+id/nav_photos"
+        android:icon="@drawable/ic_home_black_24dp"
         android:title="Pictures"/>
 
     <item
         android:id="@+id/nav_albums"
+        android:icon="@drawable/ic_home_black_24dp"
         android:title="Albums"/>
 </menu>

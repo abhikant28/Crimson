@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i("MAIN ACTIVITY:::::","ONCEEEEEEEE");
+        //Log.i("MAIN ACTIVITY:::::","ONCEEEEEEEE");
         SharedPreferences loginPreferences = getSharedPreferences(SharedPrefManager.SHARED_PREF_NAME, MODE_PRIVATE);
         if (loginPreferences.getBoolean("LOGGED_IN", false)) { //How can I ask here?
             Log.i("MAIN ACTIVITY:::::","LOGGED IN");

@@ -39,6 +39,9 @@ public interface MessagesDao {
     @Query("SELECT * from messages_Table where user_id= :user_ID")
     Cursor getMessages(String user_ID);
 
+    @Query("SELECT * from messages_Table where user_id= :user_ID LIMIT 50")
+    LiveData<List<Message>> getLiveMessages(String user_ID);
+
     @Query("SELECT * from messages_Table where msg LIKE'%' || :query || '%'")
     List<Message> searchInMessage(String query);
 

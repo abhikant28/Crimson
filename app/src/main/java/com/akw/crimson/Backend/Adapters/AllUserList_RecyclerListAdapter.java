@@ -1,6 +1,8 @@
 package com.akw.crimson.Backend.Adapters;
 
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +20,12 @@ import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.ProfileImageView;
 import com.akw.crimson.R;
+import com.akw.crimson.Utilities.SelectContact;
 
 public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserList_RecyclerListAdapter.MyViewHolder> {
     private OnItemClickListener listener;
+    private boolean multi = false;
+    Context cxt;
 
     private static final DiffUtil.ItemCallback<User> DIFF_CALLBACK_User = new DiffUtil.ItemCallback<User>() {
         @Override
@@ -36,6 +41,12 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
 
     public AllUserList_RecyclerListAdapter() {
         super(DIFF_CALLBACK_User);
+    }
+
+    public AllUserList_RecyclerListAdapter(boolean multi, Context cxt) {
+        super(DIFF_CALLBACK_User);
+        this.multi = multi;
+        this.cxt = cxt;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -58,7 +69,8 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
                 @Override
                 public void onClick(View view) {
                     int p = getAdapterPosition();
-                    if (listener != null && p != -1) listener.OnItemClick(getUser(p));
+                    if (listener != null && p != -1)
+                        listener.OnItemClick(getUser(p), tv_name, tv_lastMsg, view);
                 }
             });
         }
@@ -73,13 +85,22 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        holder.tv_time.setVisibility(View.GONE);
+        holder.tv_unreadCount.setVisibility(View.GONE);
         User user = getItem(position);
-
         holder.tv_name.setText(user.getDisplayName());
-        holder.tv_time.setText("");
-        holder.tv_unreadCount.setText("");
-        holder.tv_lastMsg.setText("");
+        holder.tv_lastMsg.setText(user.getAbout());
         holder.iv_profilePic.setImageBitmap(user.getPicBitmap());
+        if (SelectContact.selectedUsers.contains(user)) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#C6C5C5"));
+            holder.tv_lastMsg.setTextColor(Color.BLACK);
+            holder.tv_name.setTextColor(Color.BLACK);
+        } else {
+            holder.itemView.setBackgroundColor(Color.BLACK);
+            holder.tv_lastMsg.setTextColor(Color.WHITE);
+            holder.tv_name.setTextColor(Color.WHITE);
+        }
+
 
         holder.iv_profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +117,7 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
             }
 
         });
+
     }
 
     public User getUser(int position) {
@@ -103,7 +125,7 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
     }
 
     public interface OnItemClickListener {
-        void OnItemClick(User User);
+        void OnItemClick(User User, TextView tv_name, TextView tv_lastMsg, View view);
     }
 
     public void setOnItemCLickListener(AllUserList_RecyclerListAdapter.OnItemClickListener listener) {

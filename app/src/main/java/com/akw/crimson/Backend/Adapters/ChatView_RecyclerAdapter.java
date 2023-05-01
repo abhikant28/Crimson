@@ -8,8 +8,11 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.text.method.LinkMovementMethod;
@@ -20,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +33,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.Communications.DownloadFileService;
@@ -36,6 +42,9 @@ import com.akw.crimson.Backend.Communications.UploadFileService;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
+import com.akw.crimson.Chat.ChatActivity;
+import com.akw.crimson.Chat.Chat_Fragment_MediaView;
+import com.akw.crimson.Gallery.MediaView;
 import com.akw.crimson.R;
 import com.akw.crimson.databinding.MessageReceivedLayoutBinding;
 import com.akw.crimson.databinding.MessageSentLayoutBinding;
@@ -54,6 +63,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
     Context mContext;
     TheViewModel dbview;
     boolean active, unreadFound = false;
+    int mediaPosition=0;
     private OnItemClickListener listener;
 
 
@@ -63,6 +73,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         dbview = db;
         this.active = active;
         this.cursor = c;
+//        Log.i("ADAPTER::::::","FORMED");
     }
 
     @Override
@@ -112,7 +123,6 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                      }
                  });
                 }
-//                setMessageAndTimeView(holder, sent.MessageTime, sent.MessageMsgBox);
             } else {
                 sent.MessageMsgBox.setVisibility(View.GONE);
             }
@@ -134,6 +144,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                 Log.i("SENT::::", cursor.getString(cursor.getColumnIndexOrThrow("mediaID")));
 
                 if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
+                    viewHolder.mediaPos=mediaPosition++;
                     sent.MessageClMedia.setVisibility(View.VISIBLE);
                     sent.MessageIvImage.setVisibility(View.VISIBLE);
                     if (file.exists()) {
@@ -155,19 +166,35 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                                     Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
                                     intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-
+                                    Messenger messenger = new Messenger(new Handler() {
+                                        @Override
+                                        public void handleMessage(Message msg) {
+                                            // Update progress bar
+                                            int progress = msg.arg1;
+                                            sent.MessagePbProgressBarMedia.setProgress(progress);
+                                        }
+                                    });
+                                    intent.putExtra(Constants.KEY_INTENT_MESSENGER, messenger);
                                     intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     mContext.startService(intent);
                                 }
                             });
                         }
-                    } else {
                         sent.MessageIvImage.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                MediaMissingDialog();
+                                Chat_Fragment_MediaView myFragment = new Chat_Fragment_MediaView();
+                                Bundle bun=new Bundle();
+                                bun.putInt(Constants.KEY_INTENT_LIST_POSITION, viewHolder.mediaPos);
+                                myFragment.setArguments(bun);
+                                FragmentTransaction transaction = ((FragmentActivity)view.getContext()).getSupportFragmentManager().beginTransaction();
+                                transaction.add(R.id.chat_frameLayout_media, myFragment);
+                                transaction.addToBackStack(null);
+                                transaction.commit();
                             }
                         });
+                    } else {
+                        sent.MessageIvImage.setOnClickListener(view -> MediaMissingDialog());
                     }
                 } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
                     sent.MessageCvDoc.setVisibility(View.VISIBLE);
@@ -192,6 +219,15 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                                     Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
                                     intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                                    Messenger messenger = new Messenger(new Handler() {
+                                        @Override
+                                        public void handleMessage(Message msg) {
+                                            // Update progress bar
+                                            int progress = msg.arg1;
+                                            sent.MessagePbProgressBarMedia.setProgress(progress);
+                                        }
+                                    });
+                                    intent.putExtra(Constants.KEY_INTENT_MESSENGER, messenger);
                                     intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     mContext.startService(intent);
                                 }
@@ -201,9 +237,10 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
 
                     }
                 } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
+                    viewHolder.mediaPos=mediaPosition++;
                     if (file.exists()) {
                         sent.MessageClMedia.setVisibility(View.VISIBLE);
-                        sent.MessageIvImage.setVisibility(View.VISIBLE);
+                        sent.MessageVvVideo.setVisibility(View.VISIBLE);
                         sent.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
                         sent.MessageIbPlayVid.setVisibility(View.VISIBLE);
                         sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
@@ -228,6 +265,15 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                                     Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
                                     intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                                    Messenger messenger = new Messenger(new Handler() {
+                                        @Override
+                                        public void handleMessage(Message msg) {
+                                            // Update progress bar
+                                            int progress = msg.arg1;
+                                            sent.MessagePbProgressBarMedia.setProgress(progress);
+                                        }
+                                    });
+                                    intent.putExtra(Constants.KEY_INTENT_MESSENGER, messenger);
 
                                     intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     mContext.startService(intent);
@@ -273,6 +319,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         , cursor.getInt(cursor.getColumnIndexOrThrow("mediaType"))
                         , cursor.getInt(cursor.getColumnIndexOrThrow("self")) == 1);
                 if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
+                    viewHolder.mediaPos=mediaPosition++;
                     Log.i("MEDIA ID:::::", "fileID");
 
                     received.MessageClMedia.setVisibility(View.VISIBLE);
@@ -329,18 +376,19 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         });
                     }
                 } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
+                    viewHolder.mediaPos=mediaPosition++;
                     received.MessageClMedia.setVisibility(View.VISIBLE);
-                    received.MessageIvImage.setVisibility(View.VISIBLE);
+                    received.MessageVvVideo.setVisibility(View.VISIBLE);
+                    received.MessageIvImage.setVisibility(View.GONE);
                     if (file.exists()) {
+                        MediaController mediaControl= new MediaController(mContext);
                         Log.i("VIDEO::::::", file.getName());
-                        received.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
-                        received.MessageIbPlayVid.setVisibility(View.VISIBLE);
-                        received.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                //Video
-                            }
-                        });
+//                        received.MessageIvImage.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
+//                        received.MessageIbPlayVid.setVisibility(View.VISIBLE);
+                        received.MessageIbPlayVid.setVisibility(View.GONE);
+                        received.MessageVvVideo.setVideoURI(Uri.parse(file.getPath()));
+                        received.MessageVvVideo.setMediaController(mediaControl);
+                        mediaControl.setAnchorView(received.MessageVvVideo);
                     } else {
                         Log.i("VIDEO::::::", cursor.getString(cursor.getColumnIndexOrThrow("mediaID")));
                         received.MessageIbPlayVid.setVisibility(View.GONE);
@@ -496,6 +544,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
 
     class SentMessageView extends RecyclerView.ViewHolder {
         MessageSentLayoutBinding sentMsgBinding;
+        int mediaPos;
 
         public SentMessageView(@NonNull MessageSentLayoutBinding binding) {
             super(binding.getRoot());
@@ -505,6 +554,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
 
     class ReceivedMessageView extends RecyclerView.ViewHolder {
         MessageReceivedLayoutBinding receivedLayoutBinding;
+        int mediaPos;
 
         public ReceivedMessageView(@NonNull MessageReceivedLayoutBinding binding) {
             super(binding.getRoot());

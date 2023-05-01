@@ -52,10 +52,15 @@ public class Communicator extends LifecycleService {
     int starter = 0;
     String senderUserID = "2";
     String thisUserID;
+    private static Communicator instance = null;
 
+    public static boolean isCommunicatorRunning() {
+        return instance != null;
+    }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        Log.i("COMMUNICATOR:::", "STARTED ");
 
         super.onStartCommand(intent, flags, startId);
         if (intent != null && intent.getExtras() != null) {
@@ -161,11 +166,13 @@ public class Communicator extends LifecycleService {
         }
 
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
     public void onCreate() {
+        Log.i("COMMUNICATOR:::", "CREATED ");
+
 
         localDB = new TheViewModel(getApplication());
 

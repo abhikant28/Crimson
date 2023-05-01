@@ -1,6 +1,9 @@
 package com.akw.crimson;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,9 +16,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +34,7 @@ import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
+import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.Chat.ChatActivity;
 import com.akw.crimson.Gallery.MainGalleryActivity;
 import com.akw.crimson.Preferences.SettingsActivity;
@@ -37,10 +43,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 
-public class MainChatList extends AppCompatActivity {
+public class MainChatList extends BaseActivity {
 
     ActionBar ab;
     TextView tv_noResults;
@@ -55,6 +62,29 @@ public class MainChatList extends AppCompatActivity {
     TheViewModel dbViewModel;
     public static User user;
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_CAMERA) {
+                if (ContextCompat.checkSelfPermission(
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                        PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            99);
+                    return;
+                }
+                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                UsefulFunctions.saveImage(imageBitmap, true, file);
+            }
+
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -106,8 +136,8 @@ public class MainChatList extends AppCompatActivity {
                 startActivity(new Intent(this, PrepareMessageActivity.class));
                 break;
             case R.id.chatList_Menu_camera:
-                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(camera_intent, 77);
+//                Intent camera_intent = ;
+                startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), 77);
                 break;
             case R.id.chatList_Menu_payments:
                 break;
@@ -133,6 +163,7 @@ public class MainChatList extends AppCompatActivity {
     }
 
     private void connectLocalDatabase() {
+//        if(Communicator.localDB==null)startService(new Intent(new Intent(this, Communicator.class)));
         dbViewModel = Communicator.localDB;
 
         dbViewModel.getChatListUsers().observe(this, new Observer<List<User>>() {
@@ -197,7 +228,7 @@ public class MainChatList extends AppCompatActivity {
         rv_searchUsers.setAdapter(searchUserList_rvAdapter);
         searchUserList_rvAdapter.setOnItemCLickListener(new AllUserList_RecyclerListAdapter.OnItemClickListener() {
             @Override
-            public void OnItemClick(User User) {
+            public void OnItemClick(User User, TextView tv_name, TextView tv_lastMsg, View view) {
                 Intent intent = new Intent(getApplicationContext(), ProfileView.class);
                 intent.putExtra(Constants.KEY_INTENT_USERID, User.getUser_id());
                 startActivity(intent);
@@ -230,12 +261,7 @@ public class MainChatList extends AppCompatActivity {
         rv_searchUsers = findViewById(R.id.MainChat_UserSearch_List_RecyclerView);
         FloatingActionButton fab_startNew = findViewById(R.id.MainChat_floatButton_newMessage);
 
-        fab_startNew.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), StartNew.class));
-            }
-        });
+        fab_startNew.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), StartNew.class)));
 
     }
 }

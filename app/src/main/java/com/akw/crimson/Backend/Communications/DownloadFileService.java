@@ -55,16 +55,22 @@ public class DownloadFileService extends IntentService {
             case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
                 folder = "audios";
                 break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_PROFILE:
+                folder= "profile";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_STATUS:
+                folder="status";
+                break;
         }
         File outFile;
         final StorageReference fileRef = storageRef.child(folder + "/" + msg.getUser_id() + "_" + msg.getMediaID());
         if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
             String docName = msg.getMediaID().substring(Math.min(msg.getMediaID().length() - 1, msg.getMediaID().indexOf('_') + 1));
-            outFile = UsefulFunctions.getOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(), docName);
+            outFile = UsefulFunctions.makeOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(), docName);
             assert outFile != null;
             user.addDoc(outFile.getName());
         } else {
-            outFile = UsefulFunctions.getOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType());
+            outFile = UsefulFunctions.makeOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType());
             user.addMedia(outFile.getName());
         }
 
@@ -81,6 +87,7 @@ public class DownloadFileService extends IntentService {
                 db.updateMessage(msg);
                 db.updateUser(user);
                 fileRef.delete();
+                user.incMediaSize(outFile.length());
                 resultData.putInt("result", RESULT_SUCCESS);
                 receiver.send(RESULT_SUCCESS, resultData);
             } else {

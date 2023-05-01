@@ -10,15 +10,34 @@ public class Constants {
     public static final String KEY_INTENT_STARTED_BY_SEARCH = "search";
     public static final String KEY_INTENT_LIST_POSITION = "listPosition";
     public static final String KEY_INTENT_USERID = "userID";
+    public static final String KEY_INTENT_USER_LIST = "users";
     public static final String KEY_INTENT_MSG_TYPE = "messageType";
+    public static final String KEY_INTENT_URI = "uri";
     public static final String KEY_INTENT_MESSAGE_ID = "messageID";
     public static final String KEY_INTENT_USERNAME = "username";
     public static final String KEY_INTENT_PREP_MSG_ID = "preparedID";
     public static final String KEY_INTENT_PIC = "userPic";
     public static final String KEY_INTENT_EMAIL = "userEmail";
     public static final String KEY_INTENT_PHONE = "userPhone";
+    public static final String KEY_INTENT_TYPE = "activityType";
+    public static final int KEY_INTENT_TYPE_SINGLE_SELECT = 1;
+    public static final int KEY_INTENT_TYPE_MULTI_SELECT = 2;
     public static final int KEY_INTENT_START_FCM = 2;
     public static final int KEY_INTENT_START_APP = 0;
+    public static final String KEY_INTENT_MESSENGER = "MESSENGER";
+
+    public static final String KEY_INTENT_RESULT_CODE = "resultCode";
+    public static final String KEY_INTENT_REQUEST_CODE = "requestCode";
+    public static final int KEY_INTENT_REQUEST_CODE_DOCUMENT = 11;
+    public static final int KEY_INTENT_REQUEST_CODE_MENU = 111;
+    public static final int KEY_INTENT_REQUEST_CODE_MEDIA = 22;
+    public static final int KEY_INTENT_REQUEST_CODE_AUDIO = 33;
+    public static final int KEY_INTENT_REQUEST_CODE_CAMERA = 44;
+    public static final int KEY_INTENT_REQUEST_CODE_POLL = 55;
+    public static final int KEY_INTENT_REQUEST_CODE_PAYMENT = 66;
+    public static final int KEY_INTENT_REQUEST_CODE_LOCATION = 77;
+    public static final int KEY_INTENT_REQUEST_CODE_CANVAS = 88;
+    public static final int KEY_INTENT_REQUEST_CODE_CONTACT = 99;
 
     public static final String FIREBASE_REALTIME_DATABASE_MSG_URL = "https://crimson-ims-default-rtdb.asia-southeast1.firebasedatabase.app/";
     public static final String FIREBASE_REALTIME_DATABASE_CHILD_MSG = "messages";
@@ -42,6 +61,26 @@ public class Constants {
     public static final String KEY_FIRESTORE_USER_EMAIL = "email";
     public static final String KEY_FIRESTORE_USER_TOKEN = "token";
 
+    public static final int KEY_MESSAGE_MEDIA_TYPE_NONE = 0;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_IMAGE = 1;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_VIDEO = 2;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_DOCUMENT = 3;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_LOCATION = 4;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_CONTACT = 5;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_CANVAS = 6;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_AUDIO = 7;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_WALLPAPER = 8;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_PROFILE = 17;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_STATUS = 11;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE = 9;
+    public static final int KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO = 10;
+
+    public static final int KEY_MESSAGE_TYPE_INTERNAL_UPDATE_PROFILE = -2;
+    public static final int KEY_MESSAGE_TYPE_INTERNAL_UPDATE_ = -5;
+    public static final int KEY_MESSAGE_TYPE_TEXT = 1;
+    public static final int KEY_MESSAGE_TYPE_PING = 2;
+    public static final int KEY_MESSAGE_TYPE_STATUS = 3;
+    public static final int KEY_MESSAGE_TYPE_REACTION = 4;
 
     public static final String KEY_AVAILABILITY = "availability";
     public static final String REMOTE_MSG_AUTHORIZATION = "Authorization";
@@ -53,18 +92,10 @@ public class Constants {
     public static final String KEY_FRAGMENT_TYPE_NAME = "name";
     public static final String KEY_FRAGMENT_TYPE_ABOUT = "about";
     public static final String KEY_MESSAGE_MEDIA_TYPE = "mediaType";
-    public static final int KEY_MESSAGE_MEDIA_TYPE_IMAGE = 1;
-    public static final int KEY_MESSAGE_MEDIA_TYPE_VIDEO = 2;
-    public static final int KEY_MESSAGE_MEDIA_TYPE_DOCUMENT = 3;
-    public static final int KEY_MESSAGE_MEDIA_TYPE_LOCATION = 4;
-    public static final int KEY_MESSAGE_MEDIA_TYPE_CONTACT = 5;
-    public static final int KEY_MESSAGE_MEDIA_TYPE_CANVAS = 6;
-    public static final int KEY_MESSAGE_MEDIA_TYPE_AUDIO = 7;
-    public static final int KEY_MESSAGE_MEDIA_TYPE_WALLPAPER = 8;
     public static final String KEY_INTENT_LIST_SIZE = "listSize";
     public static final String KEY_FIRESTORE_USER_ABOUT = "about";
-    public static final int KEY_MESSAGE_MEDIA_TYPE_NONE = 0;
-    public static final String KEY_INTENT_ABOUT ="about" ;
+    public static final String KEY_INTENT_ABOUT = "about";
+
 
     public static HashMap<String, String> remoteMsgHeaders = null;
     public static JSONObject FcmJsonObject = null;

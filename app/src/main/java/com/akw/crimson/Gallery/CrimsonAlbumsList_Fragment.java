@@ -14,17 +14,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.akw.crimson.Gallery.GalleryAdapters.AlbumsRecyclerViewAdapter;
 import com.akw.crimson.R;
 
-public class AlbumsList_Fragment extends Fragment {
+public class CrimsonAlbumsList_Fragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v= inflater.inflate(R.layout.activity_albums_fragment, container, false);
+        View v= inflater.inflate(R.layout.crimson_albums_list_fragment, container, false);
 
-        Log.i("ALBUMS:::::",MainGalleryActivity.imageFolders.size()+"");
-        RecyclerView rv_albums= v.findViewById(R.id.AlbumsFragment_RecyclerView);
+        RecyclerView rv_albums= v.findViewById(R.id.crimsonAlbum_recyclerView);
         rv_albums.setLayoutManager(new GridLayoutManager(getContext(),2));
-        AlbumsRecyclerViewAdapter adapter = new AlbumsRecyclerViewAdapter(getContext(), MainGalleryActivity.imageFolders);
+        AlbumsRecyclerViewAdapter adapter = new AlbumsRecyclerViewAdapter(getContext(), MainGalleryActivity.crimsonFolders);
 
         rv_albums.setAdapter(adapter);
         return v;

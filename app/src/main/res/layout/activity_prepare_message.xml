@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DF1C43">
+    android:background="#0000">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#DF1C43"
+        android:background="@color/black"
         android:paddingHorizontal="10sp"
         tools:context=".PrepareMessageActivity">
 
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20sp"
-            android:text="Create Message to send automatically: "
+            android:text="Create Messages to send automatically: "
             android:textColor="@color/white"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,8 +41,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="100sp"
             android:text="Select Contact"
-            android:textSize="20sp"
             android:textColor="@color/white"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/textView10"
             app:layout_constraintTop_toTopOf="@+id/textView10" />
@@ -63,21 +63,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set Day"
-            android:textSize="20sp"
             android:textColor="@color/white"
-            app:layout_constraintEnd_toStartOf="@+id/PrepareMessage_tv_setTime"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="@+id/PrepareMessage_tv_selectContact"
             app:layout_constraintTop_toTopOf="@+id/textView5" />
 
         <TextView
             android:id="@+id/PrepareMessage_tv_setTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="50sp"
+            android:layout_marginStart="32dp"
             android:text="Set Time"
             android:textColor="@color/white"
             android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textView4"
+            app:layout_constraintStart_toEndOf="@+id/PrepareMessage_tv_selectContact"
             app:layout_constraintTop_toTopOf="@+id/PrepareMessage_tv_setDate" />
 
         <LinearLayout
@@ -147,15 +147,15 @@
                         android:background="@drawable/ic_baseline_attach_file_24"
                         android:backgroundTint="#B3B2B2"
                         android:rotation="-45" />
-
-                    <ImageButton
-                        android:id="@+id/PrepareMessage_Button_Camera"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/ic_baseline_camera_alt_24"
-                        android:backgroundTint="#B3B2B2" />
+<!--/-->
+<!--                    <ImageButton-->
+<!--                        android:id="@+id/PrepareMessage_Button_Camera"-->
+<!--                        android:layout_width="35dp"-->
+<!--                        android:layout_height="35dp"-->
+<!--                        android:layout_gravity="center_vertical"-->
+<!--                        android:layout_marginEnd="4dp"-->
+<!--                        android:background="@drawable/ic_baseline_camera_alt_24"-->
+<!--                        android:backgroundTint="#B3B2B2" />-->
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

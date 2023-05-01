@@ -60,22 +60,25 @@ public class FinalRegister extends AppCompatActivity {
         firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS)
                 .document(userID).set(data, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(getApplicationContext(), "User Details Registered", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "User Registered on Crimson!", Toast.LENGTH_SHORT).show();
                     SharedPrefManager.storeUserProfile(profilePic, userName, email,about);
                     Log.i("USERNAME::::",userName);
+                    if(profilePic!=null){
+
+                    }
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(documentReference -> {
-                    Toast.makeText(getApplicationContext(), "Data Insert Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "User Registration Failed", Toast.LENGTH_SHORT).show();
                 });
 
-        makefireReatimeDbCall(profilePic,userName,email);
+        makeFireRealtimeDBCall(profilePic,userName,email);
     }
 
-    private void makefireReatimeDbCall(String profilePic, String userName, String email) {
+    private void makeFireRealtimeDBCall(String profilePic, String userName, String email) {
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 

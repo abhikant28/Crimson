@@ -38,7 +38,7 @@ public class Registration_Profile extends AppCompatActivity {
     private ImageView iv_profilePic;
     private TextView tv_ImageText;
 
-    private String encodedImage;
+    private String encodedImage="";
     private boolean hasPic = false;
 
     @Override
@@ -95,12 +95,14 @@ public class Registration_Profile extends AppCompatActivity {
                     String about = document.getString(Constants.KEY_FIRESTORE_USER_ABOUT);
                     String profilePic = document.getString(Constants.KEY_FIRESTORE_USER_PIC);
                     encodedImage = profilePic;
-                    if (!encodedImage.isEmpty()) hasPic = true;
+                    if (encodedImage!=null && !encodedImage.isEmpty()) {
+                        hasPic = true;
+                        Bitmap bitmap = UsefulFunctions.decodeImage(profilePic);
+                        iv_profilePic.setImageBitmap(bitmap);
+                    }
                     et_mail.setText(email);
                     et_pass.setText(name);
-                    et_about.setText(about);
-                    Bitmap bitmap = UsefulFunctions.decodeImage(profilePic);
-                    iv_profilePic.setImageBitmap(bitmap);
+                    if(about!=null)et_about.setText(about);
                     tv_ImageText.setVisibility(View.GONE);
 //                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
                 }

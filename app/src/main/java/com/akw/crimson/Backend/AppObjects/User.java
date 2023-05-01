@@ -12,6 +12,7 @@ import com.akw.crimson.Backend.Database.DAOs.DataConverter;
 import com.akw.crimson.Backend.UsefulFunctions;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Entity(tableName = "user_table")
 public class User {
@@ -22,17 +23,19 @@ public class User {
     private String _id;
     private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about, wallpaper;
     private boolean unread, connected, blocked, mute;
-    private int unread_count, last_msg_type = 0;
+    private int unread_count, last_msg_type = 0, vidCount = 0, imgCount = 0, docCount = 0;
+    private long mediaSize;
     @TypeConverters(DataConverter.class)
     private ArrayList<String> groups, medias, links, docs;
 
-    public User(@NonNull String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected) {
+    public User(@NonNull String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected, String about) {
         this.user_id = user_id;
         this.name = name;
         this.displayName = displayName;
         this.pic = pic;
         this.phoneNumber = phoneNumber;
         this.connected = connected;
+        this.about = about;
     }
 
     public User(@NonNull String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected) {
@@ -45,12 +48,28 @@ public class User {
         this.connected = connected;
     }
 
+    public User(@NonNull String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected, String about) {
+        this.user_id = user_id;
+        this.name = name;
+        this.userName = username;
+        this.displayName = displayName;
+        this.pic = pic;
+        this.phoneNumber = phoneNumber;
+        this.connected = connected;
+        this.about = about;
+    }
+
+
     public int getGroupCount() {
         return getGroups().size();
     }
 
     public int getTotalMediaCount() {
         return getMedias().size() + getDocs().size() + getLinks().size();
+    }
+
+    public void setDocCount(int docCount) {
+        this.docCount = docCount;
     }
 
     public int getDocCount() {
@@ -66,18 +85,24 @@ public class User {
     }
 
     public boolean addMedia(String id) {
+        if (id.startsWith("IMG_")) imgCount++;
+        else vidCount++;
         return getMedias().add(id);
     }
 
     public boolean removeMedia(String id) {
+        if (id.startsWith("IMG_")) imgCount--;
+        else vidCount--;
         return getMedias().remove(id);
     }
 
     public boolean addDoc(String id) {
+        docCount++;
         return getDocs().add(id);
     }
 
     public boolean removeDoc(String id) {
+        docCount--;
         return getDocs().remove(id);
     }
 
@@ -258,6 +283,22 @@ public class User {
         this.docs = docs;
     }
 
+    public int getVidCount() {
+        return vidCount;
+    }
+
+    public void setVidCount(int vidCount) {
+        this.vidCount = vidCount;
+    }
+
+    public int getImgCount() {
+        return imgCount;
+    }
+
+    public void setImgCount(int imgCount) {
+        this.imgCount = imgCount;
+    }
+
     public String getDisplayName() {
         return displayName;
     }
@@ -292,5 +333,37 @@ public class User {
 
     public void setMute(boolean mute) {
         this.mute = mute;
+    }
+
+    public long getMediaSize() {
+        return mediaSize;
+    }
+
+    public long incMediaSize(long size) {
+        mediaSize += size;
+        return mediaSize;
+    }
+
+    public void setMediaSize(long mediaSize) {
+        this.mediaSize = mediaSize;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user_id, displayName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (!(obj instanceof User)) {
+            return false;
+        }
+
+        User other = (User) obj;
+        return this.user_id.equals(other.user_id);
     }
 }

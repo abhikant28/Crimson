@@ -5,28 +5,22 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Messenger;
 import android.os.ResultReceiver;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.akw.crimson.Backend.AppObjects.Message;
+import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
-import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class UploadFileService extends IntentService {
     private StorageReference storageRef;
@@ -50,57 +44,74 @@ public class UploadFileService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         new SharedPrefManager(getApplicationContext());
         storageRef = FirebaseStorage.getInstance().getReference();
-        db=Communicator.localDB;
+        db = Communicator.localDB;
         assert intent != null;
 
         ResultReceiver receiver = intent.getParcelableExtra(EXTRA_RECEIVER);
         Bundle resultData = new Bundle();
         String id = intent.getStringExtra(Constants.KEY_INTENT_MESSAGE_ID);
-
-        Message msg= db.getMessage(id);
-        Log.i("UPLOAD::::","onHandleIntent");
+        Messenger messenger = intent.getParcelableExtra(Constants.KEY_INTENT_MESSENGER);
 
 
-            String fileName = SharedPrefManager.getLocalUserID() +"_"+msg.getMediaID();
-            Log.i("UPLOAD MSG ID:::::", fileName);
+        Message msg = db.getMessage(id);
+        Log.i("UPLOAD::::", "onHandleIntent");
+        User user = db.getUser(msg.getUser_id());
 
-            String folder="";
-            switch (msg.getMediaType()) {
-                case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
-                    folder = "images";
-                    break;
-                case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
-                    folder = "videos";
-                    break;
-                case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
-                    folder = "documents";
-                    break;
-                case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
-                    folder = "audios";
-                    break;
-            }
-            StorageReference fileRef = storageRef.child(folder+"/" + fileName);
 
-            File file= UsefulFunctions.getFile(this,msg.getMediaID()
-                    , msg.getMediaType(), msg.isSelf());
+        String fileName = SharedPrefManager.getLocalUserID() + "_" + msg.getMediaID();
+        Log.i("UPLOAD MSG ID:::::", fileName);
 
-            Log.i("MEDIA TYE Upload:::::", msg.getMediaType()+"");
-            Uri uri = Uri.fromFile(file);
-            fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> {
-                Log.d("FileUploadService:::::::", "File successfully uploaded: ");
-                msg.setStatus(0);
-                db.updateMessage(msg);
-                resultData.putInt("result", RESULT_SUCCESS);
-                receiver.send(RESULT_SUCCESS, resultData);
-                stopSelf();
-            }).addOnFailureListener(e -> {
-                Log.e("FileUploadService:::::::::", "Failed to upload file.", e);
-                resultData.putInt("result", RESULT_FAIL);
-                receiver.send(RESULT_FAIL, resultData);
-                stopSelf();
-            }).addOnCanceledListener(() -> Log.e("FileUploadService::::::", "Cancelled to upload file."))
-                    .addOnProgressListener(snapshot -> Log.i("PROGRESSS:::::::::", snapshot.getBytesTransferred()+""));
+        String folder = "";
+        switch (msg.getMediaType()) {
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
+                folder = "images";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
+                folder = "videos";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
+                folder = "documents";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
+                folder = "audios";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_PROFILE:
+                folder= "profile";
+                break;
+            case Constants.KEY_MESSAGE_MEDIA_TYPE_STATUS:
+                folder="status";
+                break;
         }
+        StorageReference fileRef = storageRef.child(folder + "/" + fileName);
+
+        File file = UsefulFunctions.getFile(this, msg.getMediaID()
+                , msg.getMediaType(), msg.isSelf());
+
+        Log.i("MEDIA TYE Upload:::::", msg.getMediaType() + "");
+        Uri uri = Uri.fromFile(file);
+        fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> {
+                    Log.d("FileUploadService:::::::", "File successfully uploaded: ");
+                    msg.setStatus(0);
+                    db.updateMessage(msg);
+
+                    resultData.putInt("result", RESULT_SUCCESS);
+                    receiver.send(RESULT_SUCCESS, resultData);
+                    stopSelf();
+                }).addOnFailureListener(e -> {
+                    Log.e("FileUploadService:::::::::", "Failed to upload file.", e);
+                    resultData.putInt("result", RESULT_FAIL);
+                    receiver.send(RESULT_FAIL, resultData);
+                    stopSelf();
+                }).addOnCanceledListener(() -> Log.e("FileUploadService::::::", "Cancelled to upload file."))
+                .addOnProgressListener(snapshot ->
+                        {
+                            Log.i("PROGRESSS:::::::::", snapshot.getBytesTransferred() + "");
+                            android.os.Message m = android.os.Message.obtain();
+                            m.arg1 = (int) ((snapshot.getBytesTransferred()/file.length())*100);
+                        }
+
+                );
+    }
 
 
 }

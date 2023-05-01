@@ -36,6 +36,16 @@
                     android:orientation="vertical"
                     android:padding="5sp">
 
+                    <TextView
+                        android:id="@+id/Message_tv_Received_sender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:text="Message"
+                        android:textColor="@color/black"
+                        android:textSize="10dp"
+                        android:textStyle="bold" />
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/Message_Received_cl_media"
                         android:layout_width="wrap_content"
@@ -48,6 +58,73 @@
                             android:scaleType="centerCrop"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
+
+
+                        <ImageView
+                            android:id="@+id/Message_iv_audio_mic"
+                            android:layout_width="15sp"
+                            android:layout_height="15sp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_baseline_mic_24"
+                            app:layout_constraintEnd_toEndOf="@+id/Message_Received_cl_ll_audio"
+                            app:layout_constraintBottom_toBottomOf="@id/Message_Received_cl_ll_audio"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1:00"
+                            android:paddingHorizontal="5sp"
+                            android:textSize="10sp"
+                            app:layout_constraintStart_toStartOf="@+id/Message_Received_cl_ll_audio"
+                            app:layout_constraintTop_toBottomOf="@id/Message_Received_cl_ll_audio"/>
+                        <LinearLayout
+                            android:id="@+id/Message_Received_cl_ll_audio"
+                            android:layout_width="270sp"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingVertical="2sp"
+                            android:paddingHorizontal="2sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+
+                            <ImageButton
+                                android:id="@+id/Message_iv_audio_play"
+                                android:layout_width="25sp"
+                                android:layout_height="25sp"
+                                android:layout_gravity="center_vertical"
+                                android:backgroundTint="#00000000"
+                                android:src="@drawable/ic_baseline_play_arrow_24" />
+
+                            <SeekBar
+                                android:id="@+id/Message_sb_audio"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1" />
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/chatAttachment_popup_cv_doc"
+                                android:layout_width="30sp"
+                                android:layout_height="30sp"
+                                app:cardCornerRadius="600sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <ImageView
+                                    android:id="@+id/msg_popup_iv_doc"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="#D84315"
+                                    android:cropToPadding="true"
+                                    android:src="@drawable/ic_baseline_headphones_24"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
 
                         <ImageButton
                             android:layout_width="wrap_content"
@@ -106,10 +183,11 @@
                                 android:textStyle="bold" />
                         </androidx.cardview.widget.CardView>
 
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
-                        android:id="@+id/Message_Received_msgBox"
+                        android:id="@+id/Message_tv_Received_msgBox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxWidth="270sp"
@@ -139,7 +217,7 @@
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
-                    android:id="@+id/Message_Sent_msgBox"
+                    android:id="@+id/Message_tv_Sent_msgBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxWidth="270sp"

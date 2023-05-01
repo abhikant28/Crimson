@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".Gallery.MainGalleryActivity">
 
     <LinearLayout
@@ -20,6 +21,9 @@
             android:id="@+id/galleryMainActivity_BottomNavigationBar"
             android:layout_width="match_parent"
             app:menu="@menu/gallery_bottom_nav_menu"
+            android:background="@color/black"
+            app:itemTextColor="@color/white"
+            android:backgroundTint="@color/white"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 

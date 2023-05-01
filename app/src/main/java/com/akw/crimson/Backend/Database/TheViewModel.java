@@ -18,6 +18,7 @@ public class TheViewModel extends AndroidViewModel {
     private Cursor chatMessages;
     private Cursor chatList;
     private LiveData<List<User>> getChatList;
+    private LiveData<List<Message>> getLiveMessagesList;
     private LiveData<List<Message>> pendingMessagesList;
     private LiveData<List<Message>> receivedMessagesList;
     private  LiveData<List<User>> getAllUsers;
@@ -52,6 +53,10 @@ public class TheViewModel extends AndroidViewModel {
     }
     public List<Message> searchInUserMessages(String query, String id){
         return repository.searchInUserMessage(query,id);
+    }
+    public LiveData<List<Message>> getLiveMessagesList(String userId) {
+        getLiveMessagesList=repository.getLiveMessages(userId);
+        return getLiveMessagesList;
     }
     public LiveData<List<Message>> getPendingMessagesList() {
         return pendingMessagesList;

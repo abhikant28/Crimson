@@ -49,6 +49,7 @@
         android:layout_marginBottom="7dp"
         android:text="Message content"
         android:textColor="#B3B2B2"
+        android:maxLines="1"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/MainChatList_Item_CardView_UserPic"
         app:layout_constraintStart_toEndOf="@id/MainChatList_Item_CardView_UserPic"

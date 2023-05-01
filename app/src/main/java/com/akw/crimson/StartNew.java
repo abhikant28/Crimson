@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -167,7 +169,9 @@ public class StartNew extends BaseActivity {
 //        Log.i("Created Users::::::", "CREATED" + numsFound);
         for (DocumentSnapshot doc : numsFound) {
 //            Log.i("Created User::::::", doc.getId());
-            User user = new User(doc.getId(), doc.getString("name"), doc.getString("name"), allContacts.get(doc.getString("phone")).trim(), doc.getString("pic"), doc.getString("phone"), false);
+            User user = new User(doc.getId(), doc.getString("name"), doc.getString("name")
+                    , allContacts.get(doc.getString("phone")).trim(), doc.getString("pic")
+                    , doc.getString("phone"), false,doc.getString("about"));
             dbViewModel.insertUser(user);
         }
     }
@@ -210,7 +214,7 @@ public class StartNew extends BaseActivity {
         rv_allUsers.setAdapter(allUserList_recyclerListAdapter);
         allUserList_recyclerListAdapter.setOnItemCLickListener(new AllUserList_RecyclerListAdapter.OnItemClickListener() {
             @Override
-            public void OnItemClick(User user) {
+            public void OnItemClick(User user, TextView tv_name, TextView tv_lastMsg, View view) {
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
                 intent.putExtra(Constants.KEY_INTENT_USERID, user.getUser_id());
                 startActivity(intent);

@@ -26,8 +26,6 @@ public class MediaCursorRecyclerViewAdapter extends RecyclerView.Adapter<MediaCu
     Context mContext;
 
 
-
-
     public MediaCursorRecyclerViewAdapter(ArrayList<String> mCursorAdapter, OnImageClickListener mOnImageClickListener, Context mContext) {
         this.mCursorAdapter = mCursorAdapter;
         this.mOnImageClickListener = mOnImageClickListener;

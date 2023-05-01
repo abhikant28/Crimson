@@ -7,6 +7,7 @@ import android.provider.MediaStore;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Gallery.GalleryAdapters.MediaListRecyclerViewAdapter;
@@ -33,7 +34,9 @@ public class AlbumView extends AppCompatActivity implements MediaListRecyclerVie
         }
 
         rv_media=findViewById(R.id.AlbumMedia_RecyclerView);
-        rv_media.setLayoutManager(new GridLayoutManager(getApplicationContext(),4));
+        LinearLayoutManager layoutManager = new GridLayoutManager(this,3);
+        rv_media.setLayoutManager(layoutManager);
+        layoutManager.setAutoMeasureEnabled(true);
         MediaListRecyclerViewAdapter adapter = new MediaListRecyclerViewAdapter(getApplicationContext(), mediaCursor, this);
         rv_media.setAdapter(adapter);
         generateList(mediaCursor);

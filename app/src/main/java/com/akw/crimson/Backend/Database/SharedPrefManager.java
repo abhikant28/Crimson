@@ -58,6 +58,7 @@ public class SharedPrefManager {
         SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("USER_ID", user.getUser_id());
+        editor.putString("USER_ABOUT", user.getAbout());
         editor.putString("USER_NAME", user.getName());
         editor.putString("USER_PIC", user.getPic());
         editor.putString("USER_PHONE", user.getPhoneNumber());
@@ -99,7 +100,7 @@ public class SharedPrefManager {
     public static User getLocalUser() {
         SharedPreferences sp = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         User lUser = new User(sp.getString("USER_ID", null), null, sp.getString("USER_NAME", null)
-                , sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null), true);
+                , sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null), true, sp.getString("USER_ABOUT",null));
         lUser.setUserName(sp.getString("USER_NAME", null));
         return lUser;
     }
