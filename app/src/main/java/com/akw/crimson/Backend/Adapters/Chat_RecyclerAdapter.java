@@ -27,7 +27,7 @@ public class Chat_RecyclerAdapter
 //    CursorAdapter mCursorAdapter;
 //    Chat_RecyclerAdapter.OnListItemClickListener mOnListItemClickListener;
 //    Context mContext;
-//    TheViewModel dbview;
+//    TheViewModel dbView;
 //    boolean active,unreadFound=false;
 //    public int unreadPosition;
 //
@@ -36,7 +36,7 @@ public class Chat_RecyclerAdapter
 //    public Chat_RecyclerAdapter(Context context, Cursor c, Chat_RecyclerAdapter.OnListItemClickListener onImageClickListener, TheViewModel db, boolean active) {
 //        mOnListItemClickListener=onImageClickListener;
 //        mContext = context;
-//        dbview=db;
+//        dbView=db;
 //        this.active=active;
 //
 //        //Log.i("Chat_RecyclerAdapter::::", "Constructor "+c.getCount());
@@ -135,10 +135,10 @@ public class Chat_RecyclerAdapter
 //            holder.tv_sent_time.setText(cursor.getString(cursor.getColumnIndexOrThrow("time")));
 //
 //        }
-//        Message msg=dbview.getMessage(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+//        Message msg=dbView.getMessage(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
 //        msg.setUnread(false);
 //        if(!msg.isSelf())msg.setStatus(3);
-//        dbview.updateMessage(msg);
+//        dbView.updateMessage(msg);
 //        //Log.i("ALL ::::", mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
 //        //holder.v1.setImageURI(Uri.parse(mCursorAdapter.getCursor().getString(mCursorAdapter.getCursor().getColumnIndexOrThrow(MediaStore.Images.Media.DATA))));
 //

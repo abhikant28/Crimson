@@ -79,7 +79,8 @@ public class Constants {
     public static final int KEY_MESSAGE_TYPE_INTERNAL_UPDATE_ = -5;
     public static final int KEY_MESSAGE_TYPE_TEXT = 1;
     public static final int KEY_MESSAGE_TYPE_PING = 2;
-    public static final int KEY_MESSAGE_TYPE_STATUS = 3;
+    public static final int KEY_MESSAGE_TYPE_STATUS_IMAGE = 31;
+    public static final int KEY_MESSAGE_TYPE_STATUS_VIDEO = 32;
     public static final int KEY_MESSAGE_TYPE_REACTION = 4;
 
     public static final String KEY_AVAILABILITY = "availability";
@@ -95,6 +96,7 @@ public class Constants {
     public static final String KEY_INTENT_LIST_SIZE = "listSize";
     public static final String KEY_FIRESTORE_USER_ABOUT = "about";
     public static final String KEY_INTENT_ABOUT = "about";
+    public static final String KEY_INTENT_RESULT_AUDIO_PATH = "audioPath";
 
 
     public static HashMap<String, String> remoteMsgHeaders = null;

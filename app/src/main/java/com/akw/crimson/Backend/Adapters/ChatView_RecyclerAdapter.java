@@ -42,9 +42,7 @@ import com.akw.crimson.Backend.Communications.UploadFileService;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
-import com.akw.crimson.Chat.ChatActivity;
 import com.akw.crimson.Chat.Chat_Fragment_MediaView;
-import com.akw.crimson.Gallery.MediaView;
 import com.akw.crimson.R;
 import com.akw.crimson.databinding.MessageReceivedLayoutBinding;
 import com.akw.crimson.databinding.MessageSentLayoutBinding;
@@ -61,7 +59,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
     Cursor cursor;
     private OnItemClickListener mOnListItemClickListener;
     Context mContext;
-    TheViewModel dbview;
+    TheViewModel dbView;
     boolean active, unreadFound = false;
     int mediaPosition=0;
     private OnItemClickListener listener;
@@ -70,7 +68,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
     public ChatView_RecyclerAdapter(Context context, Cursor c, OnItemClickListener onImageClickListener, TheViewModel db, boolean active) {
         mOnListItemClickListener = onImageClickListener;
         mContext = context;
-        dbview = db;
+        dbView = db;
         this.active = active;
         this.cursor = c;
 //        Log.i("ADAPTER::::::","FORMED");
@@ -114,13 +112,10 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                 List<String> igLinks = getInstagramLinks(msg);
                 if(igLinks.size()!=0){
                  sent.MessageBViewLink.setVisibility(View.VISIBLE);
-                 sent.MessageBViewLink.setOnClickListener(new View.OnClickListener() {
-                     @Override
-                     public void onClick(View view) {
-                         sent.MessageBViewLink.setVisibility(View.GONE);
-                         sent.MessageWvLinkView.setVisibility(View.VISIBLE);
-                         openInstagramPostInWebView(igLinks.get(0),sent.MessageWvLinkView);
-                     }
+                 sent.MessageBViewLink.setOnClickListener(view -> {
+                     sent.MessageBViewLink.setVisibility(View.GONE);
+                     sent.MessageWvLinkView.setVisibility(View.VISIBLE);
+                     openInstagramPostInWebView(igLinks.get(0),sent.MessageWvLinkView);
                  });
                 }
             } else {
@@ -153,45 +148,39 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                             sent.MessageCvImageSize.setVisibility(View.VISIBLE);
                             sent.MessageTvImageSize.setVisibility(View.VISIBLE);
                             sent.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))) + " Kb ");
-                            sent.MessageCvImageSize.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    cursor.moveToPosition(holder.getAdapterPosition());
-                                    Log.i("CLICKED::::", view + "");
-                                    Intent intent;
-                                    Log.i("FIRESTORAGE :::::::", "STARTING");
-                                    sent.MessageCvImageSize.setVisibility(View.GONE);
-                                    sent.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
-                                    sent.MessageIvMediaCancel.setVisibility(View.VISIBLE);
-                                    Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
-                                    intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
-                                    intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-                                    Messenger messenger = new Messenger(new Handler() {
-                                        @Override
-                                        public void handleMessage(Message msg) {
-                                            // Update progress bar
-                                            int progress = msg.arg1;
-                                            sent.MessagePbProgressBarMedia.setProgress(progress);
-                                        }
-                                    });
-                                    intent.putExtra(Constants.KEY_INTENT_MESSENGER, messenger);
-                                    intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
-                                    mContext.startService(intent);
-                                }
+                            sent.MessageCvImageSize.setOnClickListener(view -> {
+                                cursor.moveToPosition(holder.getAdapterPosition());
+                                Log.i("CLICKED::::", view + "");
+                                Intent intent;
+                                Log.i("FIRESTORAGE :::::::", "STARTING");
+                                sent.MessageCvImageSize.setVisibility(View.GONE);
+                                sent.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
+                                sent.MessageIvMediaCancel.setVisibility(View.VISIBLE);
+                                Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
+                                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                                Messenger messenger = new Messenger(new Handler() {
+                                    @Override
+                                    public void handleMessage(Message msg) {
+                                        // Update progress bar
+                                        int progress = msg.arg1;
+                                        sent.MessagePbProgressBarMedia.setProgress(progress);
+                                    }
+                                });
+                                intent.putExtra(Constants.KEY_INTENT_MESSENGER, messenger);
+                                intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                                mContext.startService(intent);
                             });
                         }
-                        sent.MessageIvImage.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Chat_Fragment_MediaView myFragment = new Chat_Fragment_MediaView();
-                                Bundle bun=new Bundle();
-                                bun.putInt(Constants.KEY_INTENT_LIST_POSITION, viewHolder.mediaPos);
-                                myFragment.setArguments(bun);
-                                FragmentTransaction transaction = ((FragmentActivity)view.getContext()).getSupportFragmentManager().beginTransaction();
-                                transaction.add(R.id.chat_frameLayout_media, myFragment);
-                                transaction.addToBackStack(null);
-                                transaction.commit();
-                            }
+                        sent.MessageIvImage.setOnClickListener(view -> {
+                            Chat_Fragment_MediaView myFragment = new Chat_Fragment_MediaView();
+                            Bundle bun=new Bundle();
+                            bun.putInt(Constants.KEY_INTENT_LIST_POSITION, viewHolder.mediaPos);
+                            myFragment.setArguments(bun);
+                            FragmentTransaction transaction = ((FragmentActivity)view.getContext()).getSupportFragmentManager().beginTransaction();
+                            transaction.add(R.id.chat_frameLayout_media, myFragment);
+                            transaction.addToBackStack(null);
+                            transaction.commit();
                         });
                     } else {
                         sent.MessageIvImage.setOnClickListener(view -> MediaMissingDialog());
@@ -219,7 +208,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                                     Log.i("INTENT MSG ID:::::", cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     intent = new Intent(mContext.getApplicationContext(), UploadFileService.class);
                                     intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-                                    Messenger messenger = new Messenger(new Handler() {
+                                    Messenger messenger = new Messenger( new Handler() {
                                         @Override
                                         public void handleMessage(Message msg) {
                                             // Update progress bar
@@ -274,19 +263,13 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                                         }
                                     });
                                     intent.putExtra(Constants.KEY_INTENT_MESSENGER, messenger);
-
                                     intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
                                     mContext.startService(intent);
                                 }
                             });
                         }
                     } else {
-                        sent.MessageIbPlayVid.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                MediaMissingDialog();
-                            }
-                        });
+                        sent.MessageIbPlayVid.setOnClickListener(view -> MediaMissingDialog());
                     }
 
                 }
@@ -330,21 +313,18 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         received.MessageCvImageSize.setVisibility(View.VISIBLE);
                         received.MessageTvImageSize.setVisibility(View.VISIBLE);
                         received.MessageTvImageSize.setText(String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow("mediaType"))));
-                        received.MessageCvImageSize.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                received.MessageIvMediaCancel.setVisibility(View.VISIBLE);
-                                received.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
-                                Log.i("CLICKED::::", view + "");
-                                Intent intent;
-                                Log.i("FIRESTORAGE :::::::", "STARTING");
-                                cursor.moveToPosition(holder.getAdapterPosition());
-                                intent = new Intent(mContext.getApplicationContext(), DownloadFileService.class);
-                                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+                        received.MessageCvImageSize.setOnClickListener(view -> {
+                            received.MessageIvMediaCancel.setVisibility(View.VISIBLE);
+                            received.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
+                            Log.i("CLICKED::::", view + "");
+                            Intent intent;
+                            Log.i("FIRESTORAGE :::::::", "STARTING");
+                            cursor.moveToPosition(holder.getAdapterPosition());
+                            intent = new Intent(mContext.getApplicationContext(), DownloadFileService.class);
+                            intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
 
-                                intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
-                                mContext.startService(intent);
-                            }
+                            intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
+                            mContext.startService(intent);
                         });
                     }
 
@@ -459,28 +439,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private void setMessageAndTimeView(RecyclerView.ViewHolder holder, TextView timeTv, TextView msgTv) {
-        Log.i("TIME VIEW:::::", msgTv.getText().toString());
-        ConstraintLayout constraintLayout = holder.itemView.findViewById(R.id.Message_cl);
-        int msgLen = msgTv.getText().toString().length();
-        int maxWid = msgTv.getMaxWidth();
-        if (timeTv.getText().toString().length() + (msgLen) - 1 <= 23) {
-            Log.i("TIME VIEW:::::", "<= 25");
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone(constraintLayout);
-            constraintSet.connect(timeTv.getId(), ConstraintSet.LEFT,msgTv.getId(), ConstraintSet.LEFT,  2);
-            constraintSet.connect(timeTv.getId(), ConstraintSet.TOP,R.id.Message_cl,ConstraintSet.TOP,  5);
-            constraintSet.applyTo(constraintLayout);
-        } else if (timeTv.getText().toString().length() + (msgLen % 23) - 1 >= 20) {
-            Log.i("TIME VIEW:::::", ">= 25");
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone(constraintLayout);
-            constraintSet.connect(timeTv.getId(), ConstraintSet.TOP, msgTv.getId(), ConstraintSet.BOTTOM, 2);
-            constraintSet.applyTo(constraintLayout);
-        }else {
 
-        }
-    }
     public List<String> getInstagramLinks(String text) {
         List<String> links = new ArrayList<>();
         // Regular expression to match Instagram links

@@ -61,6 +61,7 @@ import com.akw.crimson.BaseActivity;
 import com.akw.crimson.PrepareMessageActivity;
 import com.akw.crimson.ProfileView;
 import com.akw.crimson.R;
+import com.akw.crimson.SelectAudio;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -138,7 +139,7 @@ public class ChatActivity extends BaseActivity {
             public boolean onQueryTextSubmit(String query) {
                 if (query.length() != 0) {
                     searchPosition = 0;
-                    makeSearch(searchView, chatCursor, query);
+                    makeSearch(searchView, query);
                 } else {
                     searchPosition = 0;
                 }
@@ -227,16 +228,6 @@ public class ChatActivity extends BaseActivity {
                         , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
 
             }
-//            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_CAMERA) {
-//                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-//                Bundle extras = data.getExtras();
-//                Bitmap imageBitmap = (Bitmap) extras.get("data");
-//                UsefulFunctions.saveImage(imageBitmap, true, file);
-//                Log.i("CAMERA:::::", data.getData() + "");
-//                message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
-//                        , null, file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-//
-//            }
             if (message != null) {
                 if (message.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
                     user.addDoc(message.getMediaID());
@@ -287,9 +278,6 @@ public class ChatActivity extends BaseActivity {
         setMyActionBar();
         setClicks();
 
-//        GetChatMessagesThread gcmt = new GetChatMessagesThread(user.getUser_id());
-//        chatThread = new Thread(gcmt);
-//        chatThread.start();
 
         dbViewModel.getLiveMessagesList(userID).observe(this, messages -> {
             GetChatLiveMessagesThread gcmt = new GetChatLiveMessagesThread(user.getUser_id());
@@ -330,12 +318,13 @@ public class ChatActivity extends BaseActivity {
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.attachment_popup_ll_audio).setOnClickListener(view -> {
-            String[] mimetypes = {"audio/3gp", "audio/AMR", "audio/mp3"};
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-            intent.setType("audio/*");
-
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(Intent.createChooser(intent, "Select Audio"), Constants.KEY_INTENT_REQUEST_CODE_AUDIO);
+//            String[] mimetypes = {"audio/3gp", "audio/AMR", "audio/mp3"};
+//            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+//            intent.setType("audio/*");
+//
+            Intent audioIntent = new Intent(this,SelectAudio.class);
+            if (audioIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(audioIntent,Constants.KEY_INTENT_REQUEST_CODE_AUDIO);
             }
             popupWindow.dismiss();
         });
@@ -392,7 +381,7 @@ public class ChatActivity extends BaseActivity {
     }
 
 
-    private void makeSearch(SearchView searchView, Cursor cursor, String query) {
+    private void makeSearch(SearchView searchView, String query) {
 
         ViewGroup.LayoutParams navButtonsParams = new ViewGroup.LayoutParams(ab.getHeight() * 2 / 3, ab.getHeight() * 2 / 3);
 
@@ -407,30 +396,24 @@ public class ChatActivity extends BaseActivity {
         ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.BOTTOM);
 
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int pos = searchCursor(chatCursor, query, true);
-                if (pos != -1) {
-                    chatRecyclerView.scrollToPosition(pos);
-                } else {
-                    Toast.makeText(getApplicationContext(), "No more results", Toast.LENGTH_SHORT).show();
-                }
-                Log.i("POSITION::::", pos + "");
+        btnNext.setOnClickListener(v -> {
+            int pos = searchCursor(chatCursor, query, true);
+            if (pos != -1) {
+                chatRecyclerView.scrollToPosition(pos);
+            } else {
+                Toast.makeText(getApplicationContext(), "No more results", Toast.LENGTH_SHORT).show();
             }
+            Log.i("POSITION::::", pos + "");
         });
 
-        btnPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int pos = searchCursor(chatCursor, query, false);
-                if (pos != -1) {
-                    chatRecyclerView.scrollToPosition(pos);
-                } else {
-                    Toast.makeText(getApplicationContext(), "No more results", Toast.LENGTH_SHORT).show();
-                }
-                Log.i("POSITION::::", pos + "");
+        btnPrev.setOnClickListener(v -> {
+            int pos = searchCursor(chatCursor, query, false);
+            if (pos != -1) {
+                chatRecyclerView.scrollToPosition(pos);
+            } else {
+                Toast.makeText(getApplicationContext(), "No more results", Toast.LENGTH_SHORT).show();
             }
+            Log.i("POSITION::::", pos + "");
         });
     }
 
@@ -461,51 +444,45 @@ public class ChatActivity extends BaseActivity {
 
 
     private void setClicks() {
-        ib_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        ib_send.setOnClickListener(view -> {
 
-                if (!et_message.getText().toString().trim().equals("")) {
-                    Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
-                    dbViewModel.insertMessage(message);
-                    //send(message);
-                    user.setConnected(true);
-                    et_message.setText("");
-                    if (!isOnline) {
-                        Log.i("NOT ONLINE", "SENDING MSG");
-                        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-                        firestore.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
+            if (!et_message.getText().toString().trim().equals("")) {
+                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
+                dbViewModel.insertMessage(message);
+                //send(message);
+                user.setConnected(true);
+                et_message.setText("");
+                if (!isOnline) {
+                    Log.i("NOT ONLINE", "SENDING MSG");
+                    FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                    firestore.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
+                            Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
 //                                Messaging.sendMessageRetroNotification(new SharedPrefManager(getApplicationContext()).getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(),userID);
-                            }
-                        });
+                        }
+                    });
 
-                    }
                 }
             }
         });
 
-        ib_emoji.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm != null) {
-                    if (imm.isActive(et_message)) {
-                        // Hide the keyboard
+        ib_emoji.setOnClickListener(view -> {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                if (imm.isActive(et_message)) {
+                    // Hide the keyboard
 //                        imm.hideSoftInputFromWindow(et_message.getWindowToken(), 0);
-                        // Switch to emoji keyboard
-                        et_message.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
-                        ib_emoji.setBackground(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_baseline_keyboard_24));
-                    } else {
-                        // Show the keyboard
-                        imm.showSoftInput(et_message, InputMethodManager.SHOW_FORCED);
-                        // Switch to text keyboard
-                        et_message.setInputType(InputType.TYPE_CLASS_TEXT);
-                        ib_emoji.setBackground(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_baseline_emoji_emotions_24));
-                    }
+                    // Switch to emoji keyboard
+                    et_message.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
+                    ib_emoji.setBackground(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_baseline_keyboard_24));
+                } else {
+                    // Show the keyboard
+                    imm.showSoftInput(et_message, InputMethodManager.SHOW_FORCED);
+                    // Switch to text keyboard
+                    et_message.setInputType(InputType.TYPE_CLASS_TEXT);
+                    ib_emoji.setBackground(AppCompatResources.getDrawable(view.getContext(), R.drawable.ic_baseline_emoji_emotions_24));
                 }
             }
         });
@@ -520,21 +497,18 @@ public class ChatActivity extends BaseActivity {
         chatRecyclerView.setLayoutManager(layoutManager);
         chatRecyclerView.setItemAnimator(new DefaultItemAnimator());
         chatRecyclerView.setAdapter(chatViewAdapter);
-        chatViewAdapter.setOnItemClickListener(new ChatView_RecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
-                Intent intent;
-                Log.i("FIRESTORAGE :::::::", "STARTING");
-                if (upload) {
-                    intent = new Intent(getApplicationContext(), UploadFileService.class);
-                    intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-                } else {
-                    intent = new Intent(getApplicationContext(), DownloadFileService.class);
-                    intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
-                }
-                intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
-                startService(intent);
+        chatViewAdapter.setOnItemClickListener((msgID, fileName, cvSize, tvSize, progressBar, ivCancel, view, upload) -> {
+            Intent intent;
+            Log.i("FIRESTORAGE :::::::", "STARTING");
+            if (upload) {
+                intent = new Intent(getApplicationContext(), UploadFileService.class);
+                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+            } else {
+                intent = new Intent(getApplicationContext(), DownloadFileService.class);
+                intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
             }
+            intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
+            startService(intent);
         });
         chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
     }
@@ -634,12 +608,7 @@ public class ChatActivity extends BaseActivity {
 
             }
         });
-        ib_attach.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attachmentPopUp();
-            }
-        });
+        ib_attach.setOnClickListener(view -> attachmentPopUp());
         ib_camera.setOnClickListener(view -> {
             Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -652,16 +621,11 @@ public class ChatActivity extends BaseActivity {
 
 
     public void updateChat(String inp) {
-//            int l = chatCursor.getCount();
         chatCursor = dbViewModel.getChatMessages(inp);
         mediaList = dbViewModel.getUserMedia(userID);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
-                        , new ChatView_RecyclerAdapter.OnItemClickListener() {
-                    @Override
-                    public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
+        runOnUiThread(() -> {
+            chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
+                    , (msgID, fileName, cvSize, tvSize, progressBar, ivCancel, view, upload) -> {
                         Intent intent;
                         Log.i("FIRESTORAGE :::::::", "STARTING");
                         if (upload) {
@@ -673,12 +637,10 @@ public class ChatActivity extends BaseActivity {
                         }
                         intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
                         startService(intent);
-                    }
-                }, dbViewModel, false);
-                chatRecyclerView.setAdapter(null);
-                loadChat();
-                chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
-            }
+                    }, dbViewModel, false);
+            chatRecyclerView.setAdapter(null);
+            loadChat();
+            chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
         });
         updated = false;
         user = dbViewModel.getUser(userID);
@@ -686,7 +648,6 @@ public class ChatActivity extends BaseActivity {
 
     class GetChatLiveMessagesThread implements Runnable {
         String inp;
-        Context cxt;
 
         GetChatLiveMessagesThread(String inp) {
             this.inp = inp;
@@ -699,81 +660,81 @@ public class ChatActivity extends BaseActivity {
         }
     }
 
-    class GetChatMessagesThread implements Runnable {
-        String inp;
-
-        GetChatMessagesThread(String inp) {
-            this.inp = inp;
-        }
-
-        @Override
-        public void run() {
-            chatCursor = dbViewModel.getChatMessages(inp);
-            mediaList = dbViewModel.getUserMedia(userID);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i(
-                            "MAKING ADAPTER CHAT:::::", "MAking.." + chatCursor.getCount() + "..");
-
-                    chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
-                            , new ChatView_RecyclerAdapter.OnItemClickListener() {
-                        @Override
-                        public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
-                            Intent intent;
-                            Log.i("FIRESTORAGE :::::::", "STARTING");
-                            if (upload) {
-                                intent = new Intent(getApplicationContext(), UploadFileService.class);
-                                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-                            } else {
-                                intent = new Intent(getApplicationContext(), DownloadFileService.class);
-                                intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
-                            }
-                            intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
-                            startService(intent);
-                        }
-                    }, dbViewModel, true);
-                    loadChat();
-                    chatRecyclerView.scrollToPosition(chatViewAdapter.getItemCount());
-                }
-            });
-
-            while (true) {
-                if (updated && chatViewAdapter != null && updateID.equals(userID)) {
-                    int l = chatCursor.getCount();
-                    //chatCursor.close();
-                    chatCursor = dbViewModel.getChatMessages(inp);
-                    mediaList = dbViewModel.getUserMedia(userID);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
-                                    , new ChatView_RecyclerAdapter.OnItemClickListener() {
-                                @Override
-                                public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
-                                    Intent intent;
-                                    Log.i("FIRESTORAGE :::::::", "STARTING");
-                                    if (upload) {
-                                        intent = new Intent(getApplicationContext(), UploadFileService.class);
-                                        intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-                                    } else {
-                                        intent = new Intent(getApplicationContext(), DownloadFileService.class);
-                                        intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
-                                    }
-                                    intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
-                                    startService(intent);
-                                }
-                            }, dbViewModel, false);
-                            chatRecyclerView.setAdapter(null);
-                            loadChat();
-                            chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
-                        }
-                    });
-                    updated = false;
-                    user = dbViewModel.getUser(userID);
-                }
-            }
-
-        }
-    }
+//    class GetChatMessagesThread implements Runnable {
+//        String inp;
+//
+//        GetChatMessagesThread(String inp) {
+//            this.inp = inp;
+//        }
+//
+//        @Override
+//        public void run() {
+//            chatCursor = dbViewModel.getChatMessages(inp);
+//            mediaList = dbViewModel.getUserMedia(userID);
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Log.i(
+//                            "MAKING ADAPTER CHAT:::::", "MAking.." + chatCursor.getCount() + "..");
+//
+//                    chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
+//                            , new ChatView_RecyclerAdapter.OnItemClickListener() {
+//                        @Override
+//                        public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
+//                            Intent intent;
+//                            Log.i("FIRESTORAGE :::::::", "STARTING");
+//                            if (upload) {
+//                                intent = new Intent(getApplicationContext(), UploadFileService.class);
+//                                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+//                            } else {
+//                                intent = new Intent(getApplicationContext(), DownloadFileService.class);
+//                                intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
+//                            }
+//                            intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
+//                            startService(intent);
+//                        }
+//                    }, dbViewModel, true);
+//                    loadChat();
+//                    chatRecyclerView.scrollToPosition(chatViewAdapter.getItemCount());
+//                }
+//            });
+//
+//            while (true) {
+//                if (updated && chatViewAdapter != null && updateID.equals(userID)) {
+//                    int l = chatCursor.getCount();
+//                    //chatCursor.close();
+//                    chatCursor = dbViewModel.getChatMessages(inp);
+//                    mediaList = dbViewModel.getUserMedia(userID);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
+//                                    , new ChatView_RecyclerAdapter.OnItemClickListener() {
+//                                @Override
+//                                public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
+//                                    Intent intent;
+//                                    Log.i("FIRESTORAGE :::::::", "STARTING");
+//                                    if (upload) {
+//                                        intent = new Intent(getApplicationContext(), UploadFileService.class);
+//                                        intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
+//                                    } else {
+//                                        intent = new Intent(getApplicationContext(), DownloadFileService.class);
+//                                        intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
+//                                    }
+//                                    intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
+//                                    startService(intent);
+//                                }
+//                            }, dbViewModel, false);
+//                            chatRecyclerView.setAdapter(null);
+//                            loadChat();
+//                            chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
+//                        }
+//                    });
+//                    updated = false;
+//                    user = dbViewModel.getUser(userID);
+//                }
+//            }
+//
+//        }
+//    }
 }
