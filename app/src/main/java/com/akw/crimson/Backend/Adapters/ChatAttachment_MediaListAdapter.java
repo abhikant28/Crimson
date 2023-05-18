@@ -18,13 +18,19 @@ import com.akw.crimson.Chat.MessageAttachment;
 import com.akw.crimson.R;
 
 public class ChatAttachment_MediaListAdapter extends RecyclerView.Adapter<ChatAttachment_MediaListAdapter.ViewHolder> {
+    public int prevPos = 0;
     ImageView iv_image;
     VideoView vv_video;
     EditText et_msg;
     Context cxt;
     View prevView;
 
-    public int prevPos = 0;
+    public ChatAttachment_MediaListAdapter(ImageView iv_image, VideoView vv_video, EditText et_msg, Context cxt) {
+        this.iv_image = iv_image;
+        this.vv_video = vv_video;
+        this.et_msg = et_msg;
+        this.cxt = cxt;
+    }
 
     @NonNull
     @Override
@@ -32,13 +38,6 @@ public class ChatAttachment_MediaListAdapter extends RecyclerView.Adapter<ChatAt
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_list_item, parent, false);
 
         return new ViewHolder(itemView);
-    }
-
-    public ChatAttachment_MediaListAdapter(ImageView iv_image, VideoView vv_video, EditText et_msg, Context cxt) {
-        this.iv_image = iv_image;
-        this.vv_video = vv_video;
-        this.et_msg = et_msg;
-        this.cxt = cxt;
     }
 
     @Override

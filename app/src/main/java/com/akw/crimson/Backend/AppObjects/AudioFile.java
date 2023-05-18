@@ -3,16 +3,16 @@ package com.akw.crimson.Backend.AppObjects;
 import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
 public class AudioFile {
-    private String name;
+    private final String name;
     private String path;
-    private long size;
-    private int id,length;
-    private Bitmap image;
+    private final long size;
+    private int id;
+    private final int length;
+    private final Bitmap image;
 
 
     public AudioFile(String name, String path, long size, int id, int length, Bitmap image) {
@@ -42,9 +42,10 @@ public class AudioFile {
                 - TimeUnit.MINUTES.toSeconds(minutes);
         return String.format("%02d:%02d", minutes, seconds);
     }
+
     @Override
     public boolean equals(@NonNull Object obj) {
-        return getId()==((AudioFile)obj).getId();
+        return getId() == ((AudioFile) obj).getId();
     }
 
     public int getId() {

@@ -3,7 +3,7 @@ package com.akw.crimson.Backend.Communications;
 import org.json.JSONObject;
 
 public class SendNotificationModel {
-    private String body,title;
+    private String body, title;
     private JSONObject data;
 
     public SendNotificationModel(String body, String title) {

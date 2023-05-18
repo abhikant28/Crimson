@@ -52,7 +52,7 @@ public class NotificationHelper extends ContextWrapper {
     public NotificationCompat.Builder getChannel1Notification(String to) {
         return new NotificationCompat.Builder(getApplicationContext(), channel1ID)
                 .setContentTitle("Prepared Message")
-                .setContentText("Message sent to "+to)
+                .setContentText("Message sent to " + to)
                 .setSmallIcon(R.drawable.ic_launcher_foreground);
     }
 

@@ -11,8 +11,8 @@ public class PreparedMessage {
     int id;
 
     public PreparedMessage(Message message, Calendar date, String to, String toID) {
-        Calendar c= Calendar.getInstance();
-        this.id=c.get(Calendar.DAY_OF_MONTH)+c.get(Calendar.HOUR_OF_DAY)+c.get(Calendar.MINUTE)+c.get(Calendar.SECOND);
+        Calendar c = Calendar.getInstance();
+        this.id = c.get(Calendar.DAY_OF_MONTH) + c.get(Calendar.HOUR_OF_DAY) + c.get(Calendar.MINUTE) + c.get(Calendar.SECOND);
         this.message = message;
         this.date = date;
         this.toName = to;

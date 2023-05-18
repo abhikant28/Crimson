@@ -5,18 +5,17 @@ import android.os.AsyncTask;
 import android.os.Environment;
 
 import androidx.annotation.NonNull;
-import androidx.room.AutoMigration;
+import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.room.Database;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Database.DAOs.DataConverter;
-import com.akw.crimson.Backend.Database.DAOs.UsersDao;
 import com.akw.crimson.Backend.Database.DAOs.MessagesDao;
+import com.akw.crimson.Backend.Database.DAOs.UsersDao;
 
 import java.io.File;
 
@@ -31,15 +30,20 @@ import java.io.File;
 
 
 @TypeConverters({DataConverter.class})
-abstract class TheDatabase extends RoomDatabase{
+abstract class TheDatabase extends RoomDatabase {
 
     private static TheDatabase instance;
+    private static RoomDatabase.Callback roomCallBack = new RoomDatabase.Callback() {
+        @Override
+        public void onCreate(@NonNull SupportSQLiteDatabase db) {
+            super.onCreate(db);
+            new PopulateDbAsyncTask(instance).execute();
+            instance.getQueryExecutor();
+        }
+    };
 
-    public abstract MessagesDao messagesDao();
-    public abstract UsersDao usersDao();
-
-    public static synchronized TheDatabase getInstance(Context context){
-        if(instance==null){
+    public static synchronized TheDatabase getInstance(Context context) {
+        if (instance == null) {
             String mediaStorageDir = Environment.getExternalStorageDirectory()
                     + "/Android/media" +
                     "" +
@@ -48,7 +52,7 @@ abstract class TheDatabase extends RoomDatabase{
                     + "/Databases";
             new File(mediaStorageDir).mkdirs();
             instance = Room.databaseBuilder(context.getApplicationContext()
-                            ,TheDatabase.class,"AppDatabase")
+                            , TheDatabase.class, "AppDatabase")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallBack)
                     .build();
@@ -56,25 +60,21 @@ abstract class TheDatabase extends RoomDatabase{
         return instance;
     }
 
-    private static RoomDatabase.Callback roomCallBack = new RoomDatabase.Callback(){
-        @Override
-        public void onCreate(@NonNull SupportSQLiteDatabase db) {
-            super.onCreate(db);
-            new PopulateDbAsyncTask(instance).execute();
-            instance.getQueryExecutor();
-                    }
-    };
+    public abstract MessagesDao messagesDao();
 
-    private  static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
+    public abstract UsersDao usersDao();
+
+    private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
         private MessagesDao messagesDao;
         private UsersDao chatListDao;
         private TheDatabase db;
 
-        private PopulateDbAsyncTask(TheDatabase db){
-            messagesDao =db.messagesDao();
+        private PopulateDbAsyncTask(TheDatabase db) {
+            messagesDao = db.messagesDao();
             chatListDao = db.usersDao();
-            this.db=db;
+            this.db = db;
         }
+
         @Override
         protected Void doInBackground(Void... voids) {
 

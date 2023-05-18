@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <!-- Add your desired views here, such as an ImageView -->
+    <LinearLayout
+        android:id="@+id/mediaView_linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:background="@color/black"
+        android:src="@drawable/ic_twotone_perm_media_24" />
+
+    <!-- Add any additional views or elements as needed -->
+
+</LinearLayout>

@@ -58,7 +58,7 @@ public class MessageAttachment extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.i("CODE::::", requestCode + "");
+        Log.i("MessageAttachment CODE::::", requestCode + "");
 
         if (resultCode == RESULT_OK && data != null && data.getData() != null) {
             if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_DOCUMENT || requestCode == Constants.KEY_INTENT_REQUEST_CODE_MEDIA || requestCode == Constants.KEY_INTENT_REQUEST_CODE_CAMERA || requestCode == Constants.KEY_INTENT_REQUEST_CODE_AUDIO || requestCode == Constants.KEY_INTENT_REQUEST_CODE_CANVAS) {
@@ -103,6 +103,8 @@ public class MessageAttachment extends AppCompatActivity {
             }.getType();
             users = gson.fromJson(listGson, type);
             Log.i("USERSSSS::::::", users.toString());
+        } else if (data != null && requestCode == Constants.KEY_INTENT_REQUEST_CODE_AUDIO) {
+
         }
         Log.i("URIs::::::_:", mediaUris.toString());
         Log.i("CODEs::::::_:", requestCodes.toString());
@@ -120,10 +122,14 @@ public class MessageAttachment extends AppCompatActivity {
         requestCodes = getIntent().getIntegerArrayListExtra(Constants.KEY_INTENT_REQUEST_CODE);
         mediaUris = getIntent().getStringArrayListExtra(Constants.KEY_INTENT_URI);
         userIDs = getIntent().getStringArrayListExtra(Constants.KEY_INTENT_USERID);
+        Log.i("MessageAttachment codes::::::_:", requestCodes.toString() + "__" + mediaUris.toString());
 
         users = getUsers();
+        if (requestCodes.get(0) == Constants.KEY_INTENT_REQUEST_CODE_AUDIO) {
+            sendMedia();
+            return;
+        }
         setViews();
-        Log.i("codes::::::_:", requestCodes.toString());
     }
 
     public ArrayList<User> getUsers() {
@@ -245,10 +251,11 @@ public class MessageAttachment extends AppCompatActivity {
                 if (cR.getType(mediaUri).startsWith("video/")) {
                     file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
                     UsefulFunctions.saveFile(this, mediaUri, file);
+                    Log.i("TEMP VID:::::", mediaUris.get(i));
 
                     messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
 
-                } else {
+                } else if (cR.getType(mediaUri).startsWith("image/")) {
                     file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
                     Bitmap bitmap = null;
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -259,10 +266,10 @@ public class MessageAttachment extends AppCompatActivity {
                     messages[i] = new Message(null
                             , msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
                 }
-
-
             } else if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_AUDIO) {
-                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
+                String f = UsefulFunctions.getFileName(this,mediaUri);
+                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO,f);
+                Log.i("1MessageAttachment AUDIO FILE::::::", file.getName()+"___"+file.getAbsolutePath());
                 UsefulFunctions.saveFile(this, mediaUri, file);
                 messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
 

@@ -18,4 +18,22 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="file_size">File Size</string>
+    <string name="file_name">File Name</string>
+    <string name="audio_name">Audio Name</string>
+    <string name="message">Message</string>
+    <string name="time">Time</string>
+    <string name="cancel">Cancel</string>
+    <string name="file_type">File Type</string>
+    <string name="video_size">Video Size</string>
+    <string name="media_size">Media Size</string>
+    <string name="image">Image</string>
+    <string name="docUpload">DocUpload</string>
+    <string name="docIcon">DocIcon</string>
+    <string name="cancelMedia">cancelMedia</string>
+    <string name="_1_00">1:00</string>
+    <string name="audioIcon">audioIcon</string>
+    <string name="audioPlayButton">audioPlayButton</string>
+    <string name="audioMic">audioMic</string>
+    <string name="mediaPlayVid">mediaPlayVid</string>
 </resources>

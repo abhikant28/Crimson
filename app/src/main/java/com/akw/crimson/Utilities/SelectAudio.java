@@ -1,4 +1,4 @@
-package com.akw.crimson;
+package com.akw.crimson.Utilities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,10 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
+import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,20 +18,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.akw.crimson.Backend.Adapters.AudioList_RecyclerAdapter;
 import com.akw.crimson.Backend.AppObjects.AudioFile;
 import com.akw.crimson.Backend.Constants;
+import com.akw.crimson.R;
 
 import java.util.ArrayList;
 
 public class SelectAudio extends AppCompatActivity {
 
-    private AudioFile currAudio;
     private MediaPlayer mediaPlayer;
-    private ImageButton playStopButton;
-    private ProgressBar progressBar;
-    private Handler handler;
     private RecyclerView rv_audioList;
     private AudioList_RecyclerAdapter audioList_recyclerAdapter;
 
-    private boolean isPlaying = false;
 
 
     @Override
@@ -44,65 +38,9 @@ public class SelectAudio extends AppCompatActivity {
         // Initialize views
         initialize();
 
-        // Initialize MediaPlayer
-
-//        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mediaPlayer) {
-//                stopMediaPlayer();
-//            }
-//        });
-//        mediaPlayer = new MediaPlayer();
-
-        // Initialize handler
     }
 
 
-//    private void startMediaPlayer(String filePath) {
-//        try {
-//            mediaPlayer.setDataSource(filePath);
-//            mediaPlayer.prepare();
-//        } catch (IOException e) {
-//            Toast.makeText(this, "Audio Not Found", Toast.LENGTH_SHORT).show();
-//            e.printStackTrace();
-//            return;
-//        }
-//        mediaPlayer.start();
-//        isPlaying = true;
-//        playStopButton.setImageResource(R.drawable.ic_baseline_stop_24);
-//
-//        // Update progress bar
-//        updateProgressBar();
-//    }
-
-//    private void stopMediaPlayer() {
-//        mediaPlayer.pause();
-////        mediaPlayer.seekTo(0);
-//        isPlaying = false;
-//        playStopButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
-////        progressBar.setProgress(0);
-//    }
-
-//    private void updateProgressBar() {
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (mediaPlayer != null && isPlaying) {
-//                    int progress = mediaPlayer.getCurrentPosition();
-//                    progressBar.setProgress(progress);
-//                    handler.postDelayed(this, 100);
-//                }
-//            }
-//        }, 100);
-//    }
-
-//    public void onPlayButtonClick(AudioFile audioFile) {
-//        if (isPlaying) {
-//            stopMediaPlayer();
-//        } else {
-//            startMediaPlayer(audioFile.getName());
-//        }
-//    }
 
     @Override
     protected void onDestroy() {
@@ -111,7 +49,7 @@ public class SelectAudio extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-//        handler.removeCallbacksAndMessages(null);
+
     }
 
     private ArrayList<AudioFile> getAudioFiles() {
@@ -195,8 +133,6 @@ public class SelectAudio extends AppCompatActivity {
     }
 
     private void initialize() {
-        playStopButton = findViewById(R.id.listItem_audioSelect_ib_playStop);
-        progressBar = findViewById(R.id.listItem_audioSelect_pb_playProgress);
         rv_audioList= findViewById(R.id.AudioSelect_rv_audioList);
 
         rv_audioList.setLayoutManager(new LinearLayoutManager(this));
@@ -206,7 +142,7 @@ public class SelectAudio extends AppCompatActivity {
             public void OnItemClick(AudioFile audio) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(SelectAudio.this);
                 builder.setTitle("Confirmation")
-                        .setMessage("Are you sure you want to select this item?")
+                        .setMessage("Are you sure you want to share "+audio.getName()+" ?")
                         .setPositiveButton("Yes", (dialog, id) -> {
                             // User confirmed selection
                             sendResultAndFinish(audio);
@@ -226,6 +162,7 @@ public class SelectAudio extends AppCompatActivity {
     private void sendResultAndFinish(AudioFile audioFile) {
         Intent intent = new Intent();
         intent.putExtra(Constants.KEY_INTENT_RESULT_AUDIO_PATH, audioFile.getPath());
+        Log.i("RESULT SENT::::::", audioFile.getPath());
         setResult(Activity.RESULT_OK, intent);
         finish();
     }

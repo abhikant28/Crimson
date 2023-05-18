@@ -100,7 +100,7 @@ public class SharedPrefManager {
     public static User getLocalUser() {
         SharedPreferences sp = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         User lUser = new User(sp.getString("USER_ID", null), null, sp.getString("USER_NAME", null)
-                , sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null), true, sp.getString("USER_ABOUT",null));
+                , sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null), true, sp.getString("USER_ABOUT", null));
         lUser.setUserName(sp.getString("USER_NAME", null));
         return lUser;
     }

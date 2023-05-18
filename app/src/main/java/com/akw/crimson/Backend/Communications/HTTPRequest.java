@@ -16,25 +16,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 
 public class HTTPRequest {
     //https://script.google.com/macros/s/AKfycbwCT0z3qG8hrswM_7Yp4ESlKaN41xsXw_eTxeEYHqutDRN_76UhEka2qvQ46-g4FqU/exec
     //https://script.google.com/macros/s/AKfycbx1rb2_XaIbHEyP83qFdIXAm0LWpeo8F2PO2qj6O4bxu97zHoPXzPgwsHyFYTNncK0/exec
 
-    private static String MESSAGE_REQUEST_URL = "https://script.google.com/macros/s/AKfycbwCT0z3qG8hrswM_7Yp4ESlKaN41xsXw_eTxeEYHqutDRN_76UhEka2qvQ46-g4FqU/exec";
-    private String USER_REQUEST_URL = "";
     public static String PREV_REQUEST_TIME = "2022/10/10,12:12:12";
     public static String USER_ID = "1001";
+    private static final String MESSAGE_REQUEST_URL = "https://script.google.com/macros/s/AKfycbwCT0z3qG8hrswM_7Yp4ESlKaN41xsXw_eTxeEYHqutDRN_76UhEka2qvQ46-g4FqU/exec";
     private static boolean inProgress = false;
-
-    private static JSONObject outQueue=new JSONObject();
-
+    private static JSONObject outQueue = new JSONObject();
+    private final String USER_REQUEST_URL = "";
 
     public static void postMessage(Message message) {
         try {
-            outQueue.put(message.getUser_id(), outQueue.get(message.getUser_id())+","+message.asString(USER_ID).replaceAll(",,", ",_,"));
+            outQueue.put(message.getUser_id(), outQueue.get(message.getUser_id()) + "," + message.asString(USER_ID).replaceAll(",,", ",_,"));
         } catch (JSONException e) {
             try {
                 outQueue.put("1002", message.asString(USER_ID));
@@ -70,14 +67,14 @@ public class HTTPRequest {
     }
 
     private static boolean POSTrequest() throws MalformedURLException {
-        String q="";
+        String q = "";
 
         URL url = null;
         try {
-            url = new URL(MESSAGE_REQUEST_URL + "?id=" + USER_ID+"&time="+ PREV_REQUEST_TIME +  "&data=" + outQueue.toString() );
+            url = new URL(MESSAGE_REQUEST_URL + "?id=" + USER_ID + "&time=" + PREV_REQUEST_TIME + "&data=" + outQueue.toString());
         } catch (Exception e) {
             e.printStackTrace();
-            url = new URL(MESSAGE_REQUEST_URL + "?id=" + USER_ID+ "&time=" + PREV_REQUEST_TIME + "&data=" + outQueue.toString() );
+            url = new URL(MESSAGE_REQUEST_URL + "?id=" + USER_ID + "&time=" + PREV_REQUEST_TIME + "&data=" + outQueue.toString());
         }
 
         String result = "";
@@ -108,21 +105,36 @@ public class HTTPRequest {
             e.printStackTrace();
         }
         if (urlConnection != null) urlConnection.disconnect();
-        inProgress=false;
+        inProgress = false;
         try {
             extractMessages(new JSONObject(result));
         } catch (JSONException e) {
             e.printStackTrace();
             Log.i("Bad JSON::", "JSON Bad");
-        }finally{
+        } finally {
             Log.i("API Response:::::", result);
             return true;
         }
     }
 
+    private static ArrayList<Message> extractMessages(JSONObject jsonObject) {
+
+        ArrayList<Message> msgs = new ArrayList<>();
+        try {
+            JSONArray jsonArray = jsonObject.getJSONObject("messages").getJSONArray("data");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                String s = jsonArray.getString(i).replaceAll(",_,", ",,");
+                msgs.add(new Message(s));
+                Log.i(":::::Message Received::::::", s);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return msgs;
+    }
 
     public boolean getMessages() {
-        if(!inProgress ){
+        if (!inProgress) {
             try {
                 GETrequestRun(USER_ID, PREV_REQUEST_TIME);
             } catch (Exception e) {
@@ -179,23 +191,6 @@ public class HTTPRequest {
             Log.i(" JSON Object: ", "Malformed JSON");
             return null;
         }
-    }
-
-
-    private static ArrayList<Message> extractMessages(JSONObject jsonObject) {
-
-        ArrayList<Message> msgs = new ArrayList<>();
-        try {
-            JSONArray jsonArray = jsonObject.getJSONObject("messages").getJSONArray("data");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                String s = jsonArray.getString(i).replaceAll(",_,",",," );
-                msgs.add(new Message(s));
-                Log.i(":::::Message Received::::::", s);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return msgs;
     }
 
 }

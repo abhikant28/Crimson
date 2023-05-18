@@ -22,17 +22,59 @@ import java.util.ArrayList;
 
 public class AudioList_RecyclerAdapter extends RecyclerView.Adapter {
 
+    MediaPlayer mediaPlayer;
     private ProgressBar currPb;
     private ImageButton currButton;
     private AudioFile audio;
     private boolean isPlaying;
-    MediaPlayer mediaPlayer;
-    private Handler handler;
+    private final Handler handler;
 
-    private OnItemClickListener mListener; // Reference to the callback interface
-    private ArrayList<AudioFile> audioList;
+    private final OnItemClickListener mListener; // Reference to the callback interface
+    private final ArrayList<AudioFile> audioList;
 
-    public AudioList_RecyclerAdapter(ArrayList audioList, OnItemClickListener listener) {
+    private void startMediaPlayer(String filePath) {
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(filePath);
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+//            Toast.makeText(, "Audio Not Found", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            return;
+        }
+        currPb.setVisibility(View.VISIBLE);
+        mediaPlayer.start();
+        isPlaying = true;
+        currButton.setImageResource(R.drawable.ic_baseline_stop_24);
+
+        // Update progress bar
+        updateProgressBar();
+    }
+
+    private void stopMediaPlayer() {
+        mediaPlayer.pause();
+        mediaPlayer.seekTo(0);
+        isPlaying = false;
+        currButton.setImageResource(R.drawable.ic_baseline_audio_play_24);
+        currPb.setProgress(0);
+        currPb.setVisibility(View.GONE);
+        mediaPlayer.release();
+    }
+
+    private void updateProgressBar() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null && isPlaying) {
+                    int progress = mediaPlayer.getCurrentPosition();
+                    currPb.setProgress(progress);
+                    handler.postDelayed(this, 100);
+                }
+            }
+        }, 100);
+    }
+
+    public AudioList_RecyclerAdapter(ArrayList<AudioFile> audioList, OnItemClickListener listener) {
         mListener = listener;
         handler = new Handler();
         this.audioList = audioList;
@@ -68,7 +110,7 @@ public class AudioList_RecyclerAdapter extends RecyclerView.Adapter {
                 mediaPlayer.release();
                 audio = audioList.get(p);
                 if (currPb != null)
-                    currButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                    currButton.setImageResource(R.drawable.ic_baseline_audio_play_24);
                 if (currPb != null)
                     currPb.setVisibility(View.GONE);
                 currButton = binding.binding.listItemAudioSelectIbPlayStop;
@@ -83,64 +125,10 @@ public class AudioList_RecyclerAdapter extends RecyclerView.Adapter {
         return audioList.size();
     }
 
+
     public interface OnItemClickListener {
         void OnItemClick(AudioFile audio);
     }
-
-//    public void setOnItemClickListener(OnClickListener listener) {
-//        this.mListener = listener;
-//    }
-
-
-    private void startMediaPlayer(String filePath) {
-        try {
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(filePath);
-            mediaPlayer.prepare();
-        } catch (IOException e) {
-//            Toast.makeText(, "Audio Not Found", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-            return;
-        }
-        currPb.setVisibility(View.VISIBLE);
-        mediaPlayer.start();
-        isPlaying = true;
-        currButton.setImageResource(R.drawable.ic_baseline_stop_24);
-
-        // Update progress bar
-        updateProgressBar();
-    }
-
-    private void stopMediaPlayer() {
-        mediaPlayer.pause();
-        mediaPlayer.seekTo(0);
-        isPlaying = false;
-        currButton.setImageResource(R.drawable.ic_baseline_play_arrow_24);
-        currPb.setProgress(0);
-        currPb.setVisibility(View.GONE);
-        mediaPlayer.release();
-    }
-
-    private void updateProgressBar() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mediaPlayer != null && isPlaying) {
-                    int progress = mediaPlayer.getCurrentPosition();
-                    currPb.setProgress(progress);
-                    handler.postDelayed(this, 100);
-                }
-            }
-        }, 100);
-    }
-
-//    public void onPlayButtonClick(AudioFile audioFile) {
-//        if (isPlaying) {
-//            stopMediaPlayer();
-//        } else {
-//            startMediaPlayer(audioFile.getName());
-//        }
-//    }
 
     class ListItemView extends RecyclerView.ViewHolder {
         ListItemSelectAudioBinding binding;

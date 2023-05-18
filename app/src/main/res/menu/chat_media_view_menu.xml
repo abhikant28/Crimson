@@ -2,43 +2,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/chat_menu_call"
-        android:icon="@drawable/ic_baseline_phone_24"
-        android:title="Call"
-        app:showAsAction="always"/>
-    <item
-        android:id="@+id/chat_menu_starredUserMessages"
+        android:id="@+id/chat_menu_profile"
         android:icon="@drawable/ic_baseline_star_border_24"
-        android:title="Starred Messages" />
-    <item
-        android:id="@+id/chat_menu_VideoCall"
-        android:icon="@drawable/ic_twotone_videocam_24"
-        android:title="Video Call"
+        android:title="Star"
         app:showAsAction="always"/>
     <item
         android:id="@+id/chat_menu_media"
+        android:icon="@drawable/forward"
+        app:showAsAction="always"
+        android:title="Forward" />
+    <item
+        android:id="@+id/month_navigation_next"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="View Media" />
+        android:title="View All Media" />
     <item
         android:id="@+id/chat_menu_search"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="Search"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/chat_menu_prepareMessage"
-        android:title="Prepare Message" />
-    <item
-        android:id="@+id/chat_menu_importChat"
-        android:icon="@drawable/ic_baseline_search_24"
-        android:title="Import Chat" />
+        android:title="Show in Chat"/>
     <item
         android:id="@+id/chat_menu_wallpaper"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="Wallpaper" />
+        android:title="Edit" />
+    <item
+        android:id="@+id/chat_menu_prepareMessage"
+        android:title="View in Gallery" />
     <item
         android:id="@+id/chat_menu_more"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="More">
+        android:title="Set as....">
         <menu>
             <item
                 android:id="@+id/chat_menu_mute"
@@ -56,11 +47,11 @@
                 android:id="@+id/chat_menu_clearChat"
                 android:icon="@drawable/ic_baseline_search_24"
                 android:title="Clear Chat" />
-            <item
-                android:id="@+id/chat_menu_profile"
-                android:icon="@drawable/ic_baseline_search_24"
-                android:title="View Profile" />
         </menu>
     </item>
 
+    <item
+        android:id="@+id/chat_menu_importChat"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="Delete" />
 </menu>

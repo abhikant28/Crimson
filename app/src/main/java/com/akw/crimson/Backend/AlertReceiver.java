@@ -30,16 +30,16 @@ public class AlertReceiver extends BroadcastReceiver {
 
         new SharedPrefManager(context);
         ArrayList<PreparedMessage> list = SharedPrefManager.getPreparedMessages();
-        Log.i("ALERT RECEIVER::::","Started");
+        Log.i("ALERT RECEIVER::::", "Started");
 
         int id = intent.getIntExtra(Constants.KEY_INTENT_PREP_MSG_ID, 0);
         PreparedMessage prepMsg = null;
         if (id != 0) {
-            Log.i("ALERT RECEIVER::::","ID EXISTS");
-            int i=0;
+            Log.i("ALERT RECEIVER::::", "ID EXISTS");
+            int i = 0;
             for (PreparedMessage msg : list) {
                 if (msg.getId() == id) {
-                    Log.i("ALERT RECEIVER::::","FOUND");
+                    Log.i("ALERT RECEIVER::::", "FOUND");
                     prepMsg = msg;
                     postMessage(prepMsg, (Application) context.getApplicationContext());
                     NotificationHelper notificationHelper = new NotificationHelper(context);
@@ -60,7 +60,7 @@ public class AlertReceiver extends BroadcastReceiver {
         TheViewModel localDB = new TheViewModel(act);
         localDB.insertMessage(prepMsg.getMessage());
         String thisUserID = SharedPrefManager.getLocalUserID();
-        Log.i("ALERT RECEIVER::::","POSTING");
+        Log.i("ALERT RECEIVER::::", "POSTING");
 
         databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(prepMsg.getToID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

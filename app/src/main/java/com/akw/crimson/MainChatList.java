@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.Adapters.AllUserList_RecyclerListAdapter;
-import com.akw.crimson.Backend.Adapters.ChatList_MessageSearch_RecyclerListAdapter;
+import com.akw.crimson.Backend.Adapters.MessageSearch_RecyclerListAdapter;
 import com.akw.crimson.Backend.Adapters.ChatList_RecyclerListAdapter;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
@@ -50,14 +50,14 @@ import java.util.List;
 public class MainChatList extends BaseActivity {
 
     ActionBar ab;
-    TextView tv_noResults;
+    TextView tv_noResults,tv_unreadCount,tv_convCount;
     RecyclerView rv_chatList;
     RecyclerView rv_searchUsers;
     RecyclerView rv_searchMessages;
 
     ChatList_RecyclerListAdapter chatList_recyclerListAdapter = new ChatList_RecyclerListAdapter();
     AllUserList_RecyclerListAdapter searchUserList_rvAdapter = new AllUserList_RecyclerListAdapter();
-    ChatList_MessageSearch_RecyclerListAdapter searchMessageList_rv_Adapter = new ChatList_MessageSearch_RecyclerListAdapter();
+    MessageSearch_RecyclerListAdapter searchMessageList_rv_Adapter = new MessageSearch_RecyclerListAdapter();
 
     TheViewModel dbViewModel;
     public static User user;
@@ -139,8 +139,10 @@ public class MainChatList extends BaseActivity {
 //                Intent camera_intent = ;
                 startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), 77);
                 break;
-            case R.id.chatList_Menu_payments:
+            case R.id.chatList_Menu_starredMessages:
+                startActivity(new Intent(this, StarredMessages.class));
                 break;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -151,7 +153,6 @@ public class MainChatList extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_chat_list);
-
         setView();
         connectLocalDatabase();
 
@@ -170,8 +171,19 @@ public class MainChatList extends BaseActivity {
             @Override
             public void onChanged(List<User> users) {
                 chatList_recyclerListAdapter.submitList(users);
+                updateCount(users);
             }
         });
+    }
+
+    private void updateCount(List<User> users) {
+        int c=0;
+        for(User u: users){
+            if(u.isUnread())
+                c++;
+        }
+        tv_unreadCount.setText(c+" Unread");
+        tv_convCount.setText(users.size()+" Conversation"+(users.size()==1?"":"s"));
     }
 
     private void searchQuery(String newText) {
@@ -235,10 +247,10 @@ public class MainChatList extends BaseActivity {
             }
         });
 
-        searchMessageList_rv_Adapter = new ChatList_MessageSearch_RecyclerListAdapter(dbViewModel);
+        searchMessageList_rv_Adapter = new MessageSearch_RecyclerListAdapter(dbViewModel);
         rv_searchMessages.setLayoutManager(new LinearLayoutManager(this));
         rv_searchMessages.setAdapter(searchMessageList_rv_Adapter);
-        searchMessageList_rv_Adapter.setOnItemCLickListener(new ChatList_MessageSearch_RecyclerListAdapter.OnItemClickListener() {
+        searchMessageList_rv_Adapter.setOnItemCLickListener(new MessageSearch_RecyclerListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(Message message) {
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
@@ -256,6 +268,8 @@ public class MainChatList extends BaseActivity {
         ab.setBackgroundDrawable(colorDrawable);
 
         tv_noResults = findViewById(R.id.MainChat_tv_Search_noResultsFound);
+        tv_convCount=findViewById(R.id.MainChat_tv_chatCount);
+        tv_unreadCount=findViewById(R.id.MainChat_tv_unreadCount);
         rv_chatList = findViewById(R.id.MainChat_List_RecyclerView);
         rv_searchMessages = findViewById(R.id.MainChat_MessageSearch_List_RecyclerView);
         rv_searchUsers = findViewById(R.id.MainChat_UserSearch_List_RecyclerView);

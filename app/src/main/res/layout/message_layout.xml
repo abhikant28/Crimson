@@ -66,8 +66,8 @@
                             android:layout_height="15sp"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_baseline_mic_24"
-                            app:layout_constraintEnd_toEndOf="@+id/Message_Received_cl_ll_audio"
-                            app:layout_constraintBottom_toBottomOf="@id/Message_Received_cl_ll_audio"/>
+                            app:layout_constraintEnd_toEndOf="@+id/Message_media_cl_ll_audio"
+                            app:layout_constraintBottom_toBottomOf="@id/Message_media_cl_ll_audio"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -75,10 +75,10 @@
                             android:text="1:00"
                             android:paddingHorizontal="5sp"
                             android:textSize="10sp"
-                            app:layout_constraintStart_toStartOf="@+id/Message_Received_cl_ll_audio"
-                            app:layout_constraintTop_toBottomOf="@id/Message_Received_cl_ll_audio"/>
+                            app:layout_constraintStart_toStartOf="@+id/Message_media_cl_ll_audio"
+                            app:layout_constraintTop_toBottomOf="@id/Message_media_cl_ll_audio"/>
                         <LinearLayout
-                            android:id="@+id/Message_Received_cl_ll_audio"
+                            android:id="@+id/Message_media_cl_ll_audio"
                             android:layout_width="270sp"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -95,7 +95,7 @@
                                 android:layout_height="25sp"
                                 android:layout_gravity="center_vertical"
                                 android:backgroundTint="#00000000"
-                                android:src="@drawable/ic_baseline_play_arrow_24" />
+                                android:src="@drawable/ic_baseline_audio_play_24" />
 
                             <SeekBar
                                 android:id="@+id/Message_sb_audio"
@@ -105,7 +105,7 @@
                                 android:layout_weight="1" />
 
                             <androidx.cardview.widget.CardView
-                                android:id="@+id/chatAttachment_popup_cv_doc"
+                                android:id="@+id/Message_media_popup_cv_doc"
                                 android:layout_width="30sp"
                                 android:layout_height="30sp"
                                 app:cardCornerRadius="600sp"
@@ -130,7 +130,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
-                            android:src="@drawable/ic_baseline_play_arrow_24"
+                            android:src="@drawable/ic_baseline_audio_play_24"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"

@@ -15,14 +15,16 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.HashSet;
 
 public class DownloadFileService extends IntentService {
-    private StorageReference storageRef;
-    private TheViewModel db;
+
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_FAIL = 0;
     public static final String EXTRA_URL = "extra_url";
     public static final String EXTRA_RECEIVER = "extra_receiver";
+    private StorageReference storageRef;
+    private TheViewModel db;
 
     public DownloadFileService() {
         super("DownloadFileService");
@@ -31,15 +33,19 @@ public class DownloadFileService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         db = Communicator.localDB;
+        String id = intent.getStringExtra(Constants.KEY_INTENT_MESSAGE_ID);
+        Message msg = db.getMessage(id);
+
+        Communicator.downloading.add(msg.getMsg_ID());
+
         FirebaseStorage fireStore = FirebaseStorage.getInstance();
         storageRef = fireStore.getReference();
+
         ResultReceiver receiver = intent.getParcelableExtra(EXTRA_RECEIVER);
         Bundle resultData = new Bundle();
 
-        String id = intent.getStringExtra(Constants.KEY_INTENT_MESSAGE_ID);
-        Message msg = db.getMessage(id);
         User user = db.getUser(msg.getUser_id());
-        Log.i("DOWNLOAD::::", "Started");
+        Log.i("DownloadFileService.DOWNLOAD::::", "Started");
 
         String folder = "";
         switch (msg.getMediaType()) {
@@ -56,10 +62,10 @@ public class DownloadFileService extends IntentService {
                 folder = "audios";
                 break;
             case Constants.KEY_MESSAGE_MEDIA_TYPE_PROFILE:
-                folder= "profile";
+                folder = "profile";
                 break;
             case Constants.KEY_MESSAGE_MEDIA_TYPE_STATUS:
-                folder="status";
+                folder = "status";
                 break;
         }
         File outFile;
@@ -71,11 +77,12 @@ public class DownloadFileService extends IntentService {
             user.addDoc(outFile.getName());
         } else {
             outFile = UsefulFunctions.makeOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType());
+            Log.i("DownloadFileService.FILENAME:::::::::", outFile.getName());
             user.addMedia(outFile.getName());
         }
 
         fileRef.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
-            Log.i("DOWNLOAD::::", "Success");
+            Log.i("DownloadFileService.DOWNLOAD::::", "Success");
             String name = null;
             try {
                 name = UsefulFunctions.saveFile(bytes, outFile);
@@ -96,12 +103,14 @@ public class DownloadFileService extends IntentService {
                 outFile.delete();
             }
             fileRef.delete();
+            Communicator.downloading.remove(msg.getMsg_ID());
             stopSelf();
         }).addOnFailureListener(e -> {
-            Log.i("DOWNLOAD::::", msg.getUser_id() + "_" + msg.getMediaID() + "FAILED- " + e);
+            Log.i("DownloadFileService.DOWNLOAD FAILED::::", msg.getUser_id() + "_" + msg.getMediaID() + "_FAILED_" + e);
             // Send the result
             resultData.putInt("result", RESULT_FAIL);
             receiver.send(RESULT_FAIL, resultData);
+            Communicator.downloading.remove(msg.getMsg_ID());
             stopSelf();
         });
     }

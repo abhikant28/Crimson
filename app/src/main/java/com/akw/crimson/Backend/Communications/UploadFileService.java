@@ -21,13 +21,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.util.HashSet;
 
 public class UploadFileService extends IntentService {
-    private StorageReference storageRef;
-    private TheViewModel db;
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_FAIL = 0;
     public static final String EXTRA_RECEIVER = "extra_receiver";
+    private StorageReference storageRef;
+    private TheViewModel db;
+//    public static HashSet<String> uploading= new HashSet<>();
 
 
     public UploadFileService() {
@@ -50,16 +52,18 @@ public class UploadFileService extends IntentService {
         ResultReceiver receiver = intent.getParcelableExtra(EXTRA_RECEIVER);
         Bundle resultData = new Bundle();
         String id = intent.getStringExtra(Constants.KEY_INTENT_MESSAGE_ID);
+        Message msg = db.getMessage(id);
+        Communicator.uploading.add(msg.getMsg_ID());
+
         Messenger messenger = intent.getParcelableExtra(Constants.KEY_INTENT_MESSENGER);
 
 
-        Message msg = db.getMessage(id);
-        Log.i("UPLOAD::::", "onHandleIntent");
+        Log.i("UploadFileService.UPLOAD::::", "onHandleIntent");
         User user = db.getUser(msg.getUser_id());
 
 
         String fileName = SharedPrefManager.getLocalUserID() + "_" + msg.getMediaID();
-        Log.i("UPLOAD MSG ID:::::", fileName);
+        Log.i("UploadFileService.UPLOAD MSG ID:::::", fileName);
 
         String folder = "";
         switch (msg.getMediaType()) {
@@ -76,10 +80,10 @@ public class UploadFileService extends IntentService {
                 folder = "audios";
                 break;
             case Constants.KEY_MESSAGE_MEDIA_TYPE_PROFILE:
-                folder= "profile";
+                folder = "profile";
                 break;
             case Constants.KEY_MESSAGE_MEDIA_TYPE_STATUS:
-                folder="status";
+                folder = "status";
                 break;
         }
         StorageReference fileRef = storageRef.child(folder + "/" + fileName);
@@ -87,27 +91,32 @@ public class UploadFileService extends IntentService {
         File file = UsefulFunctions.getFile(this, msg.getMediaID()
                 , msg.getMediaType(), msg.isSelf());
 
-        Log.i("MEDIA TYE Upload:::::", msg.getMediaType() + "");
+        Log.i("UploadFileService.MEDIA TYPE Upload:::::", msg.getMediaType() + "");
         Uri uri = Uri.fromFile(file);
         fileRef.putFile(uri).addOnSuccessListener(taskSnapshot -> {
-                    Log.d("FileUploadService:::::::", "File successfully uploaded: ");
+                    Log.d("UploadFileService.FileUploadService:::::::", "File successfully uploaded: ");
                     msg.setStatus(0);
                     db.updateMessage(msg);
 
                     resultData.putInt("result", RESULT_SUCCESS);
                     receiver.send(RESULT_SUCCESS, resultData);
+                    Communicator.uploading.remove(msg.getMsg_ID());
                     stopSelf();
                 }).addOnFailureListener(e -> {
-                    Log.e("FileUploadService:::::::::", "Failed to upload file.", e);
+                    Log.e("UploadFileService.FileUploadService:::::::::", "Failed to upload file.", e);
                     resultData.putInt("result", RESULT_FAIL);
                     receiver.send(RESULT_FAIL, resultData);
+                    Communicator.uploading.remove(msg.getMsg_ID());
                     stopSelf();
-                }).addOnCanceledListener(() -> Log.e("FileUploadService::::::", "Cancelled to upload file."))
+                }).addOnCanceledListener(() -> {
+                    Log.e("UploadFileService.FileUploadService::::::", "Cancelled to upload file.");
+                    Communicator.uploading.remove(msg.getMsg_ID());
+                })
                 .addOnProgressListener(snapshot ->
                         {
-                            Log.i("PROGRESSS:::::::::", snapshot.getBytesTransferred() + "");
+                            Log.i("UploadFileService.PROGRESS:::::::::", snapshot.getBytesTransferred() + "");
                             android.os.Message m = android.os.Message.obtain();
-                            m.arg1 = (int) ((snapshot.getBytesTransferred()/file.length())*100);
+                            m.arg1 = (int) ((snapshot.getBytesTransferred() / file.length()) * 100);
                         }
 
                 );

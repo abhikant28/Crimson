@@ -19,13 +19,16 @@ public interface MessagesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Message msg);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<Message> msgs);
+
     @Update
     void update(Message msg);
 
     @Update
     void updateAll(List<Message> messages);
 
-//    @Query("SELECT * from messages_Table where user_id= :user_id LIMIT 100")
+    //    @Query("SELECT * from messages_Table where user_id= :user_id LIMIT 100")
 //    LiveData<List<Message>> getMessages(String user_id);
     @Query("SELECT * FROM MESSAGES_TABLE WHERE status=0")
     LiveData<List<Message>> pendingMessages();
@@ -38,6 +41,12 @@ public interface MessagesDao {
 
     @Query("SELECT * from messages_Table where user_id= :user_ID")
     Cursor getMessages(String user_ID);
+
+    @Query("SELECT * from messages_Table where starred is 1")
+    List<Message> getStarredMessages();
+
+    @Query("SELECT * from messages_Table where starred is 1 AND user_id= :userID")
+    List<Message> getStarredUserMessages(String userID);
 
     @Query("SELECT * from messages_Table where user_id= :user_ID LIMIT 50")
     LiveData<List<Message>> getLiveMessages(String user_ID);

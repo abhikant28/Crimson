@@ -76,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#03FFFFFF"
-        android:src="@drawable/ic_baseline_play_arrow_24"
+        android:src="@drawable/ic_baseline_audio_play_24"
         app:layout_constraintBottom_toBottomOf="@id/listItem_audioSelect_ll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/listItem_audioSelect_ll"

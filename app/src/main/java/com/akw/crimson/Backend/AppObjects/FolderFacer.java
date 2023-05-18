@@ -3,19 +3,18 @@ package com.akw.crimson.Backend.AppObjects;
 
 public class FolderFacer {
 
-    private String path,ID,folderName;
-    private int imgCount,vidCount,iconType;
-    private long icon,size;
+    private String path, ID, folderName;
+    private int imgCount, vidCount, iconType;
+    private long icon, size;
 
-    public FolderFacer(String path, String ID, String folderName, long icon, long size) {
-        this.path = path;
-        this.ID = ID;
-        this.folderName = folderName;
-        this.icon = icon;
-        this.size = size;
+    public FolderFacer() {
+
     }
 
-
+    public FolderFacer(String path, String folderName) {
+        this.path = path;
+        this.folderName = folderName;
+    }
 
     public int getImgCount() {
         return imgCount;
@@ -24,9 +23,11 @@ public class FolderFacer {
     public void setImgCount(int imgCount) {
         this.imgCount = imgCount;
     }
+
     public void incImgCount() {
         this.imgCount++;
     }
+
     public int getVidCount() {
         return vidCount;
     }
@@ -48,7 +49,7 @@ public class FolderFacer {
     }
 
     public String getCount() {
-        return (getImgCount()==0?"":getImgCount()>1?getImgCount()+" Photos ":"1 Photo ")+(getVidCount()==0?"":getVidCount()>1?getVidCount()+" Videos":"1 Video");
+        return (getImgCount() == 0 ? "" : getImgCount() > 1 ? getImgCount() + " Photos " : "1 Photo ") + (getVidCount() == 0 ? "" : getVidCount() > 1 ? getVidCount() + " Videos" : "1 Video");
     }
 
     public void incSize(long size) {
@@ -57,6 +58,10 @@ public class FolderFacer {
 
     public long getSize() {
         return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 
     public String getSizeValue() {
@@ -71,20 +76,12 @@ public class FolderFacer {
         }
     }
 
-    public void setSize(long size) {
-        this.size = size;
-    }
-
     public long getIcon() {
         return icon;
     }
 
     public void setIcon(long icon) {
         this.icon = icon;
-    }
-
-    public FolderFacer() {
-
     }
 
     public String getID() {
@@ -94,12 +91,6 @@ public class FolderFacer {
     public void setID(String ID) {
         this.ID = ID;
     }
-
-    public FolderFacer(String path, String folderName) {
-        this.path = path;
-        this.folderName = folderName;
-    }
-
 
     public String getPath() {
         return path;

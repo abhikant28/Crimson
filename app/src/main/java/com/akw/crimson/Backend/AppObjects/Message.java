@@ -22,7 +22,7 @@ public class Message {
     private String user_id, _id, taggedMsgID, msg, time, date, mediaID, source, reaction;
     private long mediaSize;
     private double latitude, longitude;
-    private boolean self, unread, starred, media, forwarded;
+    private boolean self, unread, starred, media, forwarded,link;
     private int status, mediaType, msgType;
 
 
@@ -39,7 +39,7 @@ public class Message {
         this.mediaID = mediaID;
         this.status = status;
         this.self = self;
-        this.msgType = Constants.KEY_MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.KEY_MESSAGE_TYPE_TEXT;
     }
 
     @Ignore
@@ -59,7 +59,7 @@ public class Message {
         this.media = media;
         this.status = status;
         this.mediaType = mediaType;
-        this.msgType = Constants.KEY_MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.KEY_MESSAGE_TYPE_TEXT;
     }
 
     @Ignore
@@ -95,7 +95,7 @@ public class Message {
         this.media = media;
         this.status = status;
         this.mediaType = mediaType;
-        this.msgType = Constants.KEY_MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.KEY_MESSAGE_TYPE_TEXT;
     }
 
     @Ignore
@@ -113,7 +113,7 @@ public class Message {
         this.mediaID = mediaID;
         this.status = status;
         this.self = self;
-        this.msgType = Constants.KEY_MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.KEY_MESSAGE_TYPE_TEXT;
     }
 
 
@@ -360,6 +360,14 @@ public class Message {
 
     public void setMsgType(int msgType) {
         this.msgType = msgType;
+    }
+
+    public boolean isLink() {
+        return link;
+    }
+
+    public void setLink(boolean link) {
+        this.link = link;
     }
 
     public String asString(String selfID) {

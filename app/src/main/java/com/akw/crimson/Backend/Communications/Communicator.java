@@ -46,17 +46,18 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Communicator extends LifecycleService {
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(Constants.FIREBASE_REALTIME_DATABASE_MSG_URL);
-
     public static TheViewModel localDB;
+    private static final Communicator instance = null;
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(Constants.FIREBASE_REALTIME_DATABASE_MSG_URL);
     int starter = 0;
     String senderUserID = "2";
     String thisUserID;
-    private static Communicator instance = null;
+    public static HashSet<String> downloading= new HashSet<>(), uploading= new HashSet<>();
 
     public static boolean isCommunicatorRunning() {
         return instance != null;
     }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -79,7 +80,7 @@ public class Communicator extends LifecycleService {
             userData.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Log.i("COMMUNICATOR:::", "DATA CHANGE DETECTED from"+senderUserID);
+                    Log.i("COMMUNICATOR:::", "DATA CHANGE DETECTED from" + senderUserID);
 
                     DataSnapshot child = snapshot.child(senderUserID);
 
@@ -97,9 +98,10 @@ public class Communicator extends LifecycleService {
                                 element = value.getString(i);
                                 Message msg = new Message(UsefulFunctions.decodeText(element));
                                 if (localDB.getUser(key) == null) {
-                                    fetchUserDetails(key,msg);
-                                }else{
-                                localDB.insertMessage(msg);}
+                                    fetchUserDetails(key, msg);
+                                } else {
+                                    localDB.insertMessage(msg);
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -142,9 +144,8 @@ public class Communicator extends LifecycleService {
                                 element = value.getString(i);
                                 Message msg = new Message(UsefulFunctions.decodeText(element));
                                 if (localDB.getUser(key) == null) {
-                                    fetchUserDetails(key,msg);
-                                }else
-                                {
+                                    fetchUserDetails(key, msg);
+                                } else {
                                     localDB.insertMessage(msg);
                                 }
                                 // Log the element
@@ -225,7 +226,7 @@ public class Communicator extends LifecycleService {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-                            Log.i("COMMUNICATOR:::", "Cancelled 3: "+ databaseError);
+                            Log.i("COMMUNICATOR:::", "Cancelled 3: " + databaseError);
 
                         }
                     });
@@ -241,15 +242,12 @@ public class Communicator extends LifecycleService {
             }
         });
 
-        localDB.getReceivedMessagesList().observe(this, new Observer<List<Message>>() {
-            @Override
-            public void onChanged(List<Message> messages) {
-                Log.i("COMMUNICATOR:::", "New Messages Found - " + messages.size());
-                List<Message> msgs = localDB.getReceivedMessagesList().getValue();
-                if (msgs != null) msgs.retainAll(messages);
-                HashMap<String, HashSet<Message>> map = makeUsernameMap(localDB, msgs);
-                notifyUser(map);
-            }
+        localDB.getReceivedMessagesList().observe(this, messages -> {
+            Log.i("COMMUNICATOR:::", "New Messages Found - " + messages.size());
+            List<Message> msgs = localDB.getReceivedMessagesList().getValue();
+            if (msgs != null) msgs.retainAll(messages);
+            HashMap<String, HashSet<Message>> map = makeUsernameMap(localDB, msgs);
+            notifyUser(map);
         });
 
         super.onCreate();
@@ -258,7 +256,7 @@ public class Communicator extends LifecycleService {
 
     private void fetchUserDetails(String user_id, Message msg) {
         Log.i("COMMUNICATOR:::", "Fetching UserDetails");
-        Log.i("FETCH USER::::",user_id);
+        Log.i("FETCH USER::::", user_id);
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         Task<DocumentSnapshot> found = firestore.collection(Constants.KEY_FIRESTORE_USERS).document(user_id).get();
@@ -306,11 +304,11 @@ public class Communicator extends LifecycleService {
             builder.setSmallIcon(R.drawable.ic_launcher_foreground);
             ArrayList<Message> messages = new ArrayList<>(map.get(key));
             builder.setContentTitle(key);
-            if(messages.get(0).getMsg()!=null){
+            if (messages.get(0).getMsg() != null) {
                 String msg = messages.get(0).getMsg();
                 builder.setContentText(msg.substring(0, Math.min(msg.length(), 8)) + "...");
                 builder.setStyle(new NotificationCompat.BigTextStyle().bigText(msg.substring(0, Math.min(msg.length(), 8)) + "..."));
-            }else{
+            } else {
                 builder.setContentText("Media");
                 builder.setStyle(new NotificationCompat.BigTextStyle().bigText("Image"));
             }

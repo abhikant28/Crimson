@@ -4,11 +4,36 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/chat_FragmentMediaView_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#23000000"
+        android:elevation="1sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/chat_media_view_menu"
+        app:subtitle="When"
+        app:subtitleTextColor="@color/white"
+        app:title="From"
+        app:titleTextColor="@color/white" />
+
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/chat_FragmentMediaView_ViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <!--    <androidx.viewpager.widget.ViewPager-->
+    <!--        android:id="@+id/chat_FragmentMediaView_ViewPager"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
 </androidx.constraintlayout.widget.ConstraintLayout>

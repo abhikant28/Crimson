@@ -32,7 +32,7 @@ public interface UsersDao {
     @Query("SELECT * FROM user_table ORDER BY time ASC")
     Cursor getAllUsersCursor();
 
-    @Query("SELECT * FROM user_table WHERE connected is 1 ORDER BY date desc, lower(time) desc")
+    @Query("SELECT * FROM user_table WHERE known is 1 ORDER BY date desc, lower(time) desc")
     LiveData<List<User>> getChatList();
 
     @Query("SELECT * FROM user_table ORDER BY displayName")
@@ -50,7 +50,7 @@ public interface UsersDao {
     @Query("SELECT COUNT(*) > 0 FROM user_table WHERE phoneNumber = :value")
     boolean checkForNumber(String value);
 
-    @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 ORDER BY date desc, lower(time) desc")
+    @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 AND ( mediaType is 1 OR mediaType is 2 OR mediaType is 9 OR mediaType is 10) ORDER BY date desc, lower(time) desc")
     List<Message> getUserMedia(String user_ID);
 
     @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 AND mediaType IN(:type) ORDER BY date desc, lower(time) desc")

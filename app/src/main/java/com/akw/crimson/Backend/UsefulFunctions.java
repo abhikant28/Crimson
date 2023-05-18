@@ -13,6 +13,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.media.ExifInterface;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
@@ -36,6 +38,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 public class UsefulFunctions {
     public static String encodeImage(Bitmap bitmap) {
@@ -43,7 +46,7 @@ public class UsefulFunctions {
         int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
         Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+        previewBitmap.compress(Bitmap.CompressFormat.WEBP, 100, byteArrayOutputStream);
         byte[] bytes = byteArrayOutputStream.toByteArray();
         return Base64.encodeToString(bytes, Base64.DEFAULT);
     }
@@ -92,6 +95,40 @@ public class UsefulFunctions {
         canvas.drawBitmap(bitmap, rect, rect, paint);
         return output;
     }
+
+    public static String getSizeValue(long size) {
+        if (size >= 1073741824) {
+            return String.format("%.2f GB", size / 1073741824.0);
+        } else if (size >= 1048576) {
+            return String.format("%.2f MB", size / 1048576.0);
+        } else if (size >= 1024) {
+            return String.format("%.2f KB", size / 1024.0);
+        } else {
+            return size + " B";
+        }
+    }
+
+    public static String getAudioLength(String path) {
+        String time=null;
+        try {
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(path);
+            mediaPlayer.prepare();
+            time= getStringMmSsTimeVale(mediaPlayer.getDuration());
+            mediaPlayer.release();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return time;
+    }
+
+    public static String getStringMmSsTimeVale(int milliSec) {
+        int minutes = (milliSec / 1000) / 60;
+        int seconds = (milliSec / 1000) % 60;
+        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static Bitmap resizeAndCompressImage(Context context, Uri uri) {
@@ -213,7 +250,7 @@ public class UsefulFunctions {
             return null;
         }
         Log.i(TAG + "::::", pictureFile.getAbsolutePath());
-        return pictureFile.getName();
+        return pictureFile.getName().substring(0,pictureFile.getName().lastIndexOf('.') );
     }
 
     public static File makeOutputMediaFile(Context context, boolean sent, int type) {
@@ -283,7 +320,7 @@ public class UsefulFunctions {
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmSS").format(new Date());
         File mediaFile;
-        String mImageName = docName == null ? init + "_" + timeStamp + format : docName.substring(0, docName.lastIndexOf('.'));
+        String mImageName = docName == null ? init + "_" + timeStamp: docName.substring(0, docName.lastIndexOf('.'));
         format = docName == null ? format : docName.substring(docName.lastIndexOf('.'));
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName + format);
         int i = 1;
@@ -344,6 +381,7 @@ public class UsefulFunctions {
         OutputStream os = new FileOutputStream(outFile);
         os.write(bytes);
         os.close();
+        Log.i("UsefulFunctions.saveFile", outFile.getName());
         return outFile.getName();
     }
 
@@ -363,11 +401,13 @@ public class UsefulFunctions {
             e.printStackTrace();
             return null;
         }
-        return outputFile.getName();
+        Log.i("UsefulFunctions.saveFile", outputFile.getName());
+        return outputFile.getName().substring(0,outputFile.getName().lastIndexOf('.') );
     }
 
     public static String getFileName(Context context, Uri uri) {
         String result = null;
+        Log.i("TEMP TEST::::::", uri.getPath()+"__"+(uri.getScheme()==null));
         if (uri.getScheme().equals("content")) {
             Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
             int c = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
@@ -386,7 +426,37 @@ public class UsefulFunctions {
                 result = result.substring(cut + 1);
             }
         }
-        return result;
+        return result.substring(0,result.lastIndexOf('.') );
+    }
+
+    public static String getFileNameFromPath(String path) {
+        String fileNameWithExtension = new File(path).getName();
+        int dotIndex = fileNameWithExtension.lastIndexOf(".");
+        if (dotIndex == -1) {
+            return fileNameWithExtension;
+        } else {
+            return fileNameWithExtension.substring(0, dotIndex);
+        }
+    }
+
+    public static Uri getAudioContentUri(Context context, String filePath) {
+        String[] projection = {MediaStore.Audio.Media._ID};
+        String selection = MediaStore.Audio.Media.DATA + "=?";
+        String[] selectionArgs = {filePath};
+        Cursor cursor = context.getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                null
+        );
+        if (cursor != null && cursor.moveToFirst()) {
+            int a= cursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int id = cursor.getInt(a);
+            cursor.close();
+            return Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, Integer.toString(id));
+        }
+        return null;
     }
 
 
@@ -485,6 +555,42 @@ public class UsefulFunctions {
         return cursor;
     }
 
+    public static Bitmap getResizedBitmapFromUri(Context cxt, Uri uri, int targetWidth, int targetHeight) {
+        Bitmap bitmap = null;
+        try {
+            InputStream inputStream = cxt.getContentResolver().openInputStream(uri);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(inputStream, null, options);
+            inputStream.close();
+
+            int imageWidth = options.outWidth;
+            int imageHeight = options.outHeight;
+
+            int scaleFactor = Math.min(imageWidth / targetWidth, imageHeight / targetHeight);
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = scaleFactor;
+            inputStream = cxt.getContentResolver().openInputStream(uri);
+            bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+            inputStream.close();
+        } catch (IOException e) {
+            return null;
+        }
+        return bitmap;
+    }
+
+    public static Bitmap getThumbnail(Uri uri) {
+        Bitmap thumbnail;
+        try {
+            thumbnail = ThumbnailUtils.createVideoThumbnail(uri.getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
+            if (thumbnail == null) {
+                thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(uri.getPath()), 720, 1080);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return thumbnail;
+    }
 
     public ArrayList<FolderFacer> getVideoFolders(Context context) {
         ArrayList<FolderFacer> videoFolders = new ArrayList<>();
@@ -523,43 +629,5 @@ public class UsefulFunctions {
 //
 //        }
         return videoFolders;
-    }
-
-    public static Bitmap getResizedBitmapFromUri(Context cxt, Uri uri, int targetWidth, int targetHeight) {
-        Bitmap bitmap = null;
-        try {
-            InputStream inputStream = cxt.getContentResolver().openInputStream(uri);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(inputStream, null, options);
-            inputStream.close();
-
-            int imageWidth = options.outWidth;
-            int imageHeight = options.outHeight;
-
-            int scaleFactor = Math.min(imageWidth / targetWidth, imageHeight / targetHeight);
-            options.inJustDecodeBounds = false;
-            options.inSampleSize = scaleFactor;
-            inputStream = cxt.getContentResolver().openInputStream(uri);
-            bitmap = BitmapFactory.decodeStream(inputStream, null, options);
-            inputStream.close();
-        } catch (IOException e) {
-            return null;
-        }
-        return bitmap;
-    }
-
-
-    public static Bitmap getThumbnail(Uri uri) {
-        Bitmap thumbnail;
-        try {
-            thumbnail = ThumbnailUtils.createVideoThumbnail(uri.getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
-            if (thumbnail == null) {
-                thumbnail = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(uri.getPath()), 720, 1080);
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return thumbnail;
     }
 }

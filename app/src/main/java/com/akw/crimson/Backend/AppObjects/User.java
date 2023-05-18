@@ -21,9 +21,9 @@ public class User {
     @NonNull
     private String user_id;
     private String _id;
-    private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about, wallpaper;
-    private boolean unread, connected, blocked, mute;
-    private int unread_count, last_msg_type = 0, vidCount = 0, imgCount = 0, docCount = 0;
+    private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about, wallpaper,status;
+    private boolean unread, connected, blocked, mute, known, pinned;
+    private int unread_count, last_msg_type = 0, vidCount = 0, imgCount = 0, docCount = 0,msg_count=0, type=0;
     private long mediaSize;
     @TypeConverters(DataConverter.class)
     private ArrayList<String> groups, medias, links, docs;
@@ -68,12 +68,12 @@ public class User {
         return getMedias().size() + getDocs().size() + getLinks().size();
     }
 
-    public void setDocCount(int docCount) {
-        this.docCount = docCount;
-    }
-
     public int getDocCount() {
         return getDocs().size();
+    }
+
+    public void setDocCount(int docCount) {
+        this.docCount = docCount;
     }
 
     public int getLinksCount() {
@@ -120,10 +120,6 @@ public class User {
 
     public boolean removeGroup(String id) {
         return getGroups().remove(id);
-    }
-
-    public void setMedias(ArrayList<String> medias) {
-        this.medias = medias;
     }
 
     public String getUserName() {
@@ -182,6 +178,10 @@ public class User {
         return medias;
     }
 
+    public void setMedias(ArrayList<String> medias) {
+        this.medias = medias;
+    }
+
     public boolean isConnected() {
         return connected;
     }
@@ -198,10 +198,6 @@ public class User {
         this._id = _id;
     }
 
-    public void setPic(String pic) {
-        this.pic = pic;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -214,6 +210,10 @@ public class User {
         if (pic == null)
             return Constants.DEFAULT_PROFILE_PIC;
         return pic;
+    }
+
+    public void setPic(String pic) {
+        this.pic = pic;
     }
 
     public Bitmap getPicBitmap() {
@@ -242,6 +242,10 @@ public class User {
 
     public String getLast_msg() {
         return last_msg;
+    }
+
+    public void setLast_msg(String last_msg) {
+        this.last_msg = last_msg;
     }
 
     public void setLast_msg(String last_msg, int last_msg_type) {
@@ -323,10 +327,6 @@ public class User {
         this.last_msg_type = last_msg_type;
     }
 
-    public void setLast_msg(String last_msg) {
-        this.last_msg = last_msg;
-    }
-
     public boolean isMute() {
         return mute;
     }
@@ -335,17 +335,55 @@ public class User {
         this.mute = mute;
     }
 
-    public long getMediaSize() {
-        return mediaSize;
+    public boolean isKnown() {
+        return known;
     }
 
-    public long incMediaSize(long size) {
-        mediaSize += size;
+    public void setKnown(boolean known) {
+        this.known = known;
+    }
+
+    public void incMsgCount(){
+        msg_count++;
+    }
+
+    public int getMsg_count() {
+        return msg_count;
+    }
+
+    public void setMsg_count(int msg_count) {
+        this.msg_count = msg_count;
+    }
+
+    public String getStatus() {
+        if(status==null)
+            return getAbout();
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
+
+    public long getMediaSize() {
         return mediaSize;
     }
 
     public void setMediaSize(long mediaSize) {
         this.mediaSize = mediaSize;
+    }
+
+    public long incMediaSize(long size) {
+        mediaSize += size;
+        return mediaSize;
     }
 
     @Override
@@ -365,5 +403,13 @@ public class User {
 
         User other = (User) obj;
         return this.user_id.equals(other.user_id);
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

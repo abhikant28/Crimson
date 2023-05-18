@@ -4,17 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Utilities.SelectAudio"
-    android:background="@color/black">
+    tools:context=".StarredMessages">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/AudioSelect_rv_audioList"
+        android:id="@+id/starredMessages_recyclerView_messages"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#00000000"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/list_item_select_audio"/>
-
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -58,7 +58,7 @@ public class Messaging {
 
     public static void sendNotificationToPatner(String token, String msg, String myName) {
 
-        SendNotificationModel sendNotificationModel = new SendNotificationModel(myName, msg.substring(0, Math.min(10, msg.length())));
+        SendNotificationModel sendNotificationModel = new SendNotificationModel(msg.substring(0, Math.min(10, msg.length())),myName);
         RequestNotification requestNotification = new RequestNotification();
         requestNotification.setSendNotificationModel(sendNotificationModel);
         requestNotification.setToken(token);
@@ -81,7 +81,11 @@ public class Messaging {
 
     public static void sendMessageNotification(String localUserID, String userToken, String tag, String msg_id, String myName, String msg) {
         sendNotificationToPatner(userToken, msg, myName);
+    }
 
+    public static void sendPingMessageNotification( String userToken, String myName) {
+        sendNotificationToPatner(userToken, "Pinged you!", myName);
+        Log.i("Messaging.sendPingMessageNotification:::::::", "Ping SENT!!!!");
     }
 
     public static void sendMessageRetroNotification(String localUserID, String userToken, String tag, String msg_id, String userID) {

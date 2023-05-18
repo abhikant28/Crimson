@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,17 +26,17 @@ public class MediaListAdapter extends RecyclerView.Adapter<MediaListAdapter.View
     User user;
     List<Message> mediaList;
 
+    public MediaListAdapter(User user, List<Message> mediaList) {
+        this.user = user;
+        this.mediaList = mediaList;
+    }
+
     @NonNull
     @Override
     public MediaListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.media_list_item, parent, false);
 
         return new ViewHolder(itemView);
-    }
-
-    public MediaListAdapter(User user, List<Message> mediaList) {
-        this.user = user;
-        this.mediaList = mediaList;
     }
 
     @Override
