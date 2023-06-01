@@ -37,7 +37,7 @@ public class AlbumView extends AppCompatActivity implements MediaListRecyclerVie
         LinearLayoutManager layoutManager = new GridLayoutManager(this,3);
         rv_media.setLayoutManager(layoutManager);
         layoutManager.setAutoMeasureEnabled(true);
-        MediaListRecyclerViewAdapter adapter = new MediaListRecyclerViewAdapter(getApplicationContext(), mediaCursor, this);
+        MediaListRecyclerViewAdapter adapter = new MediaListRecyclerViewAdapter(getApplicationContext(), mediaCursor, this,3);
         rv_media.setAdapter(adapter);
         generateList(mediaCursor);
     }

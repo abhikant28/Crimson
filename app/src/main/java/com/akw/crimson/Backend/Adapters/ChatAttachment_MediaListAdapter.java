@@ -44,14 +44,15 @@ public class ChatAttachment_MediaListAdapter extends RecyclerView.Adapter<ChatAt
     public void onBindViewHolder(@NonNull ChatAttachment_MediaListAdapter.ViewHolder holder, int position) {
         final int p = position;
         ContentResolver cR = cxt.getContentResolver();
-        if (MessageAttachment.requestCodes.get(position) == Constants.KEY_INTENT_REQUEST_CODE_MEDIA) {
-            if (cR.getType(Uri.parse(MessageAttachment.mediaUris.get(position))).startsWith("video/")) {
-                holder.imageView.setVisibility(View.GONE);
-                holder.videoView.setVideoURI(Uri.parse(MessageAttachment.mediaUris.get(position)));
-            } else {
-                holder.imageView.setImageURI(Uri.parse(MessageAttachment.mediaUris.get(position)));
-                holder.videoView.setVisibility(View.GONE);
-            }
+        if (MessageAttachment.requestCodes.get(position) == Constants.Intent.KEY_INTENT_REQUEST_CODE_MEDIA) {
+//            if (cR.getType(Uri.parse(MessageAttachment.mediaUris.get(position))).startsWith("video/")) {
+//                holder.imageView.setVisibility(View.GONE);
+//                holder.videoView.setVideoURI(Uri.parse(MessageAttachment.mediaUris.get(position)));
+//            } else {
+            holder.imageView.setImageURI(Uri.parse(MessageAttachment.mediaUris.get(position)));
+            int height=holder.imageView.getWidth();
+//            holder.itemView.
+//            }
         }
         holder.itemView.setOnClickListener(view -> {
 
@@ -86,7 +87,7 @@ public class ChatAttachment_MediaListAdapter extends RecyclerView.Adapter<ChatAt
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.mediaListItem_iv_media);
-            videoView = itemView.findViewById(R.id.mediaListItem_vv_media);
+//            videoView = itemView.findViewById(R.id.mediaListItem_vv_media);
             selectedFrame = itemView.findViewById(R.id.mediaListItem_v_selectedFrame);
         }
     }

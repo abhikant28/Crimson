@@ -73,8 +73,8 @@ public class Chat_Fragment_MediaView extends Fragment {
                 actionBar.hide();
             }
         }
-        int position = getArguments().getInt(Constants.KEY_INTENT_LIST_POSITION);
-        Log.i("MEDIA LIST::::::", ChatActivity.mediaList.size() + "");
+        int position = getArguments().getInt(Constants.Intent.KEY_INTENT_LIST_POSITION);
+//        Log.i("MEDIA LIST::::::", ChatActivity.mediaList.size() + "");
         gestureDetector = new GestureDetector(container.getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -87,7 +87,12 @@ public class Chat_Fragment_MediaView extends Fragment {
             }
         });
         ViewPager2 viewPager = v.findViewById(R.id.chat_FragmentMediaView_ViewPager);
-        MediaViewAdapter adapter = new MediaViewAdapter(v.getContext(), ChatActivity.mediaList, Communicator.localDB, toolBar);
+        MediaViewAdapter adapter;
+        if(getArguments().getInt(Constants.Intent.KEY_INTENT_USER_TYPE)==Constants.User.USER_TYPE_GROUP){
+            adapter = new MediaViewAdapter(v.getContext(), GroupChatActivity.mediaList, Communicator.localDB, toolBar);
+        }else{
+            adapter = new MediaViewAdapter(v.getContext(), ChatActivity.mediaList, Communicator.localDB, toolBar);
+        }
         viewPager.setOnTouchListener((v1, event) -> gestureDetector.onTouchEvent(event));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);

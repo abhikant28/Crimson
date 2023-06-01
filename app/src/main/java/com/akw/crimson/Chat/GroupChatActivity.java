@@ -9,8 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -24,7 +22,6 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -46,6 +43,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.Adapters.ChatView_RecyclerAdapter;
+import com.akw.crimson.Backend.AppObjects.Group;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
@@ -64,19 +62,18 @@ import com.akw.crimson.StarredMessages;
 import com.akw.crimson.Utilities.SelectAudio;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class ChatActivity extends BaseActivity {
-    private static final int REQUEST_CALL_PERMISSION = 243;
+public class GroupChatActivity extends BaseActivity {
 
     private ChatView_RecyclerAdapter chatViewAdapter;
     private RecyclerView chatRecyclerView;
@@ -84,19 +81,18 @@ public class ChatActivity extends BaseActivity {
     private EditText et_message;
     LinearLayout ll_full;
 
-    private final FirebaseFirestore fireStoreDB = FirebaseFirestore.getInstance();
     private TheViewModel dbViewModel;
     private Cursor chatCursor;
     public static List<Message> mediaList;
+    public static HashMap<String, User> userMap;
     private Thread chatThread;
     private ActionBar ab;
 
     public static volatile User user;
+    public static volatile Group group;
     public static volatile boolean updated = false;
     public static volatile String userID, updateID;
-    private Boolean isOnline = false;
     private int searchPosition;
-    GestureDetector sendButtonGestureDetector;
 
     @Override
     public void onBackPressed() {
@@ -133,7 +129,6 @@ public class ChatActivity extends BaseActivity {
         super.onResume();
         Intent intent = new Intent(new Intent(this, Communicator.class));
         startService(intent);
-        listenForOnline();
     }
 
     @Override
@@ -254,25 +249,9 @@ public class ChatActivity extends BaseActivity {
                 ii.putExtra(Constants.Intent.KEY_INTENT_USERID, userID);
                 startActivity(ii);
                 break;
-            case R.id.chat_menu_call:
-                requestCallPermission();
-                break;
+
         }
         return true;
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CALL_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                makePhoneCall();
-            } else {
-                // Handle the case when permission is denied
-            }
-        }
     }
 
 
@@ -287,55 +266,12 @@ public class ChatActivity extends BaseActivity {
         dbViewModel = Communicator.localDB;
         user = dbViewModel.getUser(getIntent().getStringExtra(Constants.Intent.KEY_INTENT_USERID));
         userID = user.getUser_id();
+        group = user.getGroup();
+        makeUserMap();
 
         setMyActionBar();
         setClicks();
 
-        sendButtonGestureDetector = new GestureDetector(ChatActivity.this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                // Handle double-click event here
-                Log.i("ChatActivity.GestureDetect:::::::", "Double Tap!!!!");
-                fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(documentSnapshot -> {
-                    String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-                    Messaging.sendPingMessageNotification(userToken, SharedPrefManager.getLocalUser().getName());
-                });
-
-                return super.onDoubleTap(e);
-            }
-
-            @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
-
-
-                if (!et_message.getText().toString().trim().equals("")) {
-                    Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime()
-                            , userID, null, et_message.getText().toString().trim(), true, false
-                            , null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD, SharedPrefManager.getLocalUserID());
-                    if (user.getType() == Constants.User.USER_TYPE_GROUP) {
-                        message.setGroupUserID(SharedPrefManager.getLocalUserID());
-                        message.setMsgType(Constants.Message.BOX_TYPE_GROUP_MESSAGE);
-                    }
-
-                    dbViewModel.insertMessage(message);
-                    //send(message);
-                    user.setConnected(true);
-                    et_message.setText("");
-                    if (!isOnline) {
-                        Log.i("NOT ONLINE", "SENDING MSG");
-                        fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
-                            }
-                        });
-
-                    }
-                }
-                return super.onSingleTapConfirmed(e);
-            }
-        });
 
         dbViewModel.getLiveMessagesList(userID).observe(this, messages -> {
             GetChatLiveMessagesThread gcmt = new GetChatLiveMessagesThread(user.getUser_id());
@@ -345,29 +281,15 @@ public class ChatActivity extends BaseActivity {
 
     }
 
-
-    private void requestCallPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},
-                        REQUEST_CALL_PERMISSION);
-            } else {
-                makePhoneCall();
-            }
-        } else {
-            makePhoneCall();
+    private void makeUserMap() {
+        userMap = new HashMap<>();
+        for (String u : group.getUsers()) {
+            User use = dbViewModel.getUser(u);
+            userMap.put(u, use);
         }
+
     }
 
-    private void makePhoneCall() {
-        if (user.getType() == Constants.User.USER_TYPE_GROUP)
-            return;
-        String phoneNumber = user.getPhoneNumber(); // Replace with the desired phone number
-        Uri uri = Uri.parse("tel:" + phoneNumber);
-        Intent intent = new Intent(Intent.ACTION_CALL, uri);
-        startActivity(intent);
-    }
 
     private final ResultReceiver resultReceiver = new ResultReceiver(new Handler()) {
         @Override
@@ -380,22 +302,33 @@ public class ChatActivity extends BaseActivity {
         }
     };
 
-    private void searchChat() {
-        Log.i("2.SEARCH ::::", "searchChat");
-        EditText et_input = findViewById(R.id.Chat_et_search_searchInput);
-        et_input.setText("");
-        findViewById(R.id.Chat_ib_search_close).setOnClickListener(view -> {
-            findViewById(R.id.Chat_ll_search).setVisibility(View.GONE);
-        });
-        findViewById(R.id.Chat_ll_search).setVisibility(View.VISIBLE);
-        findViewById(R.id.Chat_ib_search_search).setOnClickListener(view -> {
-            if (!et_input.getText().toString().isEmpty()) {
-                Log.i("2.SEARCH ::::", "searchChat:::: " + et_input.getText().toString());
-                makeSearch(et_input.getText().toString().trim());
-            }
+    private void notifyOfflineUsers(Message msg) {
+        FirebaseFirestore fireStoreDB = FirebaseFirestore.getInstance();
+        for(String id: group.getUsers()) {
+            AtomicReference<Boolean> isOnline= new AtomicReference<>(false);
+            fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(id).addSnapshotListener(GroupChatActivity.this, (value, error) -> {
 
-        });
-    }
+                if (error != null) {
+                    return;
+                }
+
+                if (value != null) {
+                    if (value.get(Constants.KEY_FIRESTORE_USER_ONLINE) != null) {
+                        int online = Integer.parseInt(String.valueOf(Objects.requireNonNull(value.get(Constants.KEY_FIRESTORE_USER_ONLINE))));
+                        isOnline.set(online == 1);
+                    }
+                    if(!isOnline.get()){
+                        fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
+                                Messaging.sendMessageNotification(null, userToken,null, null,group.getDisplayName(),SharedPrefManager.getLocalUser().getName()+" : "+ msg.getMsg());
+                            }
+                        });
+                    }
+                }
+            });
+        }}
 
 
     private void makeSearch(String query) {
@@ -441,34 +374,6 @@ public class ChatActivity extends BaseActivity {
             findViewById(R.id.Chat_ll_search).setVisibility(View.GONE);
         });
     }
-
-
-    public int searchCursor(Cursor cursor, String searchValue, boolean forward) {
-        Log.i("1.SEARCH:::::::", searchValue);
-        int pos = cursor.getColumnIndex("msg");
-        int position = cursor.getPosition();
-        if (forward) {
-            while (cursor.moveToNext()) {
-                String value = cursor.getString(pos);
-                Log.i("SEARCH 1 :::::::::", searchValue + "__" + value);
-                if (value != null && value.contains(searchValue)) {
-                    return position;
-                }
-                position++;
-            }
-        } else {
-            while (cursor.moveToPrevious()) {
-                String value = cursor.getString(pos);
-                if (value != null && value.contains(searchValue)) {
-                    return position;
-                }
-                position--;
-            }
-        }
-        // If the value was not found, return -1
-        return -1;
-    }
-
 
     private void attachmentPopUp() {
         View kView = this.getCurrentFocus();
@@ -570,53 +475,75 @@ public class ChatActivity extends BaseActivity {
 
     }
 
-//    GestureDetector sendButtonGestureDetector = new GestureDetector(ChatActivity.this, new GestureDetector.SimpleOnGestureListener() {
-//        @Override
-//        public boolean onDoubleTap(MotionEvent e) {
-//            // Handle double-click event here
-//            Log.i("ChatActivity.GestureDetect:::::::", "Double Tap!!!!");
-//            FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
-//            fireStore.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(documentSnapshot -> {
-//                String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-//                Messaging.sendPingMessageNotification(userToken, SharedPrefManager.getLocalUser().getName());
-//            });
-//
-//            return super.onDoubleTap(e);
-//        }
-//
-//        @Override
-//        public boolean onSingleTapConfirmed(MotionEvent e) {
-//            Log.i("ChatActivity.GestureDetect 1 :::::::", "Single Tap!!!!");
-//
-//            if (!et_message.getText().toString().trim().equals("")) {
-//                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getSentTime().getSentTime(), userID, "0", et_message.getText().toString().trim(), true, false, null, 0);
-//                dbViewModel.insertMessage(message);
-//                //send(message);
-//                user.setConnected(true);
-//                et_message.setText("");
-//                if (!isOnline) {
-//                    Log.i("NOT ONLINE", "SENDING MSG");
-//                    FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
-//                    fireStore.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-//                        @Override
-//                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-//                            String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-//                            Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
-//                        }
-//                    });
-//
-//                }
-//            }
-//            return super.onSingleTapConfirmed(e);
-//        }
-//    });
+    private void searchChat() {
+        Log.i("2.SEARCH ::::", "searchChat");
+        EditText et_input = findViewById(R.id.Chat_et_search_searchInput);
+        et_input.setText("");
+        findViewById(R.id.Chat_ib_search_close).setOnClickListener(view -> {
+            findViewById(R.id.Chat_ll_search).setVisibility(View.GONE);
+        });
+        findViewById(R.id.Chat_ll_search).setVisibility(View.VISIBLE);
+        findViewById(R.id.Chat_ib_search_search).setOnClickListener(view -> {
+            if (!et_input.getText().toString().isEmpty()) {
+                Log.i("2.SEARCH ::::", "searchChat:::: " + et_input.getText().toString());
+                makeSearch(et_input.getText().toString().trim());
+            }
+
+        });
+    }
+
+    public int searchCursor(Cursor cursor, String searchValue, boolean forward) {
+        Log.i("1.SEARCH:::::::", searchValue);
+        int pos = cursor.getColumnIndex("msg");
+        int position = cursor.getPosition();
+        if (forward) {
+            while (cursor.moveToNext()) {
+                String value = cursor.getString(pos);
+                Log.i("SEARCH 1 :::::::::", searchValue + "__" + value);
+                if (value != null && value.contains(searchValue)) {
+                    return position;
+                }
+                position++;
+            }
+        } else {
+            while (cursor.moveToPrevious()) {
+                String value = cursor.getString(pos);
+                if (value != null && value.contains(searchValue)) {
+                    return position;
+                }
+                position--;
+            }
+        }
+        // If the value was not found, return -1
+        return -1;
+    }
+
 
     private void setClicks() {
 
-        ib_send.setOnTouchListener((v, event) -> sendButtonGestureDetector.onTouchEvent(event));
+        ib_send.setOnClickListener(view -> {
+            if (!et_message.getText().toString().trim().equals("")) {
+
+                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime()
+                        , userID, null, et_message.getText().toString().trim(), true, false
+                        , null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD, SharedPrefManager.getLocalUserID());
+
+                message.setGroupUserID(SharedPrefManager.getLocalUserID());
+                message.setMsgType(Constants.Message.BOX_TYPE_GROUP_MESSAGE);
+
+                dbViewModel.insertMessage(message);
+                user.setConnected(true);
+                et_message.setText("");
+                notifyOfflineUsers(message);
+
+            }
+
+        });
 
         ib_emoji.setOnClickListener(view -> {
+
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
             if (imm != null) {
                 if (imm.isActive(et_message)) {
                     // Hide the keyboard
@@ -661,43 +588,14 @@ public class ChatActivity extends BaseActivity {
     }
 
 
-    private void listenForOnline() {
-        fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).addSnapshotListener(ChatActivity.this, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    return;
-                }
-                if (value != null) {
-                    if (value.get(Constants.KEY_FIRESTORE_USER_ONLINE) != null) {
-                        int online = Integer.parseInt(String.valueOf(Objects.requireNonNull(value.get(Constants.KEY_FIRESTORE_USER_ONLINE))));
-                        isOnline = online == 1;
-                    }
-                    if (value.get(Constants.KEY_FIRESTORE_USER_PIC) != null) {
-                        Log.i("User:::::", user.getDisplayName());
-                        user.setPic(String.valueOf(value.get(Constants.KEY_FIRESTORE_USER_PIC)));
-                    }
-                    if (value.get(Constants.KEY_FIRESTORE_USER_NAME) != null) {
-                        user.setUserName(String.valueOf(value.get(Constants.KEY_FIRESTORE_USER_NAME)));
-                    }
-                    if (value.get(Constants.KEY_FIRESTORE_USER_ABOUT) != null) {
-                        user.setAbout(String.valueOf(value.get(Constants.KEY_FIRESTORE_USER_ABOUT)));
-                    }
-                }
-                if (isOnline) {
-                    ab.setSubtitle("Online");
-                } else {
-                    ab.setSubtitle(user.getAbout());
-                }
-            }
-        });
-    }
-
-
     private void setMyActionBar() {
         ab = getSupportActionBar();
         ab.setTitle(user.getDisplayName());
-        ab.setSubtitle(user.getAbout());
+        Log.i("USER MAP::::::",userMap.toString() );
+        String subTitle= "";
+        for(String s: group.getUsers())
+            subTitle.join(",",userMap.get(s).getDisplayName());
+        ab.setSubtitle(subTitle);
         ab.setDisplayHomeAsUpEnabled(true);
         ImageView iv = new ImageView(getApplicationContext());
         iv.setPadding(50, 50, 50, 50);
@@ -710,13 +608,10 @@ public class ChatActivity extends BaseActivity {
                 = new ColorDrawable(Color.BLACK);
 
         ab.setBackgroundDrawable(colorDrawable);
-        findViewById(R.id.action_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), ProfileView.class);
-                i.putExtra(Constants.Intent.KEY_INTENT_USERID, userID);
-                startActivity(i);
-            }
+        findViewById(R.id.action_bar).setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), ProfileView.class);
+            i.putExtra(Constants.Intent.KEY_INTENT_USERID, userID);
+            startActivity(i);
         });
 
     }
@@ -817,81 +712,5 @@ public class ChatActivity extends BaseActivity {
         }
     }
 
-//    class GetChatMessagesThread implements Runnable {
-//        String inp;
-//
-//        GetChatMessagesThread(String inp) {
-//            this.inp = inp;
-//        }
-//
-//        @Override
-//        public void run() {
-//            chatCursor = dbViewModel.getChatMessages(inp);
-//            mediaList = dbViewModel.getUserMedia(userID);
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Log.i(
-//                            "MAKING ADAPTER CHAT:::::", "MAking.." + chatCursor.getCount() + "..");
-//
-//                    chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
-//                            , new ChatView_RecyclerAdapter.OnItemClickListener() {
-//                        @Override
-//                        public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
-//                            Intent intent;
-//                            Log.i("FIRESTORAGE :::::::", "STARTING");
-//                            if (upload) {
-//                                intent = new Intent(getApplicationContext(), UploadFileService.class);
-//                                intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-//                            } else {
-//                                intent = new Intent(getApplicationContext(), DownloadFileService.class);
-//                                intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
-//                            }
-//                            intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
-//                            startService(intent);
-//                        }
-//                    }, dbViewModel, true);
-//                    loadChat();
-//                    chatRecyclerView.scrollToPosition(chatViewAdapter.getItemCount());
-//                }
-//            });
-//
-//            while (true) {
-//                if (updated && chatViewAdapter != null && updateID.equals(userID)) {
-//                    int l = chatCursor.getCount();
-//                    //chatCursor.close();
-//                    chatCursor = dbViewModel.getChatMessages(inp);
-//                    mediaList = dbViewModel.getUserMedia(userID);
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            chatViewAdapter = new ChatView_RecyclerAdapter(getApplicationContext(), chatCursor
-//                                    , new ChatView_RecyclerAdapter.OnItemClickListener() {
-//                                @Override
-//                                public void OnItemClick(String msgID, String fileName, CardView cvSize, TextView tvSize, ProgressBar progressBar, ImageView ivCancel, View view, boolean upload) {
-//                                    Intent intent;
-//                                    Log.i("FIRESTORAGE :::::::", "STARTING");
-//                                    if (upload) {
-//                                        intent = new Intent(getApplicationContext(), UploadFileService.class);
-//                                        intent.putExtra(UploadFileService.EXTRA_RECEIVER, resultReceiver);
-//                                    } else {
-//                                        intent = new Intent(getApplicationContext(), DownloadFileService.class);
-//                                        intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
-//                                    }
-//                                    intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, msgID);
-//                                    startService(intent);
-//                                }
-//                            }, dbViewModel, false);
-//                            chatRecyclerView.setAdapter(null);
-//                            loadChat();
-//                            chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
-//                        }
-//                    });
-//                    updated = false;
-//                    user = dbViewModel.getUser(userID);
-//                }
-//            }
-//
-//        }
-//    }
+
 }

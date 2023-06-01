@@ -231,11 +231,12 @@ public class TheRepository {
             messagesDao.insert(messages[0]);
             User user = usersDao.getUser(messages[0].getUser_id());
             Log.i("REPO USER ID ::::: ", messages[0].getUser_id());
-            if (messages[0].getMsg() != null)
-                user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15, messages[0].getMsg().length())), messages[0].isMedia() ? messages[0].getMediaType() : Constants.KEY_MESSAGE_MEDIA_TYPE_NONE);
-            Calendar time = Calendar.getInstance();
-            user.setTime(String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)) + ":" + String.format("%02d", time.get(Calendar.SECOND)));
-            user.setDate(new SimpleDateFormat("yyyy/MM/dd").format(time.getTime()));
+            Log.i("REPO NULL CHECK ::::: ", (user==null)+"_"+(messages[0]==null));
+            if (user!=null && messages[0].getMsg() != null)
+                user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15, messages[0].getMsg().length())), messages[0].isMedia() ? messages[0].getMediaType() : Constants.Media.KEY_MESSAGE_MEDIA_TYPE_NONE);
+            Calendar sentTime = Calendar.getInstance();
+            user.setTime(String.format("%02d", sentTime.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", sentTime.get(Calendar.MINUTE)) + ":" + String.format("%02d", sentTime.get(Calendar.SECOND)));
+            user.setDate(new SimpleDateFormat("yyyy/MM/dd").format(sentTime.getTime()));
             if (messages[0].isSelf()) {
                 user.setUnread_count(0);
                 user.setUnread(false);
@@ -270,9 +271,9 @@ public class TheRepository {
             messagesDao.update(messages[0]);
             User user = usersDao.getUser(messages[0].getUser_id());
             if (messages[0].isMedia()) {
-                if (messages[0].getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE || messages[0].getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO || messages[0].getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO)
+                if (messages[0].getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE || messages[0].getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO || messages[0].getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO)
                     user.addMedia(messages[0].getMediaID());
-                else if (messages[0].getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT)
+                else if (messages[0].getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT)
                     user.addDoc(messages[0].getMediaID());
 
             }

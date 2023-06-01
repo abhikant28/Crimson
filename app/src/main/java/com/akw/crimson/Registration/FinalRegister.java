@@ -33,10 +33,10 @@ public class FinalRegister extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_final);
         new SharedPrefManager(getApplicationContext());
-        String name = getIntent().getExtras().getString(Constants.KEY_INTENT_USERNAME);
-        String email = getIntent().getExtras().getString(Constants.KEY_INTENT_EMAIL);
-        String profilePic = getIntent().getExtras().getString(Constants.KEY_INTENT_PIC);
-        String about = getIntent().getExtras().getString(Constants.KEY_INTENT_ABOUT);
+        String name = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_USERNAME);
+        String email = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_EMAIL);
+        String profilePic = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_PIC);
+        String about = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_ABOUT);
 
         Log.i("USERNAME_::::",name);
         makeCall(profilePic, name, email, about);
@@ -63,12 +63,10 @@ public class FinalRegister extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "User Registered on Crimson!", Toast.LENGTH_SHORT).show();
                     SharedPrefManager.storeUserProfile(profilePic, userName, email,about);
                     Log.i("USERNAME::::",userName);
-                    if(profilePic!=null){
-
-                    }
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
+
                     finish();
                 })
                 .addOnFailureListener(documentReference -> {

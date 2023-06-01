@@ -61,7 +61,7 @@ public class MessageAttachment extends AppCompatActivity {
         Log.i("MessageAttachment CODE::::", requestCode + "");
 
         if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_DOCUMENT || requestCode == Constants.KEY_INTENT_REQUEST_CODE_MEDIA || requestCode == Constants.KEY_INTENT_REQUEST_CODE_CAMERA || requestCode == Constants.KEY_INTENT_REQUEST_CODE_AUDIO || requestCode == Constants.KEY_INTENT_REQUEST_CODE_CANVAS) {
+            if (requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_DOCUMENT || requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_MEDIA || requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_CAMERA || requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_AUDIO || requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_CANVAS) {
                 if (ContextCompat.checkSelfPermission(
                         this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                         PackageManager.PERMISSION_GRANTED) {
@@ -88,22 +88,22 @@ public class MessageAttachment extends AppCompatActivity {
                 Log.i("URIs:else:::::_:", mediaUris.toString());
             }
 
-            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_CAMERA) {
-                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+            if (requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_CAMERA) {
+                File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
                 Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
-                UsefulFunctions.saveImage(imageBitmap, true, file);
+                UsefulFunctions.FileUtil.saveImage(imageBitmap, true, file);
                 mediaUris.add(file.getPath());
             }
 
         } else if (data != null && requestCode == Constants.KEY_ACTIVITY_RESULT_CONTACT_SELECT) {
-            String listGson = data.getStringExtra(Constants.KEY_INTENT_USER_LIST);
+            String listGson = data.getStringExtra(Constants.Intent.KEY_INTENT_USER_LIST);
             Gson gson = new Gson();
             Type type = new TypeToken<ArrayList<User>>() {
             }.getType();
             users = gson.fromJson(listGson, type);
             Log.i("USERSSSS::::::", users.toString());
-        } else if (data != null && requestCode == Constants.KEY_INTENT_REQUEST_CODE_AUDIO) {
+        } else if (data != null && requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_AUDIO) {
 
         }
         Log.i("URIs::::::_:", mediaUris.toString());
@@ -119,13 +119,14 @@ public class MessageAttachment extends AppCompatActivity {
         new SharedPrefManager(this);
 
         dbViewModel = Communicator.localDB;
-        requestCodes = getIntent().getIntegerArrayListExtra(Constants.KEY_INTENT_REQUEST_CODE);
-        mediaUris = getIntent().getStringArrayListExtra(Constants.KEY_INTENT_URI);
-        userIDs = getIntent().getStringArrayListExtra(Constants.KEY_INTENT_USERID);
+
+        requestCodes = getIntent().getIntegerArrayListExtra(Constants.Intent.KEY_INTENT_REQUEST_CODE);
+        mediaUris = getIntent().getStringArrayListExtra(Constants.Intent.KEY_INTENT_URI);
+        userIDs = getIntent().getStringArrayListExtra(Constants.Intent.KEY_INTENT_USERID);
         Log.i("MessageAttachment codes::::::_:", requestCodes.toString() + "__" + mediaUris.toString());
 
         users = getUsers();
-        if (requestCodes.get(0) == Constants.KEY_INTENT_REQUEST_CODE_AUDIO) {
+        if (requestCodes.get(0) == Constants.Intent.KEY_INTENT_REQUEST_CODE_AUDIO) {
             sendMedia();
             return;
         }
@@ -154,7 +155,7 @@ public class MessageAttachment extends AppCompatActivity {
             intent.setType("image/* video/*");
             if (intent.resolveActivity(getPackageManager()) != null) {
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constants.KEY_INTENT_REQUEST_CODE_MEDIA);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constants.Intent.KEY_INTENT_REQUEST_CODE_MEDIA);
             }
         });
 
@@ -203,8 +204,8 @@ public class MessageAttachment extends AppCompatActivity {
         Intent intent = new Intent(this, SelectContact.class);
         Gson gson = new Gson();
         String json = gson.toJson(users);
-        intent.putExtra(Constants.KEY_INTENT_USER_LIST, json);
-        intent.putExtra(Constants.KEY_INTENT_TYPE, Constants.KEY_INTENT_TYPE_MULTI_SELECT);
+        intent.putExtra(Constants.Intent.KEY_INTENT_USER_LIST, json);
+        intent.putExtra(Constants.Intent.KEY_INTENT_TYPE, Constants.Intent.KEY_INTENT_TYPE_MULTI_SELECT);
         startActivityForResult(intent, Constants.KEY_ACTIVITY_RESULT_CONTACT_SELECT);
     }
 
@@ -241,49 +242,57 @@ public class MessageAttachment extends AppCompatActivity {
     }
 
     public void sendMedia() {
+        String selfId = SharedPrefManager.getLocalUserID();
         Message[] messages = new Message[requestCodes.size()];
+//        Log.i("MessageAttachment.sendMedia",requestCodes.size()+"");
         for (int i = 0; i < requestCodes.size(); i++) {
             int requestCode = requestCodes.get(i);
             Uri mediaUri = Uri.parse(mediaUris.get(i));
-            if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_MEDIA) {
+//            Log.i("URI :::::::", mediaUris.get(i)+"_"+(mediaUri==null));
+            if (requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_MEDIA || requestCode== Constants.Intent.KEY_INTENT_REQUEST_CODE_CAMERA) {
                 ContentResolver cR = this.getContentResolver();
                 File file;
-                if (cR.getType(mediaUri).startsWith("video/")) {
-                    file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
-                    UsefulFunctions.saveFile(this, mediaUri, file);
+                 if (cR.getType(mediaUri).startsWith("video/")) {
+                    file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
+                    UsefulFunctions.FileUtil.saveFile(this, mediaUri, file);
                     Log.i("TEMP VID:::::", mediaUris.get(i));
 
-                    messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
+                    messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_UPLOAD_PENDING, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO,selfId);
 
                 } else if (cR.getType(mediaUri).startsWith("image/")) {
-                    file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                    file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                    Log.i("TEMP IMG   :::::", mediaUris.get(i));
                     Bitmap bitmap = null;
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                         bitmap = UsefulFunctions.resizeAndCompressImage(this, mediaUri);
                     }
-                    UsefulFunctions.saveImage(bitmap, true, file);
+                    UsefulFunctions.FileUtil.saveImage(bitmap, true, file);
 
                     messages[i] = new Message(null
-                            , msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+                            , msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE,selfId);
                 }
-            } else if (requestCode == Constants.KEY_INTENT_REQUEST_CODE_AUDIO) {
-                String f = UsefulFunctions.getFileName(this,mediaUri);
-                File file = UsefulFunctions.makeOutputMediaFile(this, true, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO,f);
-                Log.i("1MessageAttachment AUDIO FILE::::::", file.getName()+"___"+file.getAbsolutePath());
-                UsefulFunctions.saveFile(this, mediaUri, file);
-                messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO);
+            }else if (requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_AUDIO) {
+                String f = UsefulFunctions.FileUtil.getFileName(this, mediaUri);
+                File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO, f);
+//                Log.i("1MessageAttachment AUDIO FILE::::::", file.getName() + "___" + file.getAbsolutePath());
+                UsefulFunctions.FileUtil.saveFile(this, mediaUri, file);
+                messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_UPLOAD_PENDING, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO,selfId);
 
             }
         }
-        String selfId = SharedPrefManager.getLocalUserID();
+        Log.i("MessageAttachment.sendMedia",requestCodes.size()+"");
         for (User user : users) {
             for (Message msg : messages) {
-                msg.setMsg_ID(selfId + Calendar.getInstance().getTime().getTime());
+                 msg.setMsg_ID(selfId + Calendar.getInstance().getTime().getTime());
                 msg.setUser_id(user.getUser_id());
-                if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
+                if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
                     user.addDoc(msg.getMediaID());
                 } else {
                     user.addMedia(msg.getMediaID());
+                }
+                if(user.getType()==Constants.User.USER_TYPE_GROUP){
+                    msg.setGroupUserID(SharedPrefManager.getLocalUserID());
+                    msg.setMsgType(Constants.Message.BOX_TYPE_GROUP_MESSAGE);
                 }
                 user.setLast_msg(null);
                 user.setLast_msg_type(msg.getMediaType());

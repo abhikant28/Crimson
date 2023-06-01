@@ -4,6 +4,7 @@
     package="com.akw.crimson">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
@@ -13,6 +14,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -22,10 +24,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Crimson">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.akw.crimson.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <activity
+            android:name=".CreateGroup"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".StarredMessages"
-            android:exported="false"
-            android:allowTaskReparenting="true">
+            android:allowTaskReparenting="true"
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -67,7 +86,10 @@
         </activity>
         <activity
             android:name=".StartNew"
-            android:exported="false">
+            android:exported="true"
+            android:parentActivityName=".MainChatList"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -81,7 +103,8 @@
         </activity>
         <activity
             android:name=".Utilities.SelectContact"
-            android:exported="false">
+            android:exported="false"
+            android:noHistory="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -118,6 +141,12 @@
             android:exported="false" />
         <activity
             android:name=".Chat.ChatActivity"
+            android:exported="true"
+            android:parentActivityName=".MainChatList"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Chat.GroupChatActivity"
             android:exported="true"
             android:parentActivityName=".MainChatList"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"

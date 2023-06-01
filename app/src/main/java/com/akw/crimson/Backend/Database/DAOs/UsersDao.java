@@ -12,6 +12,7 @@ import androidx.room.Update;
 
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
+import com.akw.crimson.Backend.Constants;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public interface UsersDao {
     @Query("SELECT * FROM user_table WHERE known is 1 ORDER BY date desc, lower(time) desc")
     LiveData<List<User>> getChatList();
 
-    @Query("SELECT * FROM user_table ORDER BY displayName")
+    @Query("SELECT * FROM user_table WHERE type="+ Constants.User.USER_TYPE_USER+" ORDER BY displayName")
     LiveData<List<User>> getAllUsersList();
 
     @Query("SELECT * FROM user_table WHERE user_id=:user_ID LIMIT 1")
@@ -50,10 +51,10 @@ public interface UsersDao {
     @Query("SELECT COUNT(*) > 0 FROM user_table WHERE phoneNumber = :value")
     boolean checkForNumber(String value);
 
-    @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 AND ( mediaType is 1 OR mediaType is 2 OR mediaType is 9 OR mediaType is 10) ORDER BY date desc, lower(time) desc")
+    @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 AND ( mediaType is 1 OR mediaType is 2 OR mediaType is 9 OR mediaType is 10) ORDER BY sentTime desc")
     List<Message> getUserMedia(String user_ID);
 
-    @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 AND mediaType IN(:type) ORDER BY date desc, lower(time) desc")
+    @Query("SELECT * FROM messages_Table WHERE user_id=:user_ID AND media is 1 AND mediaType IN(:type) ORDER BY sentTime desc")
     List<Message> getUserMediaByType(String user_ID, int[] type);
 
 }

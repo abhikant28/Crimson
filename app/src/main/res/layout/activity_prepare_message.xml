@@ -39,7 +39,7 @@
             android:id="@+id/PrepareMessage_tv_selectContact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="100sp"
+            android:layout_marginEnd="130sp"
             android:text="Select Contact"
             android:textColor="@color/white"
             android:textSize="20sp"

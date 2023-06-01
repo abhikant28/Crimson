@@ -80,8 +80,8 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
                 AppCompatActivity activity = (AppCompatActivity) holder.itemView.getContext();
                 ProfileImageView update = new ProfileImageView();
                 Bundle bundle = new Bundle();
-                bundle.putString(Constants.KEY_INTENT_USERID, getUser(holder.getAbsoluteAdapterPosition()).getUser_id());
-                bundle.putString(Constants.KEY_INTENT_PIC, getUser(holder.getAbsoluteAdapterPosition()).getPic());
+                bundle.putString(Constants.Intent.KEY_INTENT_USERID, getUser(holder.getAbsoluteAdapterPosition()).getUser_id());
+                bundle.putString(Constants.Intent.KEY_INTENT_PIC, getUser(holder.getAbsoluteAdapterPosition()).getPic());
                 update.setArguments(bundle);
                 update.show(activity.getSupportFragmentManager().beginTransaction(), "EXAMPLE");
                 holder.tv_unreadCount.setText("");

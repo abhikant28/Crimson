@@ -66,7 +66,7 @@ public class TheViewModel extends AndroidViewModel {
         return getLiveMessagesList;
     }
 
-    public LiveData<List<Message>> getPendingMessagesList() {
+    public LiveData<List<Message>> getUploadPendingMessagesList() {
         return pendingMessagesList;
     }
 

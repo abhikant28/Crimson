@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;
+import com.akw.crimson.Backend.TouchImageView;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.R;
 
@@ -63,7 +64,7 @@ public class MediaViewAdapter extends RecyclerView.Adapter<MediaViewAdapter.Medi
         holder.linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         holder.linearLayout.setGravity(Gravity.CENTER);
         Message msg = medias.get(position);
-        File file = UsefulFunctions.getFile(mContext, msg.getMediaID()
+        File file = UsefulFunctions.FileUtil.getFile(mContext, msg.getMediaID()
                 , msg.getMediaType(), msg.isSelf());
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
@@ -75,13 +76,13 @@ public class MediaViewAdapter extends RecyclerView.Adapter<MediaViewAdapter.Medi
             }
             toolbar.setSubtitle(msg.getDate() + ", " + msg.getTime());
         }
-        if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE || msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE) {
-            ImageView imageView = new ImageView(mContext);
+        if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE || msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE) {
+            TouchImageView imageView = new TouchImageView(mContext);
             imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             imageView.setImageURI(Uri.parse(file.toURI().toString()));
             imageView.setLayoutParams(params);
             holder.linearLayout.addView(imageView, 0);
-        } else if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO || msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO) {
+        } else if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO || msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO) {
 
             // Video item
             VideoView videoView = new VideoView(mContext);

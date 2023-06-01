@@ -13,9 +13,10 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.media.ExifInterface;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -41,6 +42,329 @@ import java.util.Date;
 import java.util.Locale;
 
 public class UsefulFunctions {
+
+    public static String getCurrentTimestamp() {
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy, HH:mm:ss", Locale.getDefault());
+        return dateFormat.format(currentDate);
+    }
+
+    public static String getTime(String time) {
+        return time.substring(time.lastIndexOf(",")+2);
+    }
+
+    public static String getDate(String time) {
+        return time.substring(0,time.lastIndexOf(","));
+    }
+
+    public static String getTime() {
+        String time=getCurrentTimestamp();
+        return time.substring(time.lastIndexOf(",")+2);
+    }
+
+    public static String getDate() {
+        String time=getCurrentTimestamp();
+        return time.substring(0,time.lastIndexOf(","));
+    }
+
+    public static class FileUtil{
+
+        public static File saveImageInInternalStorage(Context cxt,Bitmap bitmap) {
+            Log.i("CAMERA.saveImage:::::::", "try");
+            FileOutputStream outputStream;
+            File imageFile = null;
+            try {
+                File storageDir = cxt.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+                String imageFileName = "IMG_" + timeStamp + ".jpg";
+                imageFile = new File(storageDir, imageFileName);
+
+                outputStream = new FileOutputStream(imageFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                outputStream.flush();
+                outputStream.close();
+
+                // Image saved successfully
+                // You can do further processing with the saved image file here
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle image saving error
+            }
+            return imageFile;
+        }
+
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        public static Bitmap getImageFromUri(Context context, Uri uri) {
+            try {
+                InputStream inputStream = context.getContentResolver().openInputStream(uri);
+                Bitmap image = BitmapFactory.decodeStream(inputStream);
+                ExifInterface exifIn = new ExifInterface(context.getContentResolver().openInputStream(uri));
+                int orientation = exifIn.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                int width = image.getWidth();
+                int height = image.getHeight();
+                int side = Math.min(width, height);
+                float ratio = (float) width / height;
+
+                Matrix matrix = new Matrix();
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        matrix.setRotate(90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        matrix.setRotate(180);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        matrix.setRotate(270);
+                        break;
+                    default:
+                        break;
+                }
+                Bitmap resized = image;
+                resized = Bitmap.createBitmap(resized, 0, 0, side, side, matrix, true);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                resized.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                byte[] imageData = outputStream.toByteArray();
+                return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        public static String saveImage(Context context, Bitmap bitmap, boolean sent) {
+            File pictureFile = makeOutputMediaFile(context, sent, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+            return saveImage(bitmap, sent, pictureFile);
+        }
+
+        public static String saveImage(Bitmap bitmap, boolean sent, File file) {
+            File pictureFile = file;
+            if (pictureFile == null) {
+                Log.d(TAG + "::::",
+                        "Error creating media file, check storage permissions: ");// e.getMessage());
+                return null;
+            }
+            try {
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                Log.d("ERROR ::::", "File not found: " + e.getMessage());
+                return null;
+            } catch (IOException e) {
+                Log.d("ERROR ::::", "Error accessing file: " + e.getMessage());
+                return null;
+            }
+            Log.i(TAG + "::::", pictureFile.getAbsolutePath());
+            return pictureFile.getName().substring(0,pictureFile.getName().lastIndexOf('.') );
+        }
+
+        public static File makeOutputMediaFile(Context context, boolean sent, int type) {
+            return makeOutputMediaFile(context, sent, type, null);
+        }
+
+        public static File makeOutputMediaFile(Context context, boolean sent, int type, String docName) {
+            // To be safe, you should check that the SDCard is mounted
+            // using Environment.getExternalStorageState() before doing this.
+            String folder = "";
+            String init = "";
+            String format = "";
+            switch (type) {
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
+                    folder = "Images";
+                    init = "IMG";
+                    format = ".jpg";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
+                    folder = "Videos";
+                    init = "VID";
+                    format = ".mp4";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
+                    folder = "Documents";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
+                    folder = "Audios";
+                    init = "AUD";
+                    format = ".mp3";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_WALLPAPER:
+                    folder = "Wallpapers";
+                    init = "IMG";
+                    format = ".jpg";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE:
+                    folder = "Camera";
+                    init = "IMG";
+                    format = ".jpg";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO:
+                    folder = "Camera";
+                    init = "VID";
+                    format = ".mp4";
+                    break;
+            }
+            String fol = sent ?(type==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE||type==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO? "":"/Sent") : "";
+            File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
+                    + "/Android/media" +
+                    "" +
+                    "/"
+                    + context.getApplicationContext().getPackageName()
+                    + "/Media/Crimson " + folder + fol);
+
+            // This location works best if you want the created images to be shared
+            // between applications and persist after your app has been uninstalled.
+
+            // Create the storage directory if it does not exist
+            if (!mediaStorageDir.exists()) {
+                if (!mediaStorageDir.mkdirs()) {
+                    Log.i("mediaStorageDir" + "::::", "NULL");
+
+                    return null;
+                }
+            }
+            // Create a media file name
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmSS").format(new Date());
+            File mediaFile;
+    //        Log.i("UsefulFunction.makeOutputMediaFile::::::", "docName="+docName);
+            String mImageName = docName == null ? init + "_" + timeStamp: docName.substring(0, docName.lastIndexOf('.'));
+            format = docName == null ? format : docName.substring(docName.lastIndexOf('.'));
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName + format);
+            int i = 1;
+            while (mediaFile.exists()) {
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName + " (" + (i++) + ")" + format);
+            }
+            Log.i(TAG, mImageName);
+            return mediaFile;
+        }
+
+        public static File getFile(Context context, String id, int type) {
+            File file = getFile(context, id, type, true);
+            if (!file.exists()) {
+                return getFile(context, id, type, false);
+            }
+            return file;
+        }
+
+        public static File getFile(Context context, String id, int type, boolean sent) {
+            // To be safe, you should check that the SDCard is mounted
+            // using Environment.getExternalStorageState() before doing this.
+
+            String folder = "";
+            switch (type) {
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
+                    folder = "Images";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
+                    folder = "Videos";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
+                    folder = "Documents";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
+                    folder = "Audios";
+                    break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE:
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO:
+                    folder = "Camera";
+                    break;
+            }
+            String subFolder = sent ? "/Sent" : "";
+            String mediaStorageDir = Environment.getExternalStorageDirectory()
+                    + "/Android/media" +
+                    "" +
+                    "/"
+                    + context.getApplicationContext().getPackageName()
+                    + "/Media/Crimson " + folder + subFolder;
+
+            // This location works best if you want the created images to be shared
+            // between applications and persist after your app has been uninstalled.
+
+            Log.i("FILE::::", mediaStorageDir);
+            return new File(mediaStorageDir, id);
+        }
+
+        public static String saveFile(byte[] bytes, File outFile) throws IOException {
+            OutputStream os = new FileOutputStream(outFile);
+            os.write(bytes);
+            os.close();
+            Log.i("UsefulFunctions.saveFile", outFile.getName());
+            return outFile.getName();
+        }
+
+        public static String saveFile(Context cxt, Uri originalUri, File outputFile) {
+            try {
+                InputStream inputStream = cxt.getContentResolver().openInputStream(originalUri);
+                OutputStream outputStream = new FileOutputStream(outputFile);
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, length);
+                }
+                inputStream.close();
+                outputStream.flush();
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+            Log.i("UsefulFunctions.saveFile", outputFile.getName());
+            return outputFile.getName().substring(0,outputFile.getName().lastIndexOf('.') );
+        }
+
+        public static String getFileName(Context context, Uri uri) {
+            return getFileName(context,uri,false);
+        }
+
+        public static String getFileName(Context context, Uri uri, boolean forDoc) {
+            String result = null;
+            Log.i("TEMP TEST::::::", uri.getPath()+"__"+(uri.getScheme()==null));
+            if (uri.getScheme().equals("content")) {
+                Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+                int c = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                try {
+                    if (cursor.moveToFirst()) {
+                        result = cursor.getString(c);
+                    }
+                } finally {
+                    cursor.close();
+                }
+            }
+            if (result == null) {
+                result = uri.getPath();
+                int cut = result.lastIndexOf('/');
+                if (cut != -1) {
+                    result = result.substring(cut + 1);
+                }
+            }
+            if(forDoc)
+                return result;
+            return result.substring(0,result.lastIndexOf('.') );
+        }
+
+        public static String getFileNameFromPath(String path) {
+            String fileNameWithExtension = new File(path).getName();
+            int dotIndex = fileNameWithExtension.lastIndexOf(".");
+            if (dotIndex == -1) {
+                return fileNameWithExtension;
+            } else {
+                return fileNameWithExtension.substring(0, dotIndex);
+            }
+        }
+    }
+
+    public static boolean isInternetConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                return true; // Device is connected to the internet
+            }
+        }
+        return false; // Device is not connected to the internet
+    }
+
     public static String encodeImage(Bitmap bitmap) {
         int previewWidth = 150;
         int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
@@ -109,18 +433,18 @@ public class UsefulFunctions {
     }
 
     public static String getAudioLength(String path) {
-        String time=null;
+        String sentTime=null;
         try {
             MediaPlayer mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
-            time= getStringMmSsTimeVale(mediaPlayer.getDuration());
+            sentTime= getStringMmSsTimeVale(mediaPlayer.getDuration());
             mediaPlayer.release();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        return time;
+        return sentTime;
     }
 
     public static String getStringMmSsTimeVale(int milliSec) {
@@ -187,257 +511,6 @@ public class UsefulFunctions {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static Bitmap getImageFromUri(Context context, Uri uri) {
-        try {
-            InputStream inputStream = context.getContentResolver().openInputStream(uri);
-            Bitmap image = BitmapFactory.decodeStream(inputStream);
-            ExifInterface exifIn = new ExifInterface(context.getContentResolver().openInputStream(uri));
-            int orientation = exifIn.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            int width = image.getWidth();
-            int height = image.getHeight();
-            int side = Math.min(width, height);
-            float ratio = (float) width / height;
-
-            Matrix matrix = new Matrix();
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    matrix.setRotate(90);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    matrix.setRotate(180);
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    matrix.setRotate(270);
-                    break;
-                default:
-                    break;
-            }
-            Bitmap resized = image;
-            resized = Bitmap.createBitmap(resized, 0, 0, side, side, matrix, true);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            resized.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            byte[] imageData = outputStream.toByteArray();
-            return BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
-    public static String saveImage(Context context, Bitmap bitmap, boolean sent) {
-        File pictureFile = makeOutputMediaFile(context, sent, Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-        return saveImage(bitmap, sent, pictureFile);
-    }
-
-    public static String saveImage(Bitmap bitmap, boolean sent, File file) {
-        File pictureFile = file;
-        if (pictureFile == null) {
-            Log.d(TAG + "::::",
-                    "Error creating media file, check storage permissions: ");// e.getMessage());
-            return null;
-        }
-        try {
-            FileOutputStream fos = new FileOutputStream(pictureFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.close();
-        } catch (FileNotFoundException e) {
-            Log.d("ERROR ::::", "File not found: " + e.getMessage());
-            return null;
-        } catch (IOException e) {
-            Log.d("ERROR ::::", "Error accessing file: " + e.getMessage());
-            return null;
-        }
-        Log.i(TAG + "::::", pictureFile.getAbsolutePath());
-        return pictureFile.getName().substring(0,pictureFile.getName().lastIndexOf('.') );
-    }
-
-    public static File makeOutputMediaFile(Context context, boolean sent, int type) {
-        return makeOutputMediaFile(context, sent, type, null);
-    }
-
-    public static File makeOutputMediaFile(Context context, boolean sent, int type, String docName) {
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-        String folder = "";
-        String init = "";
-        String format = "";
-        switch (type) {
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
-                folder = "Images";
-                init = "IMG";
-                format = ".jpg";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
-                folder = "Videos";
-                init = "VID";
-                format = ".mp4";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
-                folder = "Documents";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
-                folder = "Audios";
-                init = "AUD";
-                format = ".mp3";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_WALLPAPER:
-                folder = "Wallpapers";
-                init = "IMG";
-                format = ".jpg";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE:
-                folder = "Camera";
-                init = "IMG";
-                format = ".jpg";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO:
-                folder = "Camera";
-                init = "VID";
-                format = ".mp4";
-                break;
-        }
-        String fol = sent ? "/Sent" : "";
-        File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                + "/Android/media" +
-                "" +
-                "/"
-                + context.getApplicationContext().getPackageName()
-                + "/Media/Crimson " + folder + fol);
-
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.i("mediaStorageDir" + "::::", "NULL");
-
-                return null;
-            }
-        }
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmSS").format(new Date());
-        File mediaFile;
-        String mImageName = docName == null ? init + "_" + timeStamp: docName.substring(0, docName.lastIndexOf('.'));
-        format = docName == null ? format : docName.substring(docName.lastIndexOf('.'));
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName + format);
-        int i = 1;
-        while (mediaFile.exists()) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName + " (" + (i++) + ")" + format);
-        }
-        Log.i(TAG, mImageName);
-        return mediaFile;
-    }
-
-    public static File getFile(Context context, String id, int type) {
-        File file = getFile(context, id, type, true);
-        if (!file.exists()) {
-            return getFile(context, id, type, false);
-        }
-        return file;
-    }
-
-    public static File getFile(Context context, String id, int type, boolean sent) {
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-
-        String folder = "";
-        switch (type) {
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
-                folder = "Images";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
-                folder = "Videos";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
-                folder = "Documents";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
-                folder = "Audios";
-                break;
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE:
-            case Constants.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO:
-                folder = "Camera";
-                break;
-        }
-        String subFolder = sent ? "/Sent" : "";
-        String mediaStorageDir = Environment.getExternalStorageDirectory()
-                + "/Android/media" +
-                "" +
-                "/"
-                + context.getApplicationContext().getPackageName()
-                + "/Media/Crimson " + folder + subFolder;
-
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        Log.i("FILE::::", mediaStorageDir);
-        return new File(mediaStorageDir, id);
-    }
-
-    public static String saveFile(byte[] bytes, File outFile) throws IOException {
-        OutputStream os = new FileOutputStream(outFile);
-        os.write(bytes);
-        os.close();
-        Log.i("UsefulFunctions.saveFile", outFile.getName());
-        return outFile.getName();
-    }
-
-    public static String saveFile(Context cxt, Uri originalUri, File outputFile) {
-        try {
-            InputStream inputStream = cxt.getContentResolver().openInputStream(originalUri);
-            OutputStream outputStream = new FileOutputStream(outputFile);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, length);
-            }
-            inputStream.close();
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        Log.i("UsefulFunctions.saveFile", outputFile.getName());
-        return outputFile.getName().substring(0,outputFile.getName().lastIndexOf('.') );
-    }
-
-    public static String getFileName(Context context, Uri uri) {
-        String result = null;
-        Log.i("TEMP TEST::::::", uri.getPath()+"__"+(uri.getScheme()==null));
-        if (uri.getScheme().equals("content")) {
-            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-            int c = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-            try {
-                if (cursor.moveToFirst()) {
-                    result = cursor.getString(c);
-                }
-            } finally {
-                cursor.close();
-            }
-        }
-        if (result == null) {
-            result = uri.getPath();
-            int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
-            }
-        }
-        return result.substring(0,result.lastIndexOf('.') );
-    }
-
-    public static String getFileNameFromPath(String path) {
-        String fileNameWithExtension = new File(path).getName();
-        int dotIndex = fileNameWithExtension.lastIndexOf(".");
-        if (dotIndex == -1) {
-            return fileNameWithExtension;
-        } else {
-            return fileNameWithExtension.substring(0, dotIndex);
-        }
-    }
 
     public static Uri getAudioContentUri(Context context, String filePath) {
         String[] projection = {MediaStore.Audio.Media._ID};

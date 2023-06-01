@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -59,7 +60,9 @@ public class Registration_Phone extends AppCompatActivity implements AdapterView
         setContentView(R.layout.activity_registration_phone);
 
         if(this.getSharedPreferences(SharedPrefManager.SHARED_PREF_NAME, Context.MODE_PRIVATE).getBoolean("PHONE_VERIFIED", false)){
-            startActivity(new Intent(this, Registration_Profile.class));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                startActivity(new Intent(this, Registration_Profile.class));
+            }
             finish();
         }
 
@@ -72,21 +75,21 @@ public class Registration_Phone extends AppCompatActivity implements AdapterView
         et_phoneNumber=findViewById(R.id.Registration_Phone_editTextPhone);
         b_next=findViewById(R.id.Registration_Phone_Button_Next);
 
-        b_next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(et_phoneNumber.getText().toString().matches("\\d+")){
-                    phoneNumber=phoneNumber+et_phoneNumber.getText().toString();
-                    Intent intent= new Intent(getApplicationContext(), Registration_PhoneVerification.class);
-                    intent.putExtra(Constants.KEY_INTENT_PHONE, phoneNumber);
+        b_next.setOnClickListener(view -> {
+            if(et_phoneNumber.getText().toString().matches("\\d+")){
+                phoneNumber=phoneNumber+et_phoneNumber.getText().toString();
+
+                Intent intent= new Intent(getApplicationContext(), Registration_PhoneVerification.class);
+
+                intent.putExtra(Constants.Intent.KEY_INTENT_PHONE, phoneNumber);
+
 
 //                    makeTheCall(phoneNumber);
 
-                    startActivity(intent);
-                }else{
-                    Toast.makeText(getApplicationContext()," Invalid Number ", Toast.LENGTH_SHORT).show();
-                    et_phoneNumber.setText("");
-                }
+                startActivity(intent);
+            }else{
+                Toast.makeText(getApplicationContext()," Invalid Number ", Toast.LENGTH_SHORT).show();
+                et_phoneNumber.setText("");
             }
         });
 
@@ -94,5 +97,6 @@ public class Registration_Phone extends AppCompatActivity implements AdapterView
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countryList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
     }
 }

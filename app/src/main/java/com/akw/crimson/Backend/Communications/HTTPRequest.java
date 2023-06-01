@@ -144,14 +144,14 @@ public class HTTPRequest {
         return true;
     }
 
-    private JSONObject GETrequestRun(String fromID, String time) {
+    private JSONObject GETrequestRun(String fromID, String sentTime) {
         inProgress = true;
         final JSONObject[] json = {null};
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 try {
-                    json[0] = GETrequest(fromID, time);
+                    json[0] = GETrequest(fromID, sentTime);
                     extractMessages(json[0]);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -164,8 +164,8 @@ public class HTTPRequest {
         return json[0];
     }
 
-    private JSONObject GETrequest(String fromID, String time) throws Exception {
-        URL url = new URL(MESSAGE_REQUEST_URL + "?time=" + time + "&id=" + fromID);
+    private JSONObject GETrequest(String fromID, String sentTime) throws Exception {
+        URL url = new URL(MESSAGE_REQUEST_URL + "?time=" + sentTime + "&id=" + fromID);
         String result = "";
         HttpURLConnection urlConnection = null;
         urlConnection = (HttpURLConnection) url.openConnection();

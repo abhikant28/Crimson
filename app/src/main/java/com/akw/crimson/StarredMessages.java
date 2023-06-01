@@ -15,7 +15,6 @@ import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.TheViewModel;
-import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.Chat.ChatActivity;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class StarredMessages extends AppCompatActivity {
 
         TheViewModel db = Communicator.localDB;
 
-        String userID = getIntent().getStringExtra(Constants.KEY_INTENT_USERID);
+        String userID = getIntent().getStringExtra(Constants.Intent.KEY_INTENT_USERID);
         starredMsgs_rv_Adapter= new MessageSearch_RecyclerListAdapter(db);
 
 
@@ -67,9 +66,9 @@ public class StarredMessages extends AppCompatActivity {
         rv_starredMsgs.setAdapter(starredMsgs_rv_Adapter);
         starredMsgs_rv_Adapter.setOnItemCLickListener(message -> {
             Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-            intent.putExtra(Constants.KEY_INTENT_USERID, message.getUser_id());
-            intent.putExtra(Constants.KEY_INTENT_MESSAGE_ID, message.getMsg_ID());
-            intent.putExtra(Constants.KEY_INTENT_STARTED_BY, Constants.KEY_INTENT_STARTED_BY_SEARCH);
+            intent.putExtra(Constants.Intent.KEY_INTENT_USERID, message.getUser_id());
+            intent.putExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID, message.getMsg_ID());
+            intent.putExtra(Constants.Intent.KEY_INTENT_STARTED_BY, Constants.Intent.KEY_INTENT_STARTED_BY_SEARCH);
             startActivity(intent);
         });
     }

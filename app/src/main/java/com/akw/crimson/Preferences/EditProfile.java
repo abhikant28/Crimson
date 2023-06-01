@@ -54,7 +54,7 @@ public class EditProfile extends AppCompatActivity {
                     if (result.getData() != null) {
                         Uri imageUri = result.getData().getData();
 
-                        Bitmap bitmap = UsefulFunctions.getImageFromUri(this, imageUri);
+                        Bitmap bitmap = UsefulFunctions.FileUtil.getImageFromUri(this, imageUri);
                         String encodedImage = UsefulFunctions.encodeImage(bitmap);
                         updateProfilePic(encodedImage, bitmap);
                     }

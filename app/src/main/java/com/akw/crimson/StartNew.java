@@ -210,13 +210,22 @@ public class StartNew extends BaseActivity {
 
     private void setViews() {
         rv_allUsers = findViewById(R.id.startNew_rv_allUsers);
+        findViewById(R.id.startNew_cv_newGroup).setOnClickListener(view -> startActivity(new Intent(getApplicationContext(),CreateGroup.class)));
+        findViewById(R.id.startNew_cv_newContact).setOnClickListener(view->{
+            Intent i = new Intent(Intent.ACTION_INSERT);
+            i.setType(ContactsContract.Contacts.CONTENT_TYPE);
+            startActivityForResult(i, 33);
+        });
+        findViewById(R.id.startNew_cv_newBot).setOnClickListener(view->{
+            Toast.makeText(this, "Coming soon....", Toast.LENGTH_SHORT).show();
+        });
         rv_allUsers.setLayoutManager(new LinearLayoutManager(this));
         rv_allUsers.setAdapter(allUserList_recyclerListAdapter);
         allUserList_recyclerListAdapter.setOnItemCLickListener(new AllUserList_RecyclerListAdapter.OnItemClickListener() {
             @Override
             public void OnItemClick(User user, TextView tv_name, TextView tv_lastMsg, View view) {
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                intent.putExtra(Constants.KEY_INTENT_USERID, user.getUser_id());
+                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
                 startActivity(intent);
             }
         });

@@ -355,32 +355,34 @@ public class MainGalleryActivity extends AppCompatActivity {
         String[] selectionArgs = ArrayUtils.concat(selectionArgsFolder1,selectionArgsFolder1s,selectionArgsFolder2s, selectionArgsFolder2, selectionArgsFolder3,selectionArgsFolder3s);
 
         long sizeSum=0,imgCount=0,vidCount=0;
-        for (User user : users) {
-            if (user.getMedias().size() > 0) {
-                sizeSum=+user.getMediaSize();
-                imgCount=+user.getImgCount();
-                vidCount=+user.getVidCount();
-                fol = new FolderFacer();
-                fol.setSize(user.getMediaSize());
-                fol.setFolderName(user.getDisplayName());
-                int type = (user.getMedias().get(0).startsWith("IMG_") ? Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE : Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
-                File file = UsefulFunctions.getFile(this, user.getMedias().get(0), type);
-                cursor = this.getContentResolver().query(Uri.parse(file.getPath()), projection, Arrays.deepToString(selectionArgs), null, null);
-                if (cursor != null && cursor.moveToFirst()) {
-                    int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
-                    fol.setIcon(cursor.getLong(columnIndex));
-                    fol.setIconType(type);
-                }
-                fol.setPath(path + "Images");
-                fol.setVidCount(user.getVidCount());
-                fol.setImgCount(user.getImgCount());
 
-                userFolders.add(fol);
+        if(users!=null){
+            for (User user : users) {
+                if (user.getMedias().size() > 0) {
+                    sizeSum = +user.getMediaSize();
+                    imgCount = +user.getImgCount();
+                    vidCount = +user.getVidCount();
+                    fol = new FolderFacer();
+                    fol.setSize(user.getMediaSize());
+                    fol.setFolderName(user.getDisplayName());
+                    int type = (user.getMedias().get(0).startsWith("IMG_") ? Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE : Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO);
+                    File file = UsefulFunctions.FileUtil.getFile(this, user.getMedias().get(0), type);
+                    cursor = this.getContentResolver().query(Uri.parse(file.getPath()), projection, Arrays.deepToString(selectionArgs), null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
+                        fol.setIcon(cursor.getLong(columnIndex));
+                        fol.setIconType(type);
+                    }
+                    fol.setPath(path + "Images");
+                    fol.setVidCount(user.getVidCount());
+                    fol.setImgCount(user.getImgCount());
+
+                    userFolders.add(fol);
+                }
             }
-        }
-        fol = new FolderFacer();
+        }        fol = new FolderFacer();
         fol.setPath(Arrays.deepToString(selectionArgs));
-        fol.setIconType(Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
+        fol.setIconType(Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
         fol.setFolderName("All Medias");
         fol.setSize(sizeSum);
         fol.setImgCount((int)imgCount);

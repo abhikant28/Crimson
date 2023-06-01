@@ -46,7 +46,7 @@ public class AllPhotos_fragment extends Fragment implements MediaListRecyclerVie
         rv_allMedia.setDrawingCacheEnabled(true);
         rv_allMedia.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         rv_allMedia.setLayoutManager(new GridLayoutManager(getContext(), 4));
-        adapter = new MediaListRecyclerViewAdapter(getContext(), mediaCursor, this);
+        adapter = new MediaListRecyclerViewAdapter(getContext(), mediaCursor, this,4);
         rv_allMedia.setAdapter(adapter);
 
         generateList(mediaCursor);

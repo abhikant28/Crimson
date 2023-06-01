@@ -1,16 +1,17 @@
 package com.akw.crimson.Backend.AppObjects;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.akw.crimson.Backend.Constants;
+import com.akw.crimson.Backend.UsefulFunctions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 @Entity(tableName = "messages_Table")
@@ -19,36 +20,71 @@ public class Message {
     @NonNull
     private String msg_ID;
 
-    private String user_id, _id, taggedMsgID, msg, time, date, mediaID, source, reaction;
+    private String user_id, _id, taggedMsgID, msg, sentTime, receivedTime, readTime, mediaID, source, reaction, author, groupUserID, groupData;
     private long mediaSize;
     private double latitude, longitude;
-    private boolean self, unread, starred, media, forwarded,link;
-    private int status, mediaType, msgType;
+    private boolean self, unread, starred, media, forwarded, link;
+    private int status, mediaType, msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+
+    public String asString(String selfID) {
+        Gson gson = new Gson();
+        Message msg = new Message(this);
+        if (msg.groupUserID == null) {
+            msg.user_id = selfID;
+        }
+        if (self && msg.author == null && !msg.isForwarded())
+            msg.author = selfID;
+        if (msg.mediaType == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE)
+            msg.mediaType = Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE;
+        if (msg.mediaType == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO)
+            msg.mediaType = Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO;
+        return gson.toJson(msg);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return this.msg_ID.equals(((Message) obj).getMsg_ID());
+    }
 
 
+    @Ignore
     public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, boolean self,
-                   boolean media, String mediaID, int status, Calendar time) {
+                   boolean media, String mediaID, int status, String author) {
         this.msg_ID = msg_ID;
         this.user_id = user_id;
         this.taggedMsgID = taggedMsgID;
         this.msg = msg;
-        this.time = (time == null) ? "12:00 " : (String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+        this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.unread = true;
         this.media = media;
         this.mediaID = mediaID;
         this.status = status;
         this.self = self;
-        this.msgType = Constants.Message.KEY_MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.author = author;
+    }
+
+    //For Info
+    @Ignore
+    public Message(@NonNull String msg_ID, String user_id, String msg
+            , String groupUserID, boolean self, int status, int msgType) {
+        Calendar sentTime = Calendar.getInstance();
+        this.msg_ID = msg_ID + sentTime.getTime().getTime();
+        this.user_id = user_id;
+        this.sentTime = UsefulFunctions.getCurrentTimestamp();
+        this.msg = msg;
+        this.groupUserID = groupUserID;
+        this.self = self;
+        this.status = status;
+        this.msgType = msgType;
     }
 
     @Ignore
     public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, String mediaID
-            , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType) {
-        Calendar time = Calendar.getInstance();
-        this.msg_ID = msg_ID + time.getTime().getTime();
-        this.time = String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+            , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType, String author) {
+        Calendar sentTime = Calendar.getInstance();
+        this.msg_ID = msg_ID + sentTime.getTime().getTime();
+        this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.user_id = user_id;
         this.taggedMsgID = taggedMsgID;
         this.msg = msg;
@@ -59,15 +95,15 @@ public class Message {
         this.media = media;
         this.status = status;
         this.mediaType = mediaType;
-        this.msgType = Constants.Message.KEY_MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.author = author;
     }
 
     @Ignore
-    public Message(String msg_ID, String taggedMsgID, String msg, String source, String reaction, int status, int msgType) {
-        Calendar time = Calendar.getInstance();
-        this.msg_ID = msg_ID + time.getTime().getTime();
-        this.time = String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+    public Message(String msg_ID, String taggedMsgID, String msg, String source, String reaction, int status, int msgType, String author) {
+        Calendar sentTime = Calendar.getInstance();
+        this.msg_ID = msg_ID + sentTime.getTime().getTime();
+        this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.taggedMsgID = taggedMsgID;
         this.msg = msg;
         this.source = source;
@@ -75,19 +111,18 @@ public class Message {
         this.self = true;
         this.status = status;
         this.msgType = msgType;
+        this.author = author;
     }
 
 
     @Ignore
     public Message(String taggedMsgID, String msg, String mediaID
-            , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType) {
-        Calendar time = Calendar.getInstance();
-        this.msg_ID = msg_ID + time.getTime().getTime();
-        this.user_id = user_id;
+            , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType, String author) {
+        Calendar sentTime = Calendar.getInstance();
+        this.msg_ID = msg_ID + sentTime.getTime().getTime();
         this.taggedMsgID = taggedMsgID;
         this.msg = msg;
-        this.time = String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+        this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.mediaID = mediaID;
         this.mediaSize = mediaSize;
         this.self = self;
@@ -95,81 +130,59 @@ public class Message {
         this.media = media;
         this.status = status;
         this.mediaType = mediaType;
-        this.msgType = Constants.Message.KEY_MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.author = author;
     }
 
+
+    //For Location Message
     @Ignore
-    public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, boolean self,
-                   boolean media, String mediaID, int status) {
-        Calendar time = Calendar.getInstance();
+    public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, double latitude, double longitude, boolean self, String msg, int status, String author) {
         this.msg_ID = msg_ID;
         this.user_id = user_id;
         this.taggedMsgID = taggedMsgID;
         this.msg = msg;
-        this.time = (String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE)));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
-        this.unread = true;
-        this.media = media;
-        this.mediaID = mediaID;
-        this.status = status;
-        this.self = self;
-        this.msgType = Constants.Message.KEY_MESSAGE_TYPE_TEXT;
-    }
-
-
-    public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, double latitude, double longitude, boolean self, String msg, int status) {
-        this.msg_ID = msg_ID;
-        this.user_id = user_id;
-        this.taggedMsgID = taggedMsgID;
-        this.msg = msg;
-        Calendar c = Calendar.getInstance();
-        this.time = String.format("%02d", c.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", c.get(Calendar.MINUTE));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(c.getTime());
+        this.sentTime = UsefulFunctions.getCurrentTimestamp();
+        ;
         this.source = user_id;
         this.latitude = latitude;
         this.longitude = longitude;
         this.self = self;
         this.unread = false;
         this.status = status;
-        this.mediaType = Constants.KEY_MESSAGE_MEDIA_TYPE_LOCATION;
+        this.mediaType = Constants.Media.KEY_MESSAGE_MEDIA_TYPE_LOCATION;
+        this.author = author;
     }
 
-    public Message(String[] s) {
-        Calendar time = Calendar.getInstance();
-        this.msg_ID = s[0].substring(1);
-        this.user_id = s[1];
-        this.taggedMsgID = s[2].equals("NULL") ? null : s[2];
-        String msg = s[3].replaceAll("%c%", ",").replaceAll("%q%", "\"").replaceAll("%u%", "_");
-        this.msg = msg.substring(1, msg.length() - 1);
-        this.time = String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
-        this.unread = false;
-        this.media = Boolean.parseBoolean(s[4]);
-        this.mediaID = s[5].substring(0, s[5].length() - 1).equals("NULL") ? null : s[5].substring(0, s[5].length() - 1);
-        this.status = 2;
-        this.self = false;
-    }
 
     public Message(String s) {
         Gson gson = new Gson();
         Type type = new TypeToken<Message>() {
         }.getType();
         Message message = gson.fromJson(s, type);
+        this.receivedTime = UsefulFunctions.getCurrentTimestamp();
         this.msg_ID = message.msg_ID;
         this.user_id = message.user_id;
         this.taggedMsgID = message.taggedMsgID;
         this.msg = message.msg;
-        Calendar time = Calendar.getInstance();
-        this.time = String.format("%02d", time.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", time.get(Calendar.MINUTE));
-        this.date = new SimpleDateFormat("dd/MM/yyyy").format(time.getTime());
+        this.sentTime = message.sentTime;
+        this.readTime = message.readTime;
         this.mediaID = message.mediaID;
+        this.source = message.source;
+        this.reaction = message.reaction;
+        this.author = message.author;
+        this.groupUserID = message.groupUserID;
+        this.groupData = message.groupData;
         this.mediaSize = message.mediaSize;
         this.latitude = message.latitude;
         this.longitude = message.longitude;
         this.self = false;
-        this.unread = true;
+        this.unread = message.unread;
+        this.starred = message.starred;
         this.media = message.media;
-        this.status = 2;
+        this.forwarded = message.forwarded;
+        this.link = message.link;
+        this.status = message.status;
         this.mediaType = message.mediaType;
         this.msgType = message.msgType;
     }
@@ -177,21 +190,32 @@ public class Message {
     public Message(@NonNull Message message) {
         this.msg_ID = message.msg_ID;
         this.user_id = message.user_id;
+        this._id = message._id;
         this.taggedMsgID = message.taggedMsgID;
         this.msg = message.msg;
-        this.time = message.time;
-        this.date = message.date;
+        this.sentTime = message.sentTime;
+        this.receivedTime = message.receivedTime;
+        this.readTime = message.readTime;
         this.mediaID = message.mediaID;
+        this.source = message.source;
+        this.reaction = message.reaction;
+        this.author = message.author;
+        this.groupUserID = message.groupUserID;
+        this.groupData = message.groupData;
         this.mediaSize = message.mediaSize;
         this.latitude = message.latitude;
         this.longitude = message.longitude;
         this.self = message.self;
         this.unread = message.unread;
+        this.starred = message.starred;
         this.media = message.media;
+        this.forwarded = message.forwarded;
+        this.link = message.link;
         this.status = message.status;
         this.mediaType = message.mediaType;
         this.msgType = message.msgType;
     }
+
 
     public double getLatitude() {
         return latitude;
@@ -250,7 +274,6 @@ public class Message {
     }
 
     public String getTaggedMsgID() {
-        if (taggedMsgID == null) taggedMsgID = Constants.KEY_FCM_TYPE_MSG;
         return taggedMsgID;
     }
 
@@ -267,19 +290,39 @@ public class Message {
     }
 
     public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
+        if (self)
+            return sentTime.substring(0, sentTime.lastIndexOf(","));
+        return receivedTime.substring(0, receivedTime.lastIndexOf(","));
     }
 
     public String getDate() {
-        return date;
+        if (self)
+            return sentTime.substring(sentTime.lastIndexOf(",") + 2);
+        return receivedTime.substring(sentTime.lastIndexOf(",") + 2);
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setSentTime(String sentTime) {
+        this.sentTime = sentTime;
+    }
+
+    public String getSentTime() {
+        return sentTime;
+    }
+
+    public String getReceivedTime() {
+        return receivedTime;
+    }
+
+    public void setReceivedTime(String receivedTime) {
+        this.receivedTime = receivedTime;
+    }
+
+    public String getReadTime() {
+        return readTime;
+    }
+
+    public void setReadTime(String readTime) {
+        this.readTime = readTime;
     }
 
     public boolean isSelf() {
@@ -355,6 +398,7 @@ public class Message {
     }
 
     public int getMsgType() {
+        if(msgType==0) return Constants.Message.MESSAGE_TYPE_TEXT;
         return msgType;
     }
 
@@ -370,14 +414,56 @@ public class Message {
         this.link = link;
     }
 
-    public String asString(String selfID) {
-        Gson gson = new Gson();
-        Message msg = new Message(this);
-        msg.user_id = selfID;
-        if (msg.mediaType == Constants.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE)
-            msg.mediaType = Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE;
-        if (msg.mediaType == Constants.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO)
-            msg.mediaType = Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO;
-        return gson.toJson(msg);
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getGroupUserID() {
+        return groupUserID;
+    }
+
+    public void setGroupUserID(String groupUserID) {
+        this.groupUserID = groupUserID;
+    }
+
+    public String getGroupData() {
+        return groupData;
+    }
+
+    public void setGroupData(String groupData) {
+        this.groupData = groupData;
+    }
+
+
+    public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, String sentTime, String receivedTime, String readTime, String mediaID, String source, String reaction, String author, String groupUserID, String groupData, long mediaSize, double latitude, double longitude, boolean self, boolean unread, boolean starred, boolean media, boolean forwarded, boolean link, int status, int mediaType, int msgType) {
+        this.msg_ID = msg_ID;
+        this.user_id = user_id;
+        this.taggedMsgID = taggedMsgID;
+        this.msg = msg;
+        this.sentTime = sentTime;
+        this.receivedTime = receivedTime;
+        this.readTime = readTime;
+        this.mediaID = mediaID;
+        this.source = source;
+        this.reaction = reaction;
+        this.author = author;
+        this.groupUserID = groupUserID;
+        this.groupData = groupData;
+        this.mediaSize = mediaSize;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.self = self;
+        this.unread = unread;
+        this.starred = starred;
+        this.media = media;
+        this.forwarded = forwarded;
+        this.link = link;
+        this.status = status;
+        this.mediaType = mediaType;
+        this.msgType = msgType;
     }
 }

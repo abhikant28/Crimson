@@ -364,7 +364,7 @@
                 android:id="@+id/Message_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/time"
+                android:text="@string/sentTime"
                 android:textColor="#AAA7A7"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"

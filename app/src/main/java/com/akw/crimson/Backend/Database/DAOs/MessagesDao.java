@@ -10,6 +10,7 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.akw.crimson.Backend.AppObjects.Message;
+import com.akw.crimson.Backend.Constants;
 
 import java.util.List;
 
@@ -30,10 +31,10 @@ public interface MessagesDao {
 
     //    @Query("SELECT * from messages_Table where user_id= :user_id LIMIT 100")
 //    LiveData<List<Message>> getMessages(String user_id);
-    @Query("SELECT * FROM MESSAGES_TABLE WHERE status=0")
+    @Query("SELECT * FROM MESSAGES_TABLE WHERE status="+ Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD)
     LiveData<List<Message>> pendingMessages();
 
-    @Query("SELECT * FROM MESSAGES_TABLE WHERE status=2")
+    @Query("SELECT * FROM MESSAGES_TABLE WHERE status="+Constants.Message.MESSAGE_STATUS_RECEIVED)
     LiveData<List<Message>> receivedMessages();
 
     @Query("SELECT * from messages_Table where msg_ID=:msgID LIMIT 1")

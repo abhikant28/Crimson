@@ -22,7 +22,7 @@
     <string name="file_name">File Name</string>
     <string name="audio_name">Audio Name</string>
     <string name="message">Message</string>
-    <string name="time">Time</string>
+    <string name="sentTime">Time</string>
     <string name="cancel">Cancel</string>
     <string name="file_type">File Type</string>
     <string name="video_size">Video Size</string>

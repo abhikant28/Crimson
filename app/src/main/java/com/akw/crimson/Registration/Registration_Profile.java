@@ -144,11 +144,11 @@ public class Registration_Profile extends AppCompatActivity {
         b_verify.setOnClickListener(view -> {
             if (checkFields()) {
                 Intent intent = new Intent(getApplicationContext(), FinalRegister.class);
-                intent.putExtra(Constants.KEY_INTENT_EMAIL, et_mail.getText().toString().toLowerCase().trim());
-                intent.putExtra(Constants.KEY_INTENT_USERNAME, et_pass.getText().toString().trim());
-                intent.putExtra(Constants.KEY_INTENT_ABOUT, et_about.getText().toString().trim());
+                intent.putExtra(Constants.Intent.KEY_INTENT_EMAIL, et_mail.getText().toString().toLowerCase().trim());
+                intent.putExtra(Constants.Intent.KEY_INTENT_USERNAME, et_pass.getText().toString().trim());
+                intent.putExtra(Constants.Intent.KEY_INTENT_ABOUT, et_about.getText().toString().trim());
                 if (hasPic) {
-                    intent.putExtra(Constants.KEY_INTENT_PIC, encodedImage);
+                    intent.putExtra(Constants.Intent.KEY_INTENT_PIC, encodedImage);
                 }
                 startActivity(intent);
             }

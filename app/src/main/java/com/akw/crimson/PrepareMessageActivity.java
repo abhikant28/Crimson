@@ -61,7 +61,7 @@ public class PrepareMessageActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.KEY_ACTIVITY_RESULT_CONTACT_SELECT) {
             if (resultCode == RESULT_OK && data != null) {
-                msgForUser = Communicator.localDB.getUser(data.getStringExtra(Constants.KEY_INTENT_USERID));
+                msgForUser = Communicator.localDB.getUser(data.getStringExtra(Constants.Intent.KEY_INTENT_USERID));
                 tv_selectContact.setText(msgForUser.getDisplayName());
             }
         }
@@ -113,7 +113,7 @@ public class PrepareMessageActivity extends BaseActivity {
         b_saveMsg.setOnClickListener(view -> {
 //                Log.i("SAVING::::::::",(!et_messageText.getText().toString().equals("")) +"_"+ (msgDate != null) +"_"+ (msgForUser != null));
             if (!et_messageText.getText().toString().equals("") && msgDate != null && msgForUser != null) {
-                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), msgForUser.getUser_id(), null, et_messageText.getText().toString().trim(), true, false, null, 0, msgDate);
+                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), msgForUser.getUser_id(), null, et_messageText.getText().toString().trim(), true, false, null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD,SharedPrefManager.getLocalUserID());
                 PreparedMessage prep = new PreparedMessage(message, msgDate, msgForUser.getDisplayName(), msgForUser.getUser_id());
                 messageArrayList.add(0, prep);
                 setAlarm(prep);
@@ -150,21 +150,18 @@ public class PrepareMessageActivity extends BaseActivity {
             }
         });
 
-        tv_selectContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SelectContact.class);
-                intent.putExtra(Constants.KEY_INTENT_TYPE,Constants.KEY_INTENT_TYPE_SINGLE_SELECT);
-                startActivityForResult(intent, Constants.KEY_ACTIVITY_RESULT_CONTACT_SELECT);
-            }
+        tv_selectContact.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), SelectContact.class);
+            intent.putExtra(Constants.Intent.KEY_INTENT_TYPE, Constants.Intent.KEY_INTENT_TYPE_SINGLE_SELECT);
+            startActivityForResult(intent, Constants.KEY_ACTIVITY_RESULT_CONTACT_SELECT);
         });
     }
 
     private void setAlarm(PreparedMessage preparedMessage) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, AlertReceiver.class);
-        intent.putExtra(Constants.KEY_INTENT_PREP_MSG_ID, preparedMessage.getId());
-        intent.putExtra(Constants.KEY_INTENT_USERNAME, preparedMessage.getToName());
+        intent.putExtra(Constants.Intent.KEY_INTENT_PREP_MSG_ID, preparedMessage.getId());
+        intent.putExtra(Constants.Intent.KEY_INTENT_USERNAME, preparedMessage.getToName());
         PendingIntent pi = PendingIntent.getBroadcast(this, preparedMessage.getId(), intent, PendingIntent.FLAG_MUTABLE);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, preparedMessage.getDate().getTimeInMillis(), pi);
     }
@@ -188,7 +185,7 @@ public class PrepareMessageActivity extends BaseActivity {
                             msgDate.set(Calendar.SECOND, 0);
                             tv_selectTime.setText("At: " + DateFormat.getTimeInstance(DateFormat.SHORT).format(msgDate.getTime()));
                         } else {
-                            Toast.makeText(getApplicationContext(), "Select a date and time in future", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Select a sentDate and time in future", Toast.LENGTH_LONG).show();
                         }
                     }
                 },

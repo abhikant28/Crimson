@@ -53,7 +53,8 @@ public class MessageSearch_RecyclerListAdapter extends ListAdapter<Message, Mess
         String name = db.getUser(message.getUser_id()).getDisplayName();
         holder.tv_name.setText(name);
         holder.tv_lastMsg.setText(message.getMsg());
-        holder.tv_time.setText((message.getTime() == null ? "12:00" : message.getTime().substring(0, 5)));
+        holder.tv_time.setText((message.
+                getTime() == null ? "12:00" : message.getTime().substring(0, 5)));
     }
 
     public Message getMessage(int position) {

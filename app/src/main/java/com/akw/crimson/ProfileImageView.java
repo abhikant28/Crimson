@@ -1,17 +1,12 @@
 package com.akw.crimson;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import android.transition.Transition;
-import android.transition.TransitionInflater;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +25,8 @@ public class ProfileImageView extends DialogFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = Constants.KEY_INTENT_USERID;
-    private static final String ARG_PARAM2 = Constants.KEY_INTENT_PIC;
+    private static final String ARG_PARAM1 = Constants.Intent.KEY_INTENT_USERID;
+    private static final String ARG_PARAM2 = Constants.Intent.KEY_INTENT_PIC;
 
     // TODO: Rename and change types of parameters
     private String userId;
@@ -91,7 +86,7 @@ public class ProfileImageView extends DialogFragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
-                intent.putExtra(Constants.KEY_INTENT_USERID, userId);
+                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, userId);
                 startActivity(intent);
             }
         });

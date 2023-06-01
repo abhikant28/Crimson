@@ -4,13 +4,17 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.DAOs.DataConverter;
 import com.akw.crimson.Backend.UsefulFunctions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -21,12 +25,27 @@ public class User {
     @NonNull
     private String user_id;
     private String _id;
-    private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about, wallpaper,status;
+    private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about, wallpaper, status, groupData;
     private boolean unread, connected, blocked, mute, known, pinned;
-    private int unread_count, last_msg_type = 0, vidCount = 0, imgCount = 0, docCount = 0,msg_count=0, type=0;
+    private int unread_count, last_msg_type = 0, vidCount = 0, imgCount = 0, docCount = 0, msg_count = 0, type = 0;
     private long mediaSize;
     @TypeConverters(DataConverter.class)
     private ArrayList<String> groups, medias, links, docs;
+    @TypeConverters(DataConverter.class)
+    public Group group;
+
+    //Used For Groups
+    @Ignore
+    public User(@NonNull String user_id, String displayName, String pic, String groupData, int type, Group group) {
+        this.user_id = user_id;
+        this.displayName = displayName;
+        this.pic = pic;
+        this.groupData = groupData;
+        this.connected=true;
+        this.known=true;
+        this.group=group;
+        this.type = type;
+    }
 
     public User(@NonNull String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected, String about) {
         this.user_id = user_id;
@@ -59,6 +78,45 @@ public class User {
         this.about = about;
     }
 
+    public User(String u) {
+        Gson gson = new Gson();
+        Type type = new TypeToken<User>() {
+        }.getType();
+        User user = gson.fromJson(u, type);
+        this.user_id = user.user_id;
+        this._id = user._id;
+        this.last_msg = user.last_msg;
+        this.name = user.name;
+        this.userName = user.userName;
+        this.displayName = user.displayName;
+        this.time = user.time;
+        this.pic = user.pic;
+        this.phoneNumber = user.phoneNumber;
+        this.date = user.date;
+        this.about = user.about;
+        this.wallpaper = user.wallpaper;
+        this.status = user.status;
+        this.groupData = user.groupData;
+        this.unread = user.unread;
+        this.connected = user.connected;
+        this.blocked = user.blocked;
+        this.mute = user.mute;
+        this.known = user.known;
+        this.pinned = user.pinned;
+        this.unread_count = user.unread_count;
+        this.last_msg_type = user.last_msg_type;
+        this.vidCount = user.vidCount;
+        this.imgCount = user.imgCount;
+        this.docCount = user.docCount;
+        this.msg_count = user.msg_count;
+        this.type = user.type;
+        this.mediaSize = user.mediaSize;
+        this.groups = user.groups;
+        this.medias = user.medias;
+        this.links = user.links;
+        this.docs = user.docs;
+        this.group = user.group;
+    }
 
     public int getGroupCount() {
         return getGroups().size();
@@ -208,7 +266,7 @@ public class User {
 
     public String getPic() {
         if (pic == null)
-            return Constants.DEFAULT_PROFILE_PIC;
+            return Constants.Media.DEFAULT_PROFILE_PIC;
         return pic;
     }
 
@@ -218,7 +276,7 @@ public class User {
 
     public Bitmap getPicBitmap() {
         if (pic == null)
-            return UsefulFunctions.decodeImage(Constants.DEFAULT_PROFILE_PIC);
+            return UsefulFunctions.decodeImage(Constants.Media.DEFAULT_PROFILE_PIC);
         return UsefulFunctions.decodeImage(pic);
     }
 
@@ -270,11 +328,13 @@ public class User {
     }
 
     public String getTime() {
+        if(time==null)
+            return "00:00";
         return time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setTime(String sentTime) {
+        this.time = sentTime;
     }
 
     public ArrayList<String> getDocs() {
@@ -343,7 +403,7 @@ public class User {
         this.known = known;
     }
 
-    public void incMsgCount(){
+    public void incMsgCount() {
         msg_count++;
     }
 
@@ -356,7 +416,7 @@ public class User {
     }
 
     public String getStatus() {
-        if(status==null)
+        if (status == null)
             return getAbout();
         return status;
     }
@@ -411,5 +471,21 @@ public class User {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getGroupData() {
+        return groupData;
+    }
+
+    public void setGroupData(String groupData) {
+        this.groupData = groupData;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }

@@ -24,8 +24,8 @@ public class FireBaseCloudMessaging extends FirebaseMessagingService {
         // Create an intent for the service
         Intent serviceIntent = new Intent(this, Communicator.class);
         serviceIntent.putExtra("serviceData", serviceData);
-        serviceIntent.putExtra(Constants.KEY_INTENT_STARTED_BY, Constants.KEY_INTENT_START_FCM);
-        serviceIntent.putExtra(Constants.KEY_INTENT_USERID, remoteMessage.getSenderId());
+        serviceIntent.putExtra(Constants.Intent.KEY_INTENT_STARTED_BY, Constants.Intent.KEY_INTENT_START_FCM);
+        serviceIntent.putExtra(Constants.Intent.KEY_INTENT_USERID, remoteMessage.getSenderId());
 
         // Start the service
         startService(serviceIntent);

@@ -33,7 +33,7 @@ public class ProfileView extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         db = Communicator.localDB;
-        user = db.getUser(getIntent().getStringExtra(Constants.KEY_INTENT_USERID));
+        user = db.getUser(getIntent().getStringExtra(Constants.Intent.KEY_INTENT_USERID));
 
         setValues();
         setClicks();
@@ -49,7 +49,7 @@ public class ProfileView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                intent.putExtra(Constants.KEY_INTENT_USERID, user.getUser_id());
+                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
                 startActivity(intent);
                 finish();
             }
@@ -58,7 +58,7 @@ public class ProfileView extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                intent.putExtra(Constants.KEY_INTENT_USERID, user.getUser_id());
+                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
                 startActivity(intent);
                 finish();
             }

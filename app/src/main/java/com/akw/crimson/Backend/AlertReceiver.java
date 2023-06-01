@@ -32,7 +32,7 @@ public class AlertReceiver extends BroadcastReceiver {
         ArrayList<PreparedMessage> list = SharedPrefManager.getPreparedMessages();
         Log.i("ALERT RECEIVER::::", "Started");
 
-        int id = intent.getIntExtra(Constants.KEY_INTENT_PREP_MSG_ID, 0);
+        int id = intent.getIntExtra(Constants.Intent.KEY_INTENT_PREP_MSG_ID, 0);
         PreparedMessage prepMsg = null;
         if (id != 0) {
             Log.i("ALERT RECEIVER::::", "ID EXISTS");

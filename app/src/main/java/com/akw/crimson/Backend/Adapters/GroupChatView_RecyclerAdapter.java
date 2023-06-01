@@ -58,7 +58,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
+public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
 
     MediaPlayer audioMediaPlayer;
     Cursor cursor;
@@ -91,7 +91,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public ChatView_RecyclerAdapter(Context context, Cursor c, OnItemClickListener onImageClickListener, TheViewModel db, boolean active) {
+    public GroupChatView_RecyclerAdapter(Context context, Cursor c, OnItemClickListener onImageClickListener, TheViewModel db, boolean active) {
         mOnListItemClickListener = onImageClickListener;
         mContext = context;
         dbView = db;
@@ -707,7 +707,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         Chat_Fragment_MediaView myFragment = new Chat_Fragment_MediaView();
         Bundle bun = new Bundle();
         bun.putInt(Constants.Intent.KEY_INTENT_LIST_POSITION, pos);
-        bun.putInt(Constants.Intent.KEY_INTENT_USER_TYPE, Constants.User.USER_TYPE_USER);
+        bun.putInt(Constants.Intent.KEY_INTENT_USER_TYPE, Constants.User.USER_TYPE_GROUP);
         myFragment.setArguments(bun);
         FragmentTransaction transaction = ((FragmentActivity) cxt).getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.chat_frameLayout_media, myFragment);

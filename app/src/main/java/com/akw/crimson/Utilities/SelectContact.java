@@ -40,18 +40,18 @@ public class SelectContact extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_contact);
         if (getIntent().getExtras() != null) {
-            int type = getIntent().getExtras().getInt(Constants.KEY_INTENT_TYPE);
-            if (type == Constants.KEY_INTENT_TYPE_SINGLE_SELECT) {
+            int type = getIntent().getExtras().getInt(Constants.Intent.KEY_INTENT_TYPE);
+            if (type == Constants.Intent.KEY_INTENT_TYPE_SINGLE_SELECT) {
                 adapter = new AllUserList_RecyclerListAdapter(false, this);
-            } else if (type == Constants.KEY_INTENT_TYPE_MULTI_SELECT) {
+            } else if (type == Constants.Intent.KEY_INTENT_TYPE_MULTI_SELECT) {
                 adapter = new AllUserList_RecyclerListAdapter(true, this);
             }
         }
-        if (getIntent().getExtras() != null && getIntent().getExtras().getString(Constants.KEY_INTENT_USER_LIST) != null) {
+        if (getIntent().getExtras() != null && getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_USER_LIST) != null) {
             Gson gson = new Gson();
             Type gType = new TypeToken<ArrayList<User>>() {
             }.getType();
-            ArrayList<User> users = gson.fromJson(getIntent().getExtras().getString(Constants.KEY_INTENT_USER_LIST), gType);
+            ArrayList<User> users = gson.fromJson(getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_USER_LIST), gType);
             selectedUsers.addAll(users);
         }
         Log.i("SELECTED USERS:::::", selectedUsers.toString());
@@ -61,7 +61,7 @@ public class SelectContact extends BaseActivity {
 
 
         adapter.setOnItemCLickListener((user, tv_name, tv_lastMsg, itemView) -> {
-            if (getIntent().getExtras().getInt(Constants.KEY_INTENT_TYPE) == Constants.KEY_INTENT_TYPE_MULTI_SELECT) {
+            if (getIntent().getExtras().getInt(Constants.Intent.KEY_INTENT_TYPE) == Constants.Intent.KEY_INTENT_TYPE_MULTI_SELECT) {
                 if (!selectedUsers.contains(user)) {
                     selectedUsers.add(user);
                     itemView.setBackgroundColor(Color.parseColor("#C6C5C5"));
@@ -74,9 +74,9 @@ public class SelectContact extends BaseActivity {
                     selectedUsers.remove(user);
                 }
                 updateViews();
-            } else if (getIntent().getExtras().getInt(Constants.KEY_INTENT_TYPE) == Constants.KEY_INTENT_TYPE_SINGLE_SELECT) {
+            } else if (getIntent().getExtras().getInt(Constants.Intent.KEY_INTENT_TYPE) == Constants.Intent.KEY_INTENT_TYPE_SINGLE_SELECT) {
                 Intent intent = new Intent();
-                intent.putExtra(Constants.KEY_INTENT_USERID, user.getUser_id());
+                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -116,8 +116,9 @@ public class SelectContact extends BaseActivity {
             Intent intent = new Intent();
             Gson gson = new Gson();
             String json = gson.toJson(selectedUsers);
-            intent.putExtra(Constants.KEY_INTENT_USER_LIST, json);
+            intent.putExtra(Constants.Intent.KEY_INTENT_USER_LIST, json);
             setResult(RESULT_OK, intent);
+            adapter.submitList(null);
             finish();
         });
     }

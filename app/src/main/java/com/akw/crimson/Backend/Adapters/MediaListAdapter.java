@@ -42,16 +42,16 @@ public class MediaListAdapter extends RecyclerView.Adapter<MediaListAdapter.View
     @Override
     public void onBindViewHolder(@NonNull MediaListAdapter.ViewHolder holder, int position) {
         Message msg = mediaList.get(position);
-        File file = UsefulFunctions.getFile(holder.itemView.getContext(), msg.getMediaID()
+        File file = UsefulFunctions.FileUtil.getFile(holder.itemView.getContext(), msg.getMediaID()
                 , msg.getMediaType(), msg.isSelf());
-        if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
+        if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
             holder.imageView.setImageURI(Uri.parse(file.toURI().toString()));
-        } else if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
+        } else if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
             holder.imageView.setImageDrawable(AppCompatResources.getDrawable(holder.itemView.getContext(), R.drawable.ic_twotone_insert_drive_file_24));
-        } else if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_AUDIO) {
+        } else if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO) {
             holder.imageView.setBackgroundColor(Color.MAGENTA);
             holder.imageView.setImageDrawable(AppCompatResources.getDrawable(holder.itemView.getContext(), R.drawable.ic_baseline_headphones_24));
-        } else if (msg.getMediaType() == Constants.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
+        } else if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
             holder.imageView.setImageBitmap(ThumbnailUtils.createVideoThumbnail(file.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND));
         }
     }

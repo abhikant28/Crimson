@@ -2,6 +2,7 @@ package com.akw.crimson.Backend.Database.DAOs;
 
 import androidx.room.TypeConverter;
 
+import com.akw.crimson.Backend.AppObjects.Group;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -41,6 +42,25 @@ public class DataConverter {
         Gson gson = new Gson();
         String json = gson.toJson(list);
         return json;
+    }
+
+    @TypeConverter
+    public static Group stringToGroup(String string) {
+        if (string == null) {
+            return null;
+        }
+        Gson gson = new Gson();
+        Type type = new TypeToken<Group>() {
+        }.getType();
+        return gson.fromJson(string, type);
+    }
+
+    @TypeConverter
+    public static String groupToString(Group group) {
+        if (group != null) {
+            return new Gson().toJson(group);
+        } else
+            return null;
     }
 
     @TypeConverter

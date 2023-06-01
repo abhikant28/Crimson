@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".CreateGroup">
+
+    <LinearLayout
+        android:id="@+id/CreateGroup_ll_groupSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#C4171717"
+        android:elevation="5sp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20sp"
+        android:paddingVertical="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/CreateGroup_cv_groupIcon"
+            android:layout_width="70sp"
+            android:layout_height="70sp"
+            android:backgroundTint="#FFFFFF"
+            app:cardCornerRadius="250dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/CreateGroup_iv_groupIcon"
+                    android:layout_width="50sp"
+                    android:layout_height="50sp"
+                    android:elevation="2dp"
+                    android:src="@drawable/ic_baseline_camera_alt_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!--                <TextView-->
+                <!--                    android:id="@+id/CreateGroup_tv_selectGroupIcon"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:elevation="2dp"-->
+                <!--                    android:text="Add Profile Picture"-->
+                <!--                    android:textAlignment="center"-->
+                <!--                    android:textColor="#9E4242"-->
+                <!--                    android:textSize="10dp"-->
+                <!--                    android:textStyle="bold"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+                <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toTopOf="parent" />-->
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <EditText
+            android:id="@+id/CreateGroup_et_groupSubject"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10sp"
+            android:layout_weight="1"
+            android:hint="Type group subject..."
+            android:textColor="@color/white"
+            android:textColorHint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/CreateGroup_ib_emoji"
+            android:layout_width="25sp"
+            android:layout_height="25sp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="1dp"
+            android:background="@drawable/ic_baseline_emoji_emotions_24"
+            android:backgroundTint="@color/white" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/CreateGroup_tv_participantCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Participants: "
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateGroup_ll_groupSubject" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/CreateGroup_rv_participants"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateGroup_tv_participantCount" />
+
+    <ImageView
+        android:id="@+id/CreateGroup_iv_addParticipant"
+        android:layout_width="120sp"
+        android:layout_height="120sp"
+        android:elevation="5sp"
+        android:src="@drawable/ic_baseline_add_24"
+        app:layout_constraintBottom_toBottomOf="@+id/CreateGroup_rv_participants"
+        app:layout_constraintEnd_toEndOf="@+id/CreateGroup_rv_participants"
+        app:layout_constraintStart_toStartOf="@+id/CreateGroup_rv_participants"
+        app:layout_constraintTop_toTopOf="@+id/CreateGroup_rv_participants" />
+
+    <!--    <TextView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Add Participants"-->
+    <!--        android:textColor="#8A8989"-->
+    <!--        android:elevation="-1sp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="@+id/CreateGroup_iv_addParticipant"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/CreateGroup_iv_addParticipant"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/CreateGroup_iv_addParticipant" />-->
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/CreateGroup__floatButton_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/ic_baseline_check_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
