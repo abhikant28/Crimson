@@ -12,4 +12,6 @@
     <string name="audioPlayButton">audioPlayButton</string>
     <string name="audioMic">audioMic</string>
     <string name="mediaPlayVid">mediaPlayVid</string>
+    <string name="select_file">Select File</string>
+    <string name="select_user">Select User</string>
 </resources>

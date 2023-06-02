@@ -22,8 +22,8 @@
         android:title="Prepare Message"/>
     <item android:id="@+id/chatList_Menu_gallery"
     android:title="Gallery"/>
-    <item android:id="@+id/chatList_Menu_payments"
-        android:title="Payments"/>
-    <item android:id="@+id/chatList_Menu_browser"
-        android:title="Browser"/>
+<!--    <item android:id="@+id/chatList_Menu_payments"-->
+<!--        android:title="Payments"/>-->
+<!--    <item android:id="@+id/chatList_Menu_browser"-->
+<!--        android:title="Browser"/>-->
 </menu>

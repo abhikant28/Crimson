@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ImportChat">
+
+    <TextView
+        android:id="@+id/importChat_tv_fileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60sp"
+        android:text="@string/select_file"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/importChat_tv_userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80sp"
+        android:text="@string/select_user"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="@+id/importChat_tv_fileName"
+        app:layout_constraintStart_toStartOf="@+id/importChat_tv_fileName"
+        app:layout_constraintTop_toBottomOf="@+id/importChat_tv_fileName" />
+
+    <Button
+        android:id="@+id/importChat_btn_importMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="      Import Messages       "
+        android:layout_marginTop="80sp"
+        app:layout_constraintEnd_toEndOf="@+id/importChat_tv_userName"
+        app:layout_constraintStart_toStartOf="@+id/importChat_tv_userName"
+        app:layout_constraintTop_toBottomOf="@+id/importChat_rg_usersFound" />
+
+    <TextView
+        android:id="@+id/importChat_tv_usersFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:text="Select user name: "
+        app:layout_constraintEnd_toEndOf="@+id/importChat_tv_userName"
+        app:layout_constraintStart_toStartOf="@+id/importChat_tv_userName"
+        app:layout_constraintTop_toBottomOf="@+id/importChat_tv_userName" />
+
+    <RadioGroup
+        android:id="@+id/importChat_rg_usersFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/importChat_tv_usersFound"
+        app:layout_constraintEnd_toEndOf="@+id/importChat_tv_usersFound"
+        app:layout_constraintStart_toStartOf="@+id/importChat_tv_usersFound">
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/importChat_tv_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:paddingHorizontal="100sp"
+        android:paddingVertical="10sp"
+        android:text="Note: Imported messages will not be shared with the user and will be visible to you only. Messages will be imported locally and included in the backup when done."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
