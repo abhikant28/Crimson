@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import androidx.appcompat.app.ActionBar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,6 +74,12 @@ public class BaseActivity extends AppCompatActivity {
 
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
+
+        new SharedPrefManager(this);
+
+        ActionBar ab = getSupportActionBar();
+
+        if (ab!=null) ab.setDisplayHomeAsUpEnabled(true);
 
         boolean found = false;
         for (ActivityManager.RunningServiceInfo runningServiceInfo : runningServices) {

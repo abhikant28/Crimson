@@ -61,7 +61,10 @@ public class FinalRegister extends AppCompatActivity {
                 .document(userID).set(data, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(getApplicationContext(), "User Registered on Crimson!", Toast.LENGTH_SHORT).show();
-                    SharedPrefManager.storeUserProfile(profilePic, userName, email,about);
+                    if(profilePic!=null)
+                        SharedPrefManager.storeUserProfile(profilePic, userName, email,about);
+                    else
+                        SharedPrefManager.storeUserProfile(null,userName, email, about);
                     Log.i("USERNAME::::",userName);
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

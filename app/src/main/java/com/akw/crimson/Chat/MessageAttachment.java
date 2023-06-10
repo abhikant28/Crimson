@@ -257,7 +257,7 @@ public class MessageAttachment extends AppCompatActivity {
                     UsefulFunctions.FileUtil.saveFile(this, mediaUri, file);
                     Log.i("TEMP VID:::::", mediaUris.get(i));
 
-                    messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_UPLOAD_PENDING, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO,selfId);
+                    messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_TRANSFER_PENDING, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO,selfId);
 
                 } else if (cR.getType(mediaUri).startsWith("image/")) {
                     file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
@@ -272,11 +272,11 @@ public class MessageAttachment extends AppCompatActivity {
                             , msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, -1, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE,selfId);
                 }
             }else if (requestCode == Constants.Intent.KEY_INTENT_REQUEST_CODE_AUDIO) {
-                String f = UsefulFunctions.FileUtil.getFileName(this, mediaUri);
+                String f = UsefulFunctions.FileUtil.getFileName(this, mediaUri,true);
                 File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO, f);
 //                Log.i("1MessageAttachment AUDIO FILE::::::", file.getName() + "___" + file.getAbsolutePath());
                 UsefulFunctions.FileUtil.saveFile(this, mediaUri, file);
-                messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_UPLOAD_PENDING, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO,selfId);
+                messages[i] = new Message(null, msgText.get(i), file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_TRANSFER_PENDING, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO,selfId);
 
             }
         }

@@ -187,7 +187,7 @@
                     android:layout_width="26sp"
                     android:layout_height="26sp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="4sp"
+                    android:layout_marginStart="6sp"
                     android:background="@drawable/ic_baseline_camera_alt_24"
                     android:backgroundTint="@color/white" />
 
@@ -203,379 +203,378 @@
             </LinearLayout>
 
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/attachment_popup_cl_attachmentOptions"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:layout_gravity="center_horizontal"
-                android:background="#303030"
-                android:padding="20sp">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/attachment_popup_ll_document"
+                    android:id="@+id/attachment_popup_cl_attachmentOptions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10sp"
-                    android:layout_marginTop="5sp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:visibility="gone"
+                    android:background="#303030">
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/Message_media_popup_cv_doc"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_document"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5sp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_doc"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_twotone_insert_drive_file_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/Message_media_popup_cv_doc"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="200sp"
+                            android:backgroundTint="@color/black"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_doc"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_twotone_insert_drive_file_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Document"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_gallery"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Document"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        android:clickable="true"
+                        android:duplicateParentState="true"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/attachment_popup_ll_gallery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5sp"
-                    android:clickable="true"
-                    android:duplicateParentState="true"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toStartOf="@+id/attachment_popup_ll_camera"
-                    app:layout_constraintStart_toEndOf="@+id/attachment_popup_ll_document"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/chatAttachment_popup_cv_gal"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_gal"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_twotone_perm_media_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/chatAttachment_popup_cv_gal"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="600sp"
+                            android:backgroundTint="@color/black" app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_gal"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_twotone_perm_media_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Gallery"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_camera"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Gallery"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        android:layout_marginHorizontal="5sp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/attachment_popup_ll_camera"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10sp"
-                    android:layout_marginTop="5sp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/chatAttachment_popup_cv_cam"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="600sp"
+                            android:backgroundTint="@color/black"
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/chatAttachment_popup_cv_cam"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_cam"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_baseline_camera_alt_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_cam"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_baseline_camera_alt_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Camera"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                    
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Camera"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        android:layout_marginHorizontal="5sp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_camera"
+                        app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_camera"
+                        app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_camera">
 
-                <LinearLayout
-                    android:id="@+id/attachment_popup_ll_payment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10sp"
-                    android:layout_marginTop="5sp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_gallery"
-                    app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_gallery"
-                    app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_gallery">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/chatAttachment_popup_cv_"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="600sp"
+                            android:backgroundTint="@color/black"
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/chatAttachment_popup_cv_payment"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_payment"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_baseline_diamond_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_location"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_baseline_location_on_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Location"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_audio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Payment"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        android:layout_marginHorizontal="5sp"
+                        android:elevation="5dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/attachment_popup_ll_location"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10sp"
-                    android:layout_marginTop="5sp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_camera"
-                    app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_camera"
-                    app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_camera">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/chatAttachment_popup_cv_audio"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="600sp"
+                            android:backgroundTint="@color/black"
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/chatAttachment_popup_cv_"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_location"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_baseline_location_on_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_audio"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_baseline_library_music_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Audio"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_contact"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Location"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        android:layout_marginHorizontal="5sp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_audio"
+                        app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_audio"
+                        app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_audio">
 
-                <LinearLayout
-                    android:id="@+id/attachment_popup_ll_audio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10sp"
-                    android:layout_marginTop="5sp"
-                    android:elevation="5dp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_document"
-                    app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_document"
-                    app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_document">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/chatAttachment_popup_cv_contact"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="600sp"
+                            android:backgroundTint="@color/black"
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/chatAttachment_popup_cv_audio"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_audio"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_baseline_library_music_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_contact"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_baseline_person_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
 
 
-                    <TextView
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Contact"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_poll"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Audio"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        android:layout_marginHorizontal="5sp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_payment"
+                        app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_payment"
+                        app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_payment">
 
-                <LinearLayout
-                    android:id="@+id/attachment_popup_ll_contact"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10sp"
-                    android:layout_marginTop="5sp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_audio"
-                    app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_audio"
-                    app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_audio">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/chatAttachment_popup_cv_poll"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="600sp"
+                            android:backgroundTint="@color/black"
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/chatAttachment_popup_cv_contact"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_contact"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_baseline_person_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_poll"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_twotone_poll_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
 
 
-                    <TextView
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Poll"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_canvas"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Contact"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        android:layout_marginHorizontal="5sp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/attachment_popup_ll_poll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10sp"
-                    android:layout_marginTop="5sp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_payment"
-                    app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_payment"
-                    app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_payment">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/chatAttachment_popup_cv_canvas"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="600sp"
+                            android:backgroundTint="@color/black"
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/chatAttachment_popup_cv_poll"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_poll"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_twotone_poll_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
 
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_canvas"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_baseline_edit_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
 
-                    <TextView
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Draw"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/attachment_popup_ll_payment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Poll"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-                </LinearLayout>
+                        android:layout_marginHorizontal="5sp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_gallery"
+                        app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_gallery"
+                        app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_gallery">
 
-                <LinearLayout
-                    android:id="@+id/attachment_popup_ll_canvas"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10sp"
-                    android:layout_marginTop="5sp"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="@+id/attachment_popup_ll_location"
-                    app:layout_constraintStart_toStartOf="@+id/attachment_popup_ll_location"
-                    app:layout_constraintTop_toBottomOf="@+id/attachment_popup_ll_location">
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/chatAttachment_popup_cv_payment"
+                            android:layout_width="45sp"
+                            android:layout_height="45sp"
+                            app:cardCornerRadius="600sp"
+                            android:backgroundTint="@color/black"
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/chatAttachment_popup_cv_canvas"
-                        android:layout_width="70sp"
-                        android:layout_height="70sp"
-                        app:cardCornerRadius="600sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/chatAttachment_popup_iv_canvas"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:cropToPadding="true"
-                            android:src="@drawable/ic_baseline_edit_24"
-                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.cardview.widget.CardView>
+                            app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Draw"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
+                            <ImageView
+                                android:id="@+id/chatAttachment_popup_iv_payment"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:cropToPadding="true"
+                                android:src="@drawable/ic_baseline_diamond_24"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Payment"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+
                 </LinearLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </HorizontalScrollView>
         </LinearLayout>
 
 

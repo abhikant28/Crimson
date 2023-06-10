@@ -148,7 +148,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
                 sent.MessageMsgBox.setVisibility(View.GONE);
             }
             String t=cursor.getString(cursor.getColumnIndexOrThrow("sentTime"));
-            sent.MessageTime.setText(UsefulFunctions.getTime(t));
+            sent.MessageTime.setText(UsefulFunctions.getTimeHhMm(t));
             sent.MessageTime.setPadding(25, 1, 25, 1);
             sent.MessageClMedia.setVisibility(View.GONE);
             sent.MessageCvDoc.setVisibility(View.GONE);
@@ -169,10 +169,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
 
                 if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE) {
                     viewHolder.mediaPos = mediaPosition++;
-                    sent.MessageClMedia.setVisibility(View.VISIBLE);
-                    sent.MessageIvImage.setVisibility(View.VISIBLE);
                     if (file.exists()) {
-                        sent.MessageIvImage.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
                         if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
                             if (Communicator.uploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
                                 sent.MessageCvImageSize.setVisibility(View.GONE);
@@ -441,7 +438,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
             }
             received.MessageMsgBox.setPadding(25, 1, 25, 1);
             String t= cursor.getString(cursor.getColumnIndexOrThrow("receivedTime"));
-            received.MessageTime.setText(UsefulFunctions.getTime(t));
+            received.MessageTime.setText(UsefulFunctions.getTimeHhMm(t));
             received.MessageTime.setPadding(25, 1, 25, 1);
             if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1 && !unreadFound) {
                 received.MessageLayout.addView(unreadDialog(), 0);
@@ -462,7 +459,6 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
                     received.MessageClMedia.setVisibility(View.VISIBLE);
                     received.MessageIvImage.setVisibility(View.VISIBLE);
                     if (file.exists()) {
-                        received.MessageIvImage.setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
                         received.MessageIvImage.setOnClickListener(view -> {
                             openMedia(viewHolder.mediaPos,view.getContext());
                         });
@@ -508,6 +504,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         });
                     }
                 } else if (cursor.getInt(cursor.getColumnIndexOrThrow("mediaType")) == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO) {
+
                     viewHolder.mediaPos = mediaPosition++;
                     received.MessageClMedia.setVisibility(View.VISIBLE);
 //                    received.MessageVvVideo.setVisibility(View.VISIBLE);
@@ -631,16 +628,6 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
                     } else {
                         received.MessageMediaAudioIvIcon.setImageResource(R.drawable.ic_baseline_download_24);
                         received.MessageMediaAudioIbPlayPause.setOnClickListener(view -> {
-                            received.MessageMediaAudioIbPlayPause.setImageResource(R.drawable.ic_outline_cancel_24);
-                            Intent intent;
-                            cursor.moveToPosition(holder.getAdapterPosition());
-                            intent = new Intent(mContext.getApplicationContext(), DownloadFileService.class);
-                            intent.putExtra(DownloadFileService.EXTRA_RECEIVER, resultReceiver);
-                            intent.putExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID, cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")));
-                            mContext.startService(intent);
-                        });
-                        received.MessageMediaAudioIvIcon.setImageResource(R.drawable.ic_baseline_download_24);
-                        received.MessageMediaAudioIvIcon.setOnClickListener(view -> {
                             received.MessageMediaAudioIbPlayPause.setImageResource(R.drawable.ic_outline_cancel_24);
                             Intent intent;
                             cursor.moveToPosition(holder.getAdapterPosition());

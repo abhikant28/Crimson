@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,31 +46,69 @@ public class UsefulFunctions {
 
     public static String getCurrentTimestamp() {
         Date currentDate = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy, HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss", Locale.getDefault());
         return dateFormat.format(currentDate);
     }
 
+    public static String convertToTimestamp(String time) {
+
+        SimpleDateFormat inputFormatter = new SimpleDateFormat("dd/MM/yyyy, HH:mm:ss");
+        SimpleDateFormat outputFormatter = new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss");
+
+        Date date = null;
+        try {
+            date = inputFormatter.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String outputDate = outputFormatter.format(date);
+        return outputDate;
+    }
+
     public static String getTime(String time) {
-        return time.substring(time.lastIndexOf(",")+2);
+        return time.substring(time.lastIndexOf(",") + 2);
+    }
+
+    public static String getTimeHhMm(String time) {
+        return time.substring(time.lastIndexOf(",") + 2, time.lastIndexOf(":"));
     }
 
     public static String getDate(String time) {
-        return time.substring(0,time.lastIndexOf(","));
+        return time.substring(0, time.lastIndexOf(","));
     }
 
     public static String getTime() {
-        String time=getCurrentTimestamp();
-        return time.substring(time.lastIndexOf(",")+2);
+        String time = getCurrentTimestamp();
+        return time.substring(time.lastIndexOf(",") + 2);
     }
 
     public static String getDate() {
-        String time=getCurrentTimestamp();
-        return time.substring(0,time.lastIndexOf(","));
+        String time = getCurrentTimestamp();
+        return time.substring(0, time.lastIndexOf(","));
     }
 
-    public static class FileUtil{
+    public static class FileUtil {
 
-        public static File saveImageInInternalStorage(Context cxt,Bitmap bitmap) {
+        public static String fileExt(String url) {
+            if (url.indexOf("?") > -1) {
+                url = url.substring(0, url.indexOf("?"));
+            }
+            if (url.lastIndexOf(".") == -1) {
+                return null;
+            } else {
+                String ext = url.substring(url.lastIndexOf(".") + 1);
+                if (ext.indexOf("%") > -1) {
+                    ext = ext.substring(0, ext.indexOf("%"));
+                }
+                if (ext.indexOf("/") > -1) {
+                    ext = ext.substring(0, ext.indexOf("/"));
+                }
+                return ext.toLowerCase();
+
+            }
+        }
+
+        public static File saveImageInInternalStorage(Context cxt, Bitmap bitmap) {
             Log.i("CAMERA.saveImage:::::::", "try");
             FileOutputStream outputStream;
             File imageFile = null;
@@ -92,6 +131,58 @@ public class UsefulFunctions {
                 // Handle image saving error
             }
             return imageFile;
+        }
+
+        public static File createInternalFile(Context context, String fileName) {
+            File file = new File(context.getFilesDir(), fileName);
+
+            try {
+                if (file.createNewFile()) {
+                    // File created successfully
+                } else {
+                    // File already exists or failed to create the file
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle the exception
+            }
+
+            return file;
+        }
+
+        public static File saveFileInternalStorage(Context context, Uri uri, String destinationFileName) {
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+            File destinationFile = null;
+            try {
+                destinationFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), destinationFileName);
+
+                inputStream = context.getContentResolver().openInputStream(uri);
+                outputStream = new FileOutputStream(destinationFile);
+
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+
+                // File copied successfully
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle the exception
+            } finally {
+                try {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return destinationFile;
         }
 
 
@@ -133,10 +224,6 @@ public class UsefulFunctions {
             }
         }
 
-        public static String saveImage(Context context, Bitmap bitmap, boolean sent) {
-            File pictureFile = makeOutputMediaFile(context, sent, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE);
-            return saveImage(bitmap, sent, pictureFile);
-        }
 
         public static String saveImage(Bitmap bitmap, boolean sent, File file) {
             File pictureFile = file;
@@ -157,7 +244,7 @@ public class UsefulFunctions {
                 return null;
             }
             Log.i(TAG + "::::", pictureFile.getAbsolutePath());
-            return pictureFile.getName().substring(0,pictureFile.getName().lastIndexOf('.') );
+            return pictureFile.getName().substring(0, pictureFile.getName().lastIndexOf('.'));
         }
 
         public static File makeOutputMediaFile(Context context, boolean sent, int type) {
@@ -205,7 +292,7 @@ public class UsefulFunctions {
                     format = ".mp4";
                     break;
             }
-            String fol = sent ?(type==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE||type==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO? "":"/Sent") : "";
+            String fol = sent ? (type == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE || type == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO ? "" : "/Sent") : "";
             File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
                     + "/Android/media" +
                     "" +
@@ -227,8 +314,8 @@ public class UsefulFunctions {
             // Create a media file name
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmSS").format(new Date());
             File mediaFile;
-    //        Log.i("UsefulFunction.makeOutputMediaFile::::::", "docName="+docName);
-            String mImageName = docName == null ? init + "_" + timeStamp: docName.substring(0, docName.lastIndexOf('.'));
+            //        Log.i("UsefulFunction.makeOutputMediaFile::::::", "docName="+docName);
+            String mImageName = docName == null ? init + "_" + timeStamp : docName.substring(0, docName.lastIndexOf('.'));
             format = docName == null ? format : docName.substring(docName.lastIndexOf('.'));
             mediaFile = new File(mediaStorageDir.getPath() + File.separator + mImageName + format);
             int i = 1;
@@ -310,16 +397,13 @@ public class UsefulFunctions {
                 return null;
             }
             Log.i("UsefulFunctions.saveFile", outputFile.getName());
-            return outputFile.getName().substring(0,outputFile.getName().lastIndexOf('.') );
+            return outputFile.getName().substring(0, outputFile.getName().lastIndexOf('.'));
         }
 
-        public static String getFileName(Context context, Uri uri) {
-            return getFileName(context,uri,false);
-        }
 
-        public static String getFileName(Context context, Uri uri, boolean forDoc) {
+        public static String getFileName(Context context, Uri uri, boolean withExtension) {
             String result = null;
-            Log.i("TEMP TEST::::::", uri.getPath()+"__"+(uri.getScheme()==null));
+            Log.i("TEMP TEST::::::", uri.getPath() + "__" + (uri.getScheme() == null));
             if (uri.getScheme().equals("content")) {
                 Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
                 int c = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
@@ -338,9 +422,9 @@ public class UsefulFunctions {
                     result = result.substring(cut + 1);
                 }
             }
-            if(forDoc)
+            if (withExtension)
                 return result;
-            return result.substring(0,result.lastIndexOf('.') );
+            return result.substring(0, result.lastIndexOf('.'));
         }
 
         public static String getFileNameFromPath(String path) {
@@ -433,12 +517,12 @@ public class UsefulFunctions {
     }
 
     public static String getAudioLength(String path) {
-        String sentTime=null;
+        String sentTime = null;
         try {
             MediaPlayer mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(path);
             mediaPlayer.prepare();
-            sentTime= getStringMmSsTimeVale(mediaPlayer.getDuration());
+            sentTime = getStringMmSsTimeVale(mediaPlayer.getDuration());
             mediaPlayer.release();
         } catch (IOException e) {
             e.printStackTrace();
@@ -524,7 +608,7 @@ public class UsefulFunctions {
                 null
         );
         if (cursor != null && cursor.moveToFirst()) {
-            int a= cursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int a = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int id = cursor.getInt(a);
             cursor.close();
             return Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, Integer.toString(id));

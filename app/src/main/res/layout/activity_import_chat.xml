@@ -4,46 +4,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ImportChat">
+    android:paddingHorizontal="20sp"
+    tools:context=".ImportChat"
+    android:background="@color/black">
 
     <TextView
-        android:id="@+id/importChat_tv_fileName"
+        android:id="@+id/importChat_tv_file"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60sp"
         android:text="@string/select_file"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="23sp"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/importChat_tv_userName"
-        android:layout_width="wrap_content"
+        android:id="@+id/importChat_tv_fileName"
+        android:layout_width="0sp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80sp"
+        android:layout_marginTop="60sp"
+        android:text="File: "
+        android:textColor="@color/white"
+        android:textSize="23sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/importChat_tv_file"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/importChat_tv_userName"
+        android:layout_width="0sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60sp"
         android:text="@string/select_user"
-        android:textSize="25sp"
+        android:textColor="@color/white"
+        android:textSize="23sp"
         app:layout_constraintEnd_toEndOf="@+id/importChat_tv_fileName"
-        app:layout_constraintStart_toStartOf="@+id/importChat_tv_fileName"
+        app:layout_constraintStart_toStartOf="@+id/importChat_tv_file"
         app:layout_constraintTop_toBottomOf="@+id/importChat_tv_fileName" />
 
     <Button
         android:id="@+id/importChat_btn_importMsg"
-        android:layout_width="wrap_content"
+        android:layout_width="0sp"
         android:layout_height="wrap_content"
-        android:text="      Import Messages       "
-        android:layout_marginTop="80sp"
+        android:text="Import Messages"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/importChat_tv_note"
         app:layout_constraintEnd_toEndOf="@+id/importChat_tv_userName"
         app:layout_constraintStart_toStartOf="@+id/importChat_tv_userName"
         app:layout_constraintTop_toBottomOf="@+id/importChat_rg_usersFound" />
 
     <TextView
         android:id="@+id/importChat_tv_usersFound"
-        android:layout_width="wrap_content"
+        android:layout_width="0sp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20sp"
+        android:layout_marginTop="60sp"
         android:text="Select user name: "
+        android:textSize="23sp"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/importChat_tv_userName"
         app:layout_constraintStart_toStartOf="@+id/importChat_tv_userName"
         app:layout_constraintTop_toBottomOf="@+id/importChat_tv_userName" />
@@ -52,18 +69,31 @@
         android:id="@+id/importChat_rg_usersFound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@+id/importChat_tv_usersFound"
         app:layout_constraintEnd_toEndOf="@+id/importChat_tv_usersFound"
         app:layout_constraintStart_toStartOf="@+id/importChat_tv_usersFound">
-
     </RadioGroup>
+    <TextView
+        android:id="@+id/importChat_tv_reCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chek for more users"
+        android:textSize="15sp"
+        android:visibility="gone"
+        android:drawableStart="@drawable/ic_baseline_refresh_24"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/importChat_tv_usersFound"
+        app:layout_constraintStart_toStartOf="@+id/importChat_tv_usersFound"
+        app:layout_constraintTop_toBottomOf="@+id/importChat_rg_usersFound" />
 
     <TextView
         android:id="@+id/importChat_tv_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
         android:textSize="10sp"
-        android:paddingHorizontal="100sp"
+        android:paddingHorizontal="50sp"
         android:paddingVertical="10sp"
         android:text="Note: Imported messages will not be shared with the user and will be visible to you only. Messages will be imported locally and included in the backup when done."
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,15 +1,12 @@
 package com.akw.crimson;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
@@ -22,8 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,15 +44,10 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Locale;
 
 public class MainChatList extends BaseActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 123;
@@ -84,30 +74,30 @@ public class MainChatList extends BaseActivity {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        Log.i("CAMERA.dispatchTakePictureIntent:::::::","Started");
+        Log.i("CAMERA.dispatchTakePictureIntent:::::::", "Started");
         // Ensure that there's a camera activity to handle the intent
 //        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create a file to save the image
-            Log.i("CAMERA.dispatchTakePictureIntent:::::::","takePictureIntent.resolveActivity(getPackageManager()) != null");
-            File photoFile = null;
-            try {
-                Log.i("CAMERA.dispatchTakePictureIntent:::::::","try");
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Handle file creation error
-                Log.e("CAMERA.dispatchTakePictureIntent:::::::","Failed::"+ex.getMessage());
-                ex.printStackTrace();
-            }
+        // Create a file to save the image
+        Log.i("CAMERA.dispatchTakePictureIntent:::::::", "takePictureIntent.resolveActivity(getPackageManager()) != null");
+        File photoFile = null;
+        try {
+            Log.i("CAMERA.dispatchTakePictureIntent:::::::", "try");
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            // Handle file creation error
+            Log.e("CAMERA.dispatchTakePictureIntent:::::::", "Failed::" + ex.getMessage());
+            ex.printStackTrace();
+        }
 
-            // Continue only if the file was successfully created
-            if (photoFile != null) {
-                Log.i("CAMERA.dispatchTakePictureIntent:::::::","File created successfully");
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        getPackageName()+".fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
+        // Continue only if the file was successfully created
+        if (photoFile != null) {
+            Log.i("CAMERA.dispatchTakePictureIntent:::::::", "File created successfully");
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    getPackageName() + ".fileprovider",
+                    photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
 //        }else{
 //            Log.i("CAMERA.dispatchTakePictureIntent:::::::","takePictureIntent.resolveActivity(getPackageManager()) == null");
 //
@@ -126,17 +116,14 @@ public class MainChatList extends BaseActivity {
 //                storageDir      /* directory */
 //        );
 
-       File file= UsefulFunctions.FileUtil.makeOutputMediaFile(this,true,Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE);
+        File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE);
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = file.getAbsolutePath();
         return file;
     }
 
 
-
     // Save the image in the best quality
-
-
 
 
     @Override
@@ -145,18 +132,18 @@ public class MainChatList extends BaseActivity {
 
         Log.i("onActivityResult.CAMERA IMAGE ::::::", (data == null) + "_" + resultCode + "_" + requestCode);
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK  ) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             // Image captured and saved to the file specified in the Intent
             Bitmap imageBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
 
-            File file= UsefulFunctions.FileUtil.makeOutputMediaFile(this,true,Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE);
-            UsefulFunctions.FileUtil.saveImage(imageBitmap,true , file);
+            File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE);
+            UsefulFunctions.FileUtil.saveImage(imageBitmap, true, file);
             // Save the image in the best quality
-            Intent intent= new Intent(this, MessageAttachment.class);
-            ArrayList<Integer> arr= new ArrayList<>();
+            Intent intent = new Intent(this, MessageAttachment.class);
+            ArrayList<Integer> arr = new ArrayList<>();
             arr.add(Constants.Intent.KEY_INTENT_REQUEST_CODE_CAMERA);
             intent.putExtra(Constants.Intent.KEY_INTENT_REQUEST_CODE, arr);
-            ArrayList<String>ar= new ArrayList<>();
+            ArrayList<String> ar = new ArrayList<>();
             Uri contentUri = FileProvider.getUriForFile(
                     this,
                     "com.akw.crimson.fileprovider",

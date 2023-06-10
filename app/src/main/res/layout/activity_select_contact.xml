@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DF1C43"
+    android:background="@color/black"
     tools:context=".Utilities.SelectContact">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/SelectContact_rv_contactList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0sp"
+        app:layout_constraintBottom_toTopOf="@+id/SelectContact_ll_userList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

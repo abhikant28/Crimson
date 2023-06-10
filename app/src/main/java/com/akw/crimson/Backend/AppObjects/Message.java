@@ -38,6 +38,7 @@ public class Message {
             msg.mediaType = Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE;
         if (msg.mediaType == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO)
             msg.mediaType = Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO;
+
         return gson.toJson(msg);
     }
 
@@ -64,12 +65,28 @@ public class Message {
         this.author = author;
     }
 
+    //For Chat Import
+    @Ignore
+    public Message(@NonNull String msg_ID, String user_id, String msg,
+                   boolean media, String mediaID, String author) {
+        Calendar c = Calendar.getInstance();
+        this.msg_ID = msg_ID + c.getTime().getTime();
+        this.user_id = user_id;
+        this.msg = msg;
+        this.unread = true;
+        this.media = media;
+        this.mediaID = mediaID;
+        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.status=Constants.Message.MESSAGE_STATUS_READ;
+        this.author = author;
+    }
+
     //For Info
     @Ignore
     public Message(@NonNull String msg_ID, String user_id, String msg
             , String groupUserID, boolean self, int status, int msgType) {
-        Calendar sentTime = Calendar.getInstance();
-        this.msg_ID = msg_ID + sentTime.getTime().getTime();
+        Calendar c = Calendar.getInstance();
+        this.msg_ID = msg_ID + c.getTime().getTime();
         this.user_id = user_id;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.msg = msg;
@@ -82,8 +99,8 @@ public class Message {
     @Ignore
     public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, String mediaID
             , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType, String author) {
-        Calendar sentTime = Calendar.getInstance();
-        this.msg_ID = msg_ID + sentTime.getTime().getTime();
+        Calendar c = Calendar.getInstance();
+        this.msg_ID = msg_ID + c.getTime().getTime();
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.user_id = user_id;
         this.taggedMsgID = taggedMsgID;
@@ -291,8 +308,8 @@ public class Message {
 
     public String getTime() {
         if (self)
-            return sentTime.substring(0, sentTime.lastIndexOf(","));
-        return receivedTime.substring(0, receivedTime.lastIndexOf(","));
+            return sentTime.substring(sentTime.indexOf(",")+2,sentTime.lastIndexOf(":"));
+        return receivedTime.substring(receivedTime.indexOf(",")+2, receivedTime.lastIndexOf(":"));
     }
 
     public String getDate() {
@@ -362,6 +379,12 @@ public class Message {
     }
 
     public void setStatus(int status) {
+        if(status==Constants.Message.MESSAGE_STATUS_SENT)
+            setSentTime(UsefulFunctions.getCurrentTimestamp());
+        else if(status==Constants.Message.MESSAGE_STATUS_RECEIVED)
+            setReceivedTime(UsefulFunctions.getCurrentTimestamp());
+        else if(status==Constants.Message.MESSAGE_STATUS_READ)
+            setReadTime(UsefulFunctions.getCurrentTimestamp());
         this.status = status;
     }
 

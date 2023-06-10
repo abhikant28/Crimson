@@ -61,7 +61,7 @@ public class Constants {
         public static final int BOX_TYPE_FORWARD = 5;
         public static final int BOX_TYPE_TEXT_MESSAGE = 1;
 
-        public static final int MESSAGE_STATUS_MEDIA_UPLOAD_PENDING = -1;
+        public static final int MESSAGE_STATUS_MEDIA_TRANSFER_PENDING = -1;
         public static final int MESSAGE_STATUS_PENDING_UPLOAD = 0;
         public static final int MESSAGE_STATUS_SENT = 1;
         public static final int MESSAGE_STATUS_RECEIVED = 2;
@@ -192,5 +192,6 @@ public class Constants {
         public static final int KEY_INTENT_REQUEST_CODE_CANVAS = 88;
         public static final int KEY_INTENT_REQUEST_CODE_CONTACT = 99;
         public static final String KEY_INTENT_USER_TYPE = "userType";
+        public static final String KEY_INTENT_FILE_PATH = "filePath";
     }
 }

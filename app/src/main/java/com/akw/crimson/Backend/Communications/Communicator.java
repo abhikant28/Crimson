@@ -157,7 +157,8 @@ public class Communicator extends LifecycleService {
 
                                 if (box.getType() == Constants.Message.MESSAGE_TYPE_TEXT) {
                                     Message msg = new Message(box.getData());
-                                    msg.setMsgType(Constants.Message.MESSAGE_STATUS_RECEIVED);
+                                    msg.setStatus(Constants.Message.MESSAGE_STATUS_RECEIVED);
+                                    msg.setMsgType(Constants.Message.MESSAGE_TYPE_TEXT);
                                     Log.i("Communicator.Downloaded.Adding", msg.getMsg_ID());
                                     if (localDB.getUser(key) == null) {
                                         Log.i("Communicator.Downloaded.User Unknown", msg.getMsg_ID());
@@ -213,50 +214,6 @@ public class Communicator extends LifecycleService {
             for (String key : userKeys) {
                 Log.i("COMMUNICATOR:::", "Messages For > " + key);
                 putUserMessage(key,userMap);
-//                databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        Log.i("COMMUNICATOR:::", "Pending Messages: Adding message");
-//                        // Check if the user ID node exists
-//                        if (dataSnapshot.hasChild(thisUserID)) {
-//                            Log.i("COMMUNICATOR:::", "Pending Messages: Previous Messages Exist");
-//                            // Get the array from the snapshot
-//                            JSONArray array = null;
-//                            try {
-//                                array = new JSONArray(dataSnapshot.child(thisUserID).getValue(String.class));
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                            // Add the new values to the array
-//                            for (Message msg : userMap.get(key)) {
-//                                Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
-//                                array.put(UsefulFunctions.encodeText(msg.asString(thisUserID)));
-//                            }
-//
-//                            SerialJSONArray serialJSONArray = new SerialJSONArray(array);
-//                            // Update the array in the database
-//                            dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
-//                        } else {
-//                            Log.i("COMMUNICATOR:::", "Pending Messages: No Previous Messages");
-//                            // Create a new JSONArray
-//                            JSONArray array = new JSONArray();
-//                            for (Message msg : userMap.get(key)) {
-//                                Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
-//                                array.put(UsefulFunctions.encodeText(msg.asString(thisUserID)));
-//                            }
-//                            // Add the array to the database
-//                            dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
-//                        }
-//                        Log.i("COMMUNICATOR:::", "Pending Messages: Message Sent");
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//                        Log.i("COMMUNICATOR:::", "Cancelled 3: " + databaseError);
-//
-//                    }
-//                });
             }
 
 
@@ -442,7 +399,8 @@ public class Communicator extends LifecycleService {
                 if (dataSnapshot.hasChild(SharedPrefManager.getLocalUserID())) {
                     ref.child(SharedPrefManager.getLocalUserID()).removeValue().addOnCompleteListener(unused -> {
                         Log.i("COMMUNICATOR.getGroupMessage:::", "UserID Deleted");
-                        if (dataSnapshot.getChildrenCount() == 2) {
+                        Log.i("COMMUNICATOR.getGroupMessage:::", "Child KEYS:: "+ref.get().getResult().getKey());
+                        if (dataSnapshot.getChildrenCount() == 1) {
                             Log.i("COMMUNICATOR.getGroupMessage:::", "Message Deleted");
                             ref.removeValue();
                         }

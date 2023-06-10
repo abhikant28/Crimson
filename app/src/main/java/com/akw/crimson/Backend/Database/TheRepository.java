@@ -230,8 +230,8 @@ public class TheRepository {
         protected Void doInBackground(Message... messages) {
             messagesDao.insert(messages[0]);
             User user = usersDao.getUser(messages[0].getUser_id());
-            Log.i("REPO USER ID ::::: ", messages[0].getUser_id());
-            Log.i("REPO NULL CHECK ::::: ", (user==null)+"_"+(messages[0]==null));
+           // Log.i("REPO USER ID ::::: ", messages[0].getUser_id());
+           // Log.i("REPO NULL CHECK ::::: ", (user==null)+"_"+(messages[0]==null));
             if (user!=null && messages[0].getMsg() != null)
                 user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15, messages[0].getMsg().length())), messages[0].isMedia() ? messages[0].getMediaType() : Constants.Media.KEY_MESSAGE_MEDIA_TYPE_NONE);
             Calendar sentTime = Calendar.getInstance();

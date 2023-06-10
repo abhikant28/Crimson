@@ -25,8 +25,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Crimson">
         <activity
-            android:name=".ImportChat"
+            android:name=".Registration_PrivateProfile"
             android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".ImportChat"
+            android:exported="false"
+            android:parentActivityName=".MainChatList"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -44,7 +54,10 @@
 
         <activity
             android:name=".CreateGroup"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".MainChatList"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -52,7 +65,10 @@
         <activity
             android:name=".StarredMessages"
             android:allowTaskReparenting="true"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".MainChatList"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -87,7 +103,10 @@
         </activity>
         <activity
             android:name=".Preferences.EditProfile"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".Preferences.SettingsActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -104,7 +123,10 @@
         </activity>
         <activity
             android:name=".Preferences.SettingsActivity"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".MainChatList"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -119,7 +141,10 @@
         </activity>
         <activity
             android:name=".PrepareMessageActivity"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".MainChatList"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -191,6 +216,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service
+            android:name=".Backend.ImportChatService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="TODO" />
         <service
             android:name=".Backend.Communications.Communicator"
             android:enabled="true"

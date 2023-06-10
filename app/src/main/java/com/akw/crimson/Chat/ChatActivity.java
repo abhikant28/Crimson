@@ -20,19 +20,16 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -57,6 +54,7 @@ import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.BaseActivity;
+import com.akw.crimson.ImportChat;
 import com.akw.crimson.PrepareMessageActivity;
 import com.akw.crimson.ProfileView;
 import com.akw.crimson.R;
@@ -210,7 +208,7 @@ public class ChatActivity extends BaseActivity {
                 File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, f);
                 UsefulFunctions.FileUtil.saveFile(this, data.getData(), file);
                 message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
-                        , null, file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_UPLOAD_PENDING - 1, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, SharedPrefManager.getLocalUserID());
+                        , null, file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_TRANSFER_PENDING , Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, SharedPrefManager.getLocalUserID());
 
             }
 
@@ -236,6 +234,7 @@ public class ChatActivity extends BaseActivity {
                 this.finish();
                 return true;
             case R.id.chat_menu_importChat:
+                startActivity(new Intent(this, ImportChat.class));
                 break;
             case R.id.chat_menu_search:
                 Log.i("SEARCH:::::", "MENU CLICK");
@@ -471,102 +470,85 @@ public class ChatActivity extends BaseActivity {
 
 
     private void attachmentPopUp() {
-        View kView = this.getCurrentFocus();
-        if (kView != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(kView.getWindowToken(), 0);
+
+
+        if(findViewById(R.id.attachment_popup_cl_attachmentOptions).getVisibility()==View.VISIBLE){
+            findViewById(R.id.attachment_popup_cl_attachmentOptions).setVisibility(View.GONE);
+
+        }else {
+            findViewById(R.id.attachment_popup_cl_attachmentOptions).setVisibility(View.VISIBLE);
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+
+
+            findViewById(R.id.attachment_popup_ll_gallery).setOnClickListener(view -> {
+                Log.i("ChatActivity.CLICKED::::", "GALLERY");
+                Intent intent1 = new Intent(Intent.ACTION_GET_CONTENT);
+                intent1.setType("image/* video/*");
+
+                if (intent1.resolveActivity(getPackageManager()) != null) {
+                    Log.i("ChatActivity.CLICKED::::", "GALLERY_not null");
+                    startActivityForResult(Intent.createChooser(intent1, "Select Picture"), Constants.Intent.KEY_INTENT_REQUEST_CODE_MEDIA);
+                } else {
+                    Intent intentOther = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intentOther.addCategory(Intent.CATEGORY_OPENABLE);
+                    intentOther.setType("*/*");
+                    String[] mimeTypes = {"image/*", "video/*"};
+                    intentOther.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+
+                    startActivityForResult(intentOther, Constants.Intent.KEY_INTENT_REQUEST_CODE_MEDIA);
+
+                    // No activities found to handle the intent
+                    Toast.makeText(this, "No app found to handle this action", Toast.LENGTH_SHORT).show();
+                }
+            });
+            findViewById(R.id.attachment_popup_ll_audio).setOnClickListener(view -> {
+
+                Intent audioIntent = new Intent(this, SelectAudio.class);
+                if (audioIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(audioIntent, Constants.Intent.KEY_INTENT_REQUEST_CODE_AUDIO);
+                }
+            });
+            findViewById(R.id.attachment_popup_ll_camera).setOnClickListener(view -> {
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_CAMERA);
+                }
+            });
+            findViewById(R.id.attachment_popup_ll_poll).setOnClickListener(view -> {
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_POLL);
+                }
+            });
+            findViewById(R.id.attachment_popup_ll_payment).setOnClickListener(view -> {
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_PAYMENT);
+                }
+            });
+            findViewById(R.id.attachment_popup_ll_location).setOnClickListener(view -> {
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_LOCATION);
+                }
+            });
+            findViewById(R.id.attachment_popup_ll_canvas).setOnClickListener(view -> {
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_CANVAS);
+                }
+            });
+            findViewById(R.id.attachment_popup_ll_document).setOnClickListener(view -> {
+                intent.setType("*/*");
+
+//                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_DOCUMENT);
+//                }
+            });
+            findViewById(R.id.attachment_popup_ll_contact).setOnClickListener(view -> {
+                Log.i("CLICKED::::", "GALLERY");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_CONTACT);
+                }
+            });
+
         }
-        findViewById(R.id.attachment_popup_cl_attachmentOptions).setVisibility(View.VISIBLE);
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-
-        View popupView = getLayoutInflater().inflate(R.layout.chat_attachment_popup, null);
-// Create the PopupWindow
-        final PopupWindow popupWindow = new PopupWindow(popupView,
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-//        popupWindow.setAnimationStyle(R.style.PopUpAnimation);
-        popupView.findViewById(R.id.attachment_popup_ll_gallery).setOnClickListener(view -> {
-            Log.i("ChatActivity.CLICKED::::", "GALLERY");
-            Intent intent1 = new Intent(Intent.ACTION_GET_CONTENT);
-            intent1.setType("image/* video/*");
-
-            if (intent1.resolveActivity(getPackageManager()) != null) {
-                Log.i("ChatActivity.CLICKED::::", "GALLERY_not null");
-                startActivityForResult(Intent.createChooser(intent1, "Select Picture"), Constants.Intent.KEY_INTENT_REQUEST_CODE_MEDIA);
-            } else {
-                Intent intentOther = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intentOther.addCategory(Intent.CATEGORY_OPENABLE);
-                intentOther.setType("*/*");
-                String[] mimeTypes = {"image/*", "video/*"};
-                intentOther.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-
-                startActivityForResult(intentOther, Constants.Intent.KEY_INTENT_REQUEST_CODE_MEDIA);
-
-                // No activities found to handle the intent
-                Toast.makeText(this, "No app found to handle this action", Toast.LENGTH_SHORT).show();
-            }
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_audio).setOnClickListener(view -> {
-
-            Intent audioIntent = new Intent(this, SelectAudio.class);
-            if (audioIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(audioIntent, Constants.Intent.KEY_INTENT_REQUEST_CODE_AUDIO);
-            }
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_camera).setOnClickListener(view -> {
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_CAMERA);
-            }
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_poll).setOnClickListener(view -> {
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_POLL);
-            }
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_payment).setOnClickListener(view -> {
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_PAYMENT);
-            }
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_location).setOnClickListener(view -> {
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_LOCATION);
-            }
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_canvas).setOnClickListener(view -> {
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_CANVAS);
-            }
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_document).setOnClickListener(view -> {
-            intent.setType("*/*");
-
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_DOCUMENT);
-            }
-            popupWindow.dismiss();
-        });
-        popupView.findViewById(R.id.attachment_popup_ll_contact).setOnClickListener(view -> {
-            Log.i("CLICKED::::", "GALLERY");
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_CONTACT);
-            }
-            popupWindow.dismiss();
-        });
-
-// Set an OnClickListener for the camera option
-        popupWindow.setOnDismissListener(() -> findViewById(R.id.attachment_popup_cl_attachmentOptions).setVisibility(View.GONE));
-
-
-        popupWindow.showAtLocation(findViewById(R.id.attachment_popup_cl_attachmentOptions), Gravity.BOTTOM, et_message.getWidth() / 50, 0);
-
 
     }
 
@@ -701,7 +683,7 @@ public class ChatActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ImageView iv = new ImageView(getApplicationContext());
         iv.setPadding(50, 50, 50, 50);
-        iv.setImageBitmap(UsefulFunctions.getCircularBitmap(user.getPicBitmap()));
+        iv.setImageBitmap(UsefulFunctions.getCircularBitmap(UsefulFunctions.decodeImage(user.getPic())));
 
         Drawable d = iv.getDrawable();
         getSupportActionBar().setIcon(d);

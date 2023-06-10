@@ -9,7 +9,7 @@ import java.lang.reflect.Type;
 public class Box {
 
     private int type = 0;
-    private String data;
+    private String data,appendix;
 
     public Box(int type, String data) {
         this.type = type;
@@ -44,5 +44,13 @@ public class Box {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public String getAppendix() {
+        return appendix;
+    }
+
+    public void setAppendix(String appendix) {
+        this.appendix = appendix;
     }
 }

@@ -76,6 +76,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.connected = connected;
         this.about = about;
+        this.type=Constants.User.USER_TYPE_USER;
     }
 
     public User(String u) {

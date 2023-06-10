@@ -40,7 +40,7 @@ public interface MessagesDao {
     @Query("SELECT * from messages_Table where msg_ID=:msgID LIMIT 1")
     Message getMessage(String msgID);
 
-    @Query("SELECT * from messages_Table where user_id= :user_ID")
+    @Query("SELECT * FROM messages_Table WHERE user_id = :user_ID ORDER BY CASE WHEN self = 1 THEN sentTime ELSE receivedTime END ASC")
     Cursor getMessages(String user_ID);
 
     @Query("SELECT * from messages_Table where starred is 1")
