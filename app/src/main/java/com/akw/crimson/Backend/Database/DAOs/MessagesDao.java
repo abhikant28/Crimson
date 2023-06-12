@@ -17,6 +17,15 @@ import java.util.List;
 @Dao
 public interface MessagesDao {
 
+    @Query("CREATE TRIGGER IF NOT EXISTS update_last_msg AFTER INSERT ON message_table\n" +
+            "FOR EACH ROW\n" +
+            "WHEN NEW.messageType = " +Constants.Message.MESSAGE_TYPE_TEXT+
+            "BEGIN\n" +
+            "    UPDATE user_table\n" +
+            "    SET last_msg = SUBSTR(NEW.msg, 1, 10)\n" +
+            "    WHERE ROWID = 1;\n" +
+            "END;")
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Message msg);
 
@@ -57,4 +66,5 @@ public interface MessagesDao {
 
     @Query("SELECT * from messages_Table where user_id=:userID AND msg LIKE'%' || :query || '%'")
     List<Message> searchInUserMessages(String userID, String query);
+
 }

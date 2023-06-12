@@ -25,6 +25,7 @@ public class TheRepository {
     private final UsersDao usersDao;
     private final MessagesDao messagesDao;
     private final LiveData<List<User>> getChatList;
+    private final LiveData<List<User>> getConnectedUsers;
     private LiveData<List<Message>> getLiveMessages;
     private final LiveData<List<Message>> pendingMessagesList;
     private final LiveData<List<Message>> receivedMessagesList;
@@ -36,6 +37,7 @@ public class TheRepository {
         messagesDao = database.messagesDao();
 //        chatList= usersDao.getChatList();
         getChatList = usersDao.getChatList();
+        getConnectedUsers = usersDao.getConnectedUsers();
         getAllUsers = usersDao.getAllUsersList();
         pendingMessagesList = messagesDao.pendingMessages();
         receivedMessagesList = messagesDao.receivedMessages();
@@ -120,6 +122,10 @@ public class TheRepository {
 
     public LiveData<List<User>> getGetChatList() {
         return getChatList;
+    }
+
+    public LiveData<List<User>> getConnectedUsers() {
+        return getConnectedUsers;
     }
 
     public LiveData<List<User>> getGetAllUsersList() {

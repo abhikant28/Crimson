@@ -3,7 +3,10 @@ package com.akw.crimson.Backend.Communications;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -13,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LifecycleService;
+import androidx.lifecycle.Observer;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.akw.crimson.Backend.AppObjects.Box;
 import com.akw.crimson.Backend.AppObjects.Group;
@@ -31,8 +36,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,19 +57,21 @@ public class Communicator extends LifecycleService {
     private static final String GROUP_MAP = "groupMap";
     private static final String USER_MAP = "userMap";
     public static TheViewModel localDB;
-    private static final Communicator instance = null;
+    private static Communicator instance = null;
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl(Constants.FIREBASE_REALTIME_DATABASE_MSG_URL);
     int starter = 0;
     String senderUserID = "2";
     public static String thisUserID;
     public static HashSet<String> downloading = new HashSet<>(), uploading = new HashSet<>();
 
-    public static boolean isCommunicatorRunning() {
-        return instance != null;
-    }
+//    public static boolean isCommunicatorRunning() {
+//        return instance != null;
+//    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        instance = this;
 
         Log.i("COMMUNICATOR:::", "STARTED ");
 
@@ -72,7 +82,7 @@ public class Communicator extends LifecycleService {
         }
 
 
-        thisUserID = new SharedPrefManager(this).getLocalUserID();
+        thisUserID = SharedPrefManager.getLocalUserID();
 
         Log.i("COMMUNICATOR:::", "onStart Started");
         DatabaseReference userData = databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(thisUserID);
@@ -195,7 +205,6 @@ public class Communicator extends LifecycleService {
     }
 
 
-
     @Override
     public void onCreate() {
         Log.i("COMMUNICATOR:::", "CREATED ");
@@ -213,7 +222,7 @@ public class Communicator extends LifecycleService {
 
             for (String key : userKeys) {
                 Log.i("COMMUNICATOR:::", "Messages For > " + key);
-                putUserMessage(key,userMap);
+                putUserMessage(key, userMap);
             }
 
 
@@ -225,7 +234,7 @@ public class Communicator extends LifecycleService {
             Log.i("COMMUNICATOR.Observer:::", "GROUP MESSAGESFor > " + groupKeys.length);
 
             for (String groupID : groupKeys) {
-                Log.i("COMMUNICATOR.Observer:::", "GROUP ID > "+ groupID );
+                Log.i("COMMUNICATOR.Observer:::", "GROUP ID > " + groupID);
                 Group group = localDB.getUser(groupID).getGroup();
                 ArrayList<String> groupUsersList = group.getUsers();
                 groupUsersList.remove(thisUserID);
@@ -233,7 +242,7 @@ public class Communicator extends LifecycleService {
                 //Put message in group_message
                 for (Message msg : groupMap.get(groupID)) {
                     Log.i("COMMUNICATOR.UPLOADING MESSAGES:::", "Putting Messages ::::: For group");
-                    if(msg.getMsgType()==Constants.Message.BOX_TYPE_NEW_GROUP) continue;
+                    if (msg.getMsgType() == Constants.Message.BOX_TYPE_NEW_GROUP) continue;
                     DatabaseReference msgRef = groupDatabaseReference.child(msg.getMsg_ID());
                     Box box = new Box(Constants.Message.MESSAGE_TYPE_TEXT, msg.asString(thisUserID));
                     msgRef.child(Constants.KEY_FIRESTORE_GROUP_MESSAGE_DATA).setValue(UsefulFunctions.encodeText(box.asString()));
@@ -265,7 +274,7 @@ public class Communicator extends LifecycleService {
                                 for (Message msg : groupMap.get(groupID)) {
                                     Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
                                     if (msg.getMsgType() == Constants.Message.BOX_TYPE_NEW_GROUP) {
-                                        Box newBox = new Box(Constants.Message.BOX_TYPE_NEW_GROUP,msg.getUser_id());
+                                        Box newBox = new Box(Constants.Message.BOX_TYPE_NEW_GROUP, msg.getUser_id());
                                         array.put(UsefulFunctions.encodeText(newBox.asString()));
                                         msg.setMsgType(Constants.Message.MESSAGE_TYPE_INFO);
                                     }
@@ -283,7 +292,7 @@ public class Communicator extends LifecycleService {
                                 for (Message msg : groupMap.get(groupID)) {
                                     Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
                                     if (msg.getMsgType() == Constants.Message.BOX_TYPE_NEW_GROUP) {
-                                        Box newBox = new Box(Constants.Message.BOX_TYPE_NEW_GROUP,msg.getUser_id());
+                                        Box newBox = new Box(Constants.Message.BOX_TYPE_NEW_GROUP, msg.getUser_id());
                                         array.put(UsefulFunctions.encodeText(newBox.asString()));
                                         msg.setMsgType(Constants.Message.MESSAGE_TYPE_INFO);
                                     }
@@ -328,7 +337,7 @@ public class Communicator extends LifecycleService {
         super.onCreate();
     }
 
-    private void putUserMessage(String key, HashMap<String, HashSet<Message>> userMap){
+    private void putUserMessage(String key, HashMap<String, HashSet<Message>> userMap) {
         databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(key).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -347,7 +356,7 @@ public class Communicator extends LifecycleService {
                     // Add the new values to the array
                     for (Message msg : userMap.get(key)) {
                         Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
-                        Box box = new Box(Constants.Message.BOX_TYPE_TEXT_MESSAGE,msg.asString(thisUserID));
+                        Box box = new Box(Constants.Message.BOX_TYPE_TEXT_MESSAGE, msg.asString(thisUserID));
                         array.put(UsefulFunctions.encodeText(box.asString()));
                     }
 
@@ -360,8 +369,9 @@ public class Communicator extends LifecycleService {
                     JSONArray array = new JSONArray();
                     for (Message msg : userMap.get(key)) {
                         Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
-                        Box box = new Box(Constants.Message.BOX_TYPE_TEXT_MESSAGE,msg.asString(thisUserID));
-                        array.put(UsefulFunctions.encodeText(box.asString()));                    }
+                        Box box = new Box(Constants.Message.BOX_TYPE_TEXT_MESSAGE, msg.asString(thisUserID));
+                        array.put(UsefulFunctions.encodeText(box.asString()));
+                    }
                     // Add the array to the database
                     dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
                 }
@@ -391,7 +401,7 @@ public class Communicator extends LifecycleService {
                 // do something with data
                 if (data != null) {
                     Log.i("COMMUNICATOR.getGroupMessage:::", "Data Found ");
-                    Box box= new Box(UsefulFunctions.decodeText(data));
+                    Box box = new Box(UsefulFunctions.decodeText(data));
                     Message msg = new Message(box.getData());
                     msg.setStatus(Constants.Message.MESSAGE_STATUS_RECEIVED);
                     localDB.insertMessage(msg);
@@ -399,7 +409,7 @@ public class Communicator extends LifecycleService {
                 if (dataSnapshot.hasChild(SharedPrefManager.getLocalUserID())) {
                     ref.child(SharedPrefManager.getLocalUserID()).removeValue().addOnCompleteListener(unused -> {
                         Log.i("COMMUNICATOR.getGroupMessage:::", "UserID Deleted");
-                        Log.i("COMMUNICATOR.getGroupMessage:::", "Child KEYS:: "+ref.get().getResult().getKey());
+                        Log.i("COMMUNICATOR.getGroupMessage:::", "Child KEYS:: " + ref.get().getResult().getKey());
                         if (dataSnapshot.getChildrenCount() == 1) {
                             Log.i("COMMUNICATOR.getGroupMessage:::", "Message Deleted");
                             ref.removeValue();
@@ -418,7 +428,7 @@ public class Communicator extends LifecycleService {
     }
 
     private void fetchGroupDetails(String grpID) {
-        Log.i("COMMUNICATOR.fetchGroupDetails:::", "Fetching group: "+ grpID);
+        Log.i("COMMUNICATOR.fetchGroupDetails:::", "Fetching group: " + grpID);
         FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
         Task<DocumentSnapshot> found = fireStore.collection(Constants.KEY_FIRESTORE_GROUPS).document(grpID).get();
         found.addOnSuccessListener(doc -> {
@@ -454,7 +464,7 @@ public class Communicator extends LifecycleService {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         Task<DocumentSnapshot> found = firestore.collection(Constants.KEY_FIRESTORE_USERS).document(user_id).get();
         found.addOnSuccessListener(doc -> {
-             User user = new User(user_id, doc.getString(Constants.KEY_FIRESTORE_USER_NAME)
+            User user = new User(user_id, doc.getString(Constants.KEY_FIRESTORE_USER_NAME)
                     , doc.getString(Constants.KEY_FIRESTORE_USER_NAME)
                     , doc.getString(Constants.KEY_FIRESTORE_USER_PHONE)
                     , doc.getString(Constants.KEY_FIRESTORE_USER_PIC)
@@ -577,4 +587,93 @@ public class Communicator extends LifecycleService {
 
         return null;
     }
+
+
+    private void sendProfilePic(Message msg) {
+
+        //check for previous profilePic document
+
+
+    }
+
+    public static void updateProfilePic(Context cxt, String uri) {
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        Task<DocumentSnapshot> found = firestore.collection(Constants.KEY_FIRESTORE_USERS).document(thisUserID).get();
+        found.addOnSuccessListener(docSnap -> {
+            if (docSnap.contains(Constants.KEY_FIRESTORE_USER_PROFILE_PIC) && docSnap.getString(Constants.KEY_FIRESTORE_USER_PROFILE_PIC) != null) {
+                String profileValue = docSnap.getString(Constants.KEY_FIRESTORE_USER_PROFILE_PIC);
+                //Value exists for profilePic
+                deleteDocAndPic(profileValue);
+            }
+
+            //Upload the profilePic
+
+            BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if(intent.getExtras().getInt(Constants.Intent.KEY_INTENT_RESULT_CODE,0)==UploadFileService.RESULT_FAIL)
+                        return;
+                    LocalBroadcastManager.getInstance(context).unregisterReceiver(resultReceiver);
+                    // Handle the result received from the called Service
+                    String mediaUrl = intent.getStringExtra(Constants.Intent.KEY_INTENT_URI);
+                    // Process the result
+                    localDB.getConnectedUsers().observe(this, new Observer<List<User>>() {
+                        @Override
+                        public void onChanged(List<User> users) {
+                            ArrayList<Message> msgList = new ArrayList<>();
+                            for (User u : users)
+                                msgList.add(new Message(thisUserID, u.getUser_id(), null
+                                        , true, null, true, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD
+                                        , Constants.Message.MESSAGE_TYPE_INFO,Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE
+                                        ,mediaUrl));
+                            localDB.insertAllmessages(msgList);
+
+                        }
+                    });
+                }
+            };
+            LocalBroadcastManager.getInstance(instance.getApplicationContext()).registerReceiver(resultReceiver, new IntentFilter("profilePicUpdate"));
+
+            Intent intent = new Intent(cxt, UploadFileService.class);
+            intent.putExtra(Constants.Intent.);
+            intent.putExtra(Constants.Intent.KEY_INTENT_UPLOAD_TYPE, Constants.Intent.KEY_INTENT_UPLOAD_TYPE_MEDIA);
+            cxt.startService(intent);
+
+        });
+    }
+
+    private void getProfile(String userID) {
+
+
+    }
+
+    private static void deleteDocAndPic(String profileValue) {
+        DocumentReference mediaDocRef = FirebaseFirestore.getInstance().collection(Constants.KEY_FCM_ATTACHMENTS_REFERENCE).document(profileValue);
+        final StorageReference mediaRef = FirebaseStorage.getInstance().getReference();
+
+        Log.i("Communicator.deleteDocAndPic:::::::::", "CHECKING");
+
+        mediaDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            // Check if the document exists and contains the "data" field
+            if (documentSnapshot.exists() && documentSnapshot.contains("data")) {
+                String mediaData = documentSnapshot.getString("data");
+                if (mediaData != null) {
+                    StorageReference mediaToDeleteRef = mediaRef.child("profile" + "/" + mediaData);
+                    // Delete the media file
+                    mediaToDeleteRef.delete().addOnSuccessListener(unused ->
+                                    // Delete the document after successful deletion of the media
+                                    mediaDocRef.delete().addOnSuccessListener(unused2 ->
+                                                    Log.d("Communicator.deleteDocAndPic:::::::::", "Media and document deleted successfully"))
+                                            .addOnFailureListener(e ->
+                                                    Log.e("Communicator.deleteDocAndPic:::::::::", "Failed to delete the document: " + e.getMessage())))
+                            .addOnFailureListener(e ->
+                                    Log.e("Communicator.deleteDocAndPic:::::::::", "Failed to delete the media: " + e.getMessage()));
+                }
+            }
+        }).addOnFailureListener(e ->
+                Log.e("Communicator.deleteDocAndPic:::::::::", "Failed to retrieve the document: " + e.getMessage()));
+
+    }
+
 }

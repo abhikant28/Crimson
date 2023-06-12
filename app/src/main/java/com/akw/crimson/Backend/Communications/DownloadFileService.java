@@ -44,6 +44,7 @@ public class DownloadFileService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         db = Communicator.localDB;
+        new SharedPrefManager(this);
         String id = intent.getStringExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID);
         Message msg = db.getMessage(id);
 
@@ -75,9 +76,9 @@ public class DownloadFileService extends IntentService {
             case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_STATUS:
                 folder = "status";
                 break;
-//            case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE:
-//                folder = "profile";
-//                break;
+            case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE:
+                folder = "profile";
+                break;
         }
         File outFile;
         if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
@@ -96,7 +97,6 @@ public class DownloadFileService extends IntentService {
 
     public boolean getReference(File outFile, String folder, User user, Message msg, ResultReceiver receiver, Bundle resultData) {
         String docID = (msg.getGroupUserID()==null?msg.getUser_id():msg.getGroupUserID()) +"_"+ msg.getMediaID().substring(0, msg.getMediaID().lastIndexOf('.'));
-        new SharedPrefManager(this);
         String currentUserID = SharedPrefManager.getLocalUserID();
         mediaDocRef = fireDB.collection(Constants.KEY_FCM_ATTACHMENTS_REFERENCE).document(docID);
         Log.i("DownloadFileService.getReference:::::::::", outFile.getName());

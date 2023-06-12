@@ -29,6 +29,7 @@ public class Constants {
     public static final String KEY_FIRESTORE_USER_NAME = "name";
     public static final String KEY_FIRESTORE_USER_ID = "userID";
     public static final String KEY_FIRESTORE_USER_PIC = "pic";
+    public static final String KEY_FIRESTORE_USER_PROFILE_PIC = "profilePic";
     public static final String KEY_FIRESTORE_USER_PHONE = "phone";
     public static final String KEY_FIRESTORE_USER_EMAIL = "email";
     public static final String KEY_FIRESTORE_USER_TOKEN = "token";
@@ -144,7 +145,7 @@ public class Constants {
         return FcmJsonObject;
     }
 
-    public static HashMap<String, String> getRemoteMsgHeaderes() {
+    public static HashMap<String, String> getRemoteMsgHeaders() {
         if (remoteMsgHeaders == null) {
             remoteMsgHeaders = new HashMap<>();
             remoteMsgHeaders.put(REMOTE_MSG_AUTHORIZATION,
@@ -171,14 +172,25 @@ public class Constants {
         public static final String KEY_INTENT_EMAIL = "userEmail";
         public static final String KEY_INTENT_PHONE = "userPhone";
         public static final String KEY_INTENT_TYPE = "activityType";
+        public static final String KEY_INTENT_UPLOAD_TYPE = "uploadType";
+        public static final String KEY_INTENT_DOWNLOAD_TYPE = "downloadType";
         public static final String KEY_INTENT_MESSENGER = "MESSENGER";
         public static final String KEY_INTENT_LIST_SIZE = "listSize";
         public static final String KEY_INTENT_ABOUT = "about";
         public static final String KEY_INTENT_RESULT_AUDIO_PATH = "audioPath";
         public static final String KEY_INTENT_RESULT_CODE = "resultCode";
+        public static final int KEY_INTENT_RESULT_CODE_SUCCESS = 1;
+        public static final int KEY_INTENT_RESULT_CODE_FAIL = 0;
+        public static final String KEY_INTENT_RESULT_STATUS = "resultCode";
         public static final String KEY_INTENT_REQUEST_CODE = "requestCode";
+        public static final String KEY_INTENT_USER_TYPE = "userType";
+        public static final String KEY_INTENT_FILE_PATH = "filePath";
         public static final int KEY_INTENT_TYPE_SINGLE_SELECT = 1;
         public static final int KEY_INTENT_TYPE_MULTI_SELECT = 2;
+        public static final int KEY_INTENT_UPLOAD_TYPE_MEDIA = 101;
+        public static final int KEY_INTENT_UPLOAD_TYPE_PROFILE = 102;
+        public static final int KEY_INTENT_DOWNLOAD_TYPE_MEDIA = 101;
+        public static final int KEY_INTENT_DOWNLOAD_TYPE_PROFILE = 102;
         public static final int KEY_INTENT_START_FCM = 2;
         public static final int KEY_INTENT_START_APP = 0;
         public static final int KEY_INTENT_REQUEST_CODE_DOCUMENT = 11;
@@ -191,7 +203,5 @@ public class Constants {
         public static final int KEY_INTENT_REQUEST_CODE_LOCATION = 77;
         public static final int KEY_INTENT_REQUEST_CODE_CANVAS = 88;
         public static final int KEY_INTENT_REQUEST_CODE_CONTACT = 99;
-        public static final String KEY_INTENT_USER_TYPE = "userType";
-        public static final String KEY_INTENT_FILE_PATH = "filePath";
     }
 }

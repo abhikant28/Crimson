@@ -36,8 +36,15 @@ public interface UsersDao {
     @Query("SELECT * FROM user_table WHERE known is 1 ORDER BY date desc, lower(time) desc")
     LiveData<List<User>> getChatList();
 
+    @Query("SELECT * FROM user_table WHERE connected is 1 AND type is "+ Constants.User.USER_TYPE_USER+" ORDER BY date desc, lower(time) desc")
+    LiveData<List<User>> getConnectedUsers();
+
     @Query("SELECT * FROM user_table WHERE type="+ Constants.User.USER_TYPE_USER+" ORDER BY displayName")
     LiveData<List<User>> getAllUsersList();
+
+    @Query("SELECT * FROM user_table WHERE user_id=:userID")
+    LiveData<User> getUserLive(String userID);
+
 
     @Query("SELECT * FROM user_table WHERE user_id=:user_ID LIMIT 1")
     User getUser(String user_ID);

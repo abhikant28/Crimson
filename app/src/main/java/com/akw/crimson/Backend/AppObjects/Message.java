@@ -20,7 +20,8 @@ public class Message {
     @NonNull
     private String msg_ID;
 
-    private String user_id, _id, taggedMsgID, msg, sentTime, receivedTime, readTime, mediaID, source, reaction, author, groupUserID, groupData;
+    private String user_id, _id, taggedMsgID, msg, sentTime, receivedTime, readTime, mediaID
+            , source, reaction, author, groupUserID, groupData, mediaUrl;
     private long mediaSize;
     private double latitude, longitude;
     private boolean self, unread, starred, media, forwarded, link;
@@ -44,6 +45,7 @@ public class Message {
 
     @Override
     public boolean equals(@Nullable Object obj) {
+        assert obj != null;
         return this.msg_ID.equals(((Message) obj).getMsg_ID());
     }
 
@@ -68,7 +70,7 @@ public class Message {
     //For Chat Import
     @Ignore
     public Message(@NonNull String msg_ID, String user_id, String msg,
-                   boolean media, String mediaID, String author) {
+                   boolean media, String mediaID, String author, String mediaUrl) {
         Calendar c = Calendar.getInstance();
         this.msg_ID = msg_ID + c.getTime().getTime();
         this.user_id = user_id;
@@ -79,14 +81,16 @@ public class Message {
         this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
         this.status=Constants.Message.MESSAGE_STATUS_READ;
         this.author = author;
+        this.mediaUrl= mediaUrl;
     }
 
     //For Info
     @Ignore
-    public Message(@NonNull String msg_ID, String user_id, String msg
-            , String groupUserID, boolean self, int status, int msgType) {
+    public Message(@NonNull String thisUserID, String user_id, String msg
+            , boolean hasMedia, String groupUserID, boolean self, int status, int msgType
+            ,int mediaType, String mediaID, String mediaUrl) {
         Calendar c = Calendar.getInstance();
-        this.msg_ID = msg_ID + c.getTime().getTime();
+        this.msg_ID = thisUserID + c.getTime().getTime();
         this.user_id = user_id;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.msg = msg;
@@ -94,6 +98,10 @@ public class Message {
         this.self = self;
         this.status = status;
         this.msgType = msgType;
+        this.media=hasMedia;
+        this.mediaUrl=mediaUrl;
+        this.mediaType= mediaType;
+        this.mediaID= mediaID;
     }
 
     @Ignore
@@ -135,8 +143,8 @@ public class Message {
     @Ignore
     public Message(String taggedMsgID, String msg, String mediaID
             , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType, String author) {
-        Calendar sentTime = Calendar.getInstance();
-        this.msg_ID = msg_ID + sentTime.getTime().getTime();
+        Calendar c = Calendar.getInstance();
+        this.msg_ID = msg_ID + c.getTime().getTime();
         this.taggedMsgID = taggedMsgID;
         this.msg = msg;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
@@ -160,7 +168,6 @@ public class Message {
         this.taggedMsgID = taggedMsgID;
         this.msg = msg;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
-        ;
         this.source = user_id;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -202,6 +209,7 @@ public class Message {
         this.status = message.status;
         this.mediaType = message.mediaType;
         this.msgType = message.msgType;
+        this.mediaUrl=message.mediaUrl;
     }
 
     public Message(@NonNull Message message) {
@@ -231,6 +239,7 @@ public class Message {
         this.status = message.status;
         this.mediaType = message.mediaType;
         this.msgType = message.msgType;
+        this.mediaUrl=message.mediaUrl;
     }
 
 
@@ -254,9 +263,7 @@ public class Message {
         return mediaSize;
     }
 
-    public void setMediaSize(long mediaSize) {
-        this.mediaSize = mediaSize;
-    }
+    public void setMediaSize(long mediaSize) {this.mediaSize = mediaSize;}
 
     public int getMediaType() {
         return mediaType;
@@ -274,11 +281,12 @@ public class Message {
         this._id = _id;
     }
 
+    @NonNull
     public String getMsg_ID() {
         return msg_ID;
     }
 
-    public void setMsg_ID(String msg_ID) {
+    public void setMsg_ID(@NonNull String msg_ID) {
         this.msg_ID = msg_ID;
     }
 
@@ -461,8 +469,15 @@ public class Message {
         this.groupData = groupData;
     }
 
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
 
-    public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, String sentTime, String receivedTime, String readTime, String mediaID, String source, String reaction, String author, String groupUserID, String groupData, long mediaSize, double latitude, double longitude, boolean self, boolean unread, boolean starred, boolean media, boolean forwarded, boolean link, int status, int mediaType, int msgType) {
+    public void setMediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
+    }
+
+    public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, String sentTime, String receivedTime, String readTime, String mediaID, String source, String reaction, String author, String groupUserID, String groupData, long mediaSize, double latitude, double longitude, boolean self, boolean unread, boolean starred, boolean media, boolean forwarded, boolean link, int status, int mediaType, int msgType, String mediaUrl) {
         this.msg_ID = msg_ID;
         this.user_id = user_id;
         this.taggedMsgID = taggedMsgID;
@@ -488,5 +503,6 @@ public class Message {
         this.status = status;
         this.mediaType = mediaType;
         this.msgType = msgType;
+        this.mediaUrl=mediaUrl;
     }
 }

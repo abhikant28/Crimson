@@ -7,7 +7,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
@@ -105,10 +104,10 @@ public class ImportChatService extends Service {
 //        Log.i("Import.parseMessage::::::", count + "_" + timestamp + "::" + author + " ::" + data);
         if (author.equals(userName)) {
             msg.setSelf(false);
-            msg.setReceivedTime(UsefulFunctions.convertToTimestamp(timestamp));
+            msg.setReceivedTime(UsefulFunctions.convertTimestampFormat(timestamp));
         } else {
             msg.setSelf(true);
-            msg.setSentTime(UsefulFunctions.convertToTimestamp(timestamp));
+            msg.setSentTime(UsefulFunctions.convertTimestampFormat(timestamp));
         }
         msg.setStatus(Constants.Message.MESSAGE_STATUS_READ);
         return msg;

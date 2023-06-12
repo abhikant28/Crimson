@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -364,6 +365,11 @@ public class MainChatList extends BaseActivity {
 
         fab_startNew.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), StartNew.class)));
 
+    }
+
+    public static LifecycleOwner getMainLifeCycleOwner(){
+        LifecycleOwner lo = this;
+        return lo;
     }
 }
 

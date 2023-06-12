@@ -44,13 +44,16 @@ import java.util.Locale;
 
 public class UsefulFunctions {
 
-    public static String getCurrentTimestamp() {
-        Date currentDate = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss", Locale.getDefault());
-        return dateFormat.format(currentDate);
+    public static String getCurrentMmTimeStamp(){
+        return String.valueOf(System.currentTimeMillis());
     }
 
-    public static String convertToTimestamp(String time) {
+    public static String getCurrentTimestamp() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss", Locale.getDefault());
+        return dateFormat.format(new Date());
+    }
+
+    public static String convertTimestampFormat(String time) {
 
         SimpleDateFormat inputFormatter = new SimpleDateFormat("dd/MM/yyyy, HH:mm:ss");
         SimpleDateFormat outputFormatter = new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss");
