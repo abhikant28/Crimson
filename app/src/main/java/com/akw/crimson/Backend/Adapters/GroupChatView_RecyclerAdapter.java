@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
@@ -171,7 +170,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
                     viewHolder.mediaPos = mediaPosition++;
                     if (file.exists()) {
                         if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
-                            if (Communicator.uploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
+                            if (Communicator.mediaUploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
                                 sent.MessageCvImageSize.setVisibility(View.GONE);
                                 sent.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
                                 sent.MessageIvMediaCancel.setVisibility(View.VISIBLE);
@@ -217,7 +216,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
                         int l = cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).lastIndexOf('.');
                         sent.MessageTvDocType.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).substring(l + 1));
                         if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
-                            if (Communicator.uploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
+                            if (Communicator.mediaUploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
                                 sent.MessageIvDocUpload.setVisibility(View.GONE);
                                 sent.MessagePbDocDownloadProgress.setVisibility(View.VISIBLE);
                                 sent.MessageIvDocCancel.setVisibility(View.VISIBLE);
@@ -267,7 +266,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
 
                         });
                         if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
-                            if (Communicator.uploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
+                            if (Communicator.mediaUploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
                                 sent.MessageCvVideoSize.setVisibility(View.GONE);
                                 sent.MessagePbProgressBarMedia.setVisibility(View.VISIBLE);
                                 sent.MessageIvMediaCancel.setVisibility(View.VISIBLE);

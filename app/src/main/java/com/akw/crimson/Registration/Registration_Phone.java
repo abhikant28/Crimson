@@ -61,7 +61,7 @@ public class Registration_Phone extends AppCompatActivity implements AdapterView
 
         if(this.getSharedPreferences(SharedPrefManager.SHARED_PREF_NAME, Context.MODE_PRIVATE).getBoolean("PHONE_VERIFIED", false)){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                startActivity(new Intent(this, Registration_Profile.class));
+                startActivity(new Intent(this, Registration_PublicProfile.class));
             }
             finish();
         }

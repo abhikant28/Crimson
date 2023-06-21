@@ -91,7 +91,7 @@ public class ChatActivity extends BaseActivity {
 
     public static volatile User user;
     public static volatile boolean updated = false;
-    public static volatile String userID, updateID;
+    public static volatile String userID;
     private Boolean isOnline = false;
     private int searchPosition;
     GestureDetector sendButtonGestureDetector;
@@ -308,12 +308,11 @@ public class ChatActivity extends BaseActivity {
 
 
                 if (!et_message.getText().toString().trim().equals("")) {
-                    Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime()
-                            , userID, null, et_message.getText().toString().trim(), true, false
+                    Message message = new Message(userID, null, et_message.getText().toString().trim(), true, false
                             , null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD, SharedPrefManager.getLocalUserID());
                     if (user.getType() == Constants.User.USER_TYPE_GROUP) {
                         message.setGroupUserID(SharedPrefManager.getLocalUserID());
-                        message.setMsgType(Constants.Message.BOX_TYPE_GROUP_MESSAGE);
+                        message.setMsgType(Constants.Box.BOX_TYPE_GROUP_MESSAGE);
                     }
 
                     dbViewModel.insertMessage(message);
@@ -326,7 +325,7 @@ public class ChatActivity extends BaseActivity {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
+                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsg(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
                             }
                         });
 
@@ -583,7 +582,7 @@ public class ChatActivity extends BaseActivity {
 //                        @Override
 //                        public void onSuccess(DocumentSnapshot documentSnapshot) {
 //                            String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-//                            Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsgID(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
+//                            Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsg(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
 //                        }
 //                    });
 //
@@ -657,7 +656,7 @@ public class ChatActivity extends BaseActivity {
                     }
                     if (value.get(Constants.KEY_FIRESTORE_USER_PIC) != null) {
                         Log.i("User:::::", user.getDisplayName());
-                        user.setPic(String.valueOf(value.get(Constants.KEY_FIRESTORE_USER_PIC)));
+                        user.setPublicPic(String.valueOf(value.get(Constants.KEY_FIRESTORE_USER_PIC)));
                     }
                     if (value.get(Constants.KEY_FIRESTORE_USER_NAME) != null) {
                         user.setUserName(String.valueOf(value.get(Constants.KEY_FIRESTORE_USER_NAME)));
@@ -683,7 +682,7 @@ public class ChatActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ImageView iv = new ImageView(getApplicationContext());
         iv.setPadding(50, 50, 50, 50);
-        iv.setImageBitmap(UsefulFunctions.getCircularBitmap(UsefulFunctions.decodeImage(user.getPic())));
+        iv.setImageBitmap(UsefulFunctions.getCircularBitmap(UsefulFunctions.decodeImage(user.getPublicPic())));
 
         Drawable d = iv.getDrawable();
         getSupportActionBar().setIcon(d);
@@ -749,7 +748,7 @@ public class ChatActivity extends BaseActivity {
         ib_attach.setOnClickListener(view -> attachmentPopUp());
         ib_camera.setOnClickListener(view -> {
             Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            startActivityForResult(camera_intent, 77);
+            startActivityForResult(camera_intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_CAMERA);
 
         });
     }

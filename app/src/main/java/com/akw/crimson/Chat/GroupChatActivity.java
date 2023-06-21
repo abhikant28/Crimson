@@ -503,12 +503,11 @@ public class GroupChatActivity extends BaseActivity {
         ib_send.setOnClickListener(view -> {
             if (!et_message.getText().toString().trim().equals("")) {
 
-                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime()
-                        , userID, null, et_message.getText().toString().trim(), true, false
+                Message message = new Message(userID, null, et_message.getText().toString().trim(), true, false
                         , null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD, SharedPrefManager.getLocalUserID());
 
                 message.setGroupUserID(SharedPrefManager.getLocalUserID());
-                message.setMsgType(Constants.Message.BOX_TYPE_GROUP_MESSAGE);
+                message.setMsgType(Constants.Box.BOX_TYPE_GROUP_MESSAGE);
 
                 dbViewModel.insertMessage(message);
                 user.setConnected(true);
@@ -578,7 +577,7 @@ public class GroupChatActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ImageView iv = new ImageView(getApplicationContext());
         iv.setPadding(50, 50, 50, 50);
-        iv.setImageBitmap(UsefulFunctions.getCircularBitmap(user.getPicBitmap()));
+        iv.setImageBitmap(UsefulFunctions.getCircularBitmap(user.getUserPic(this)));
 
         Drawable d = iv.getDrawable();
         getSupportActionBar().setIcon(d);

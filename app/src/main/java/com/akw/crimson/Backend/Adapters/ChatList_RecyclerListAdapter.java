@@ -51,7 +51,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
 
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText(user.getLast_msg());
-        holder.iv_profilePic.setImageBitmap(user.getPicBitmap());
+        holder.iv_profilePic.setImageBitmap(user.getUserPic(holder.itemView.getContext()));
 
         if (user.getUnread_count() > 0) {
             holder.tv_unreadCount.setVisibility(View.VISIBLE);
@@ -125,10 +125,10 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
                     ProfileImageView update = new ProfileImageView();
                     Bundle bundle = new Bundle();
                     bundle.putString(Constants.Intent.KEY_INTENT_USERID, getUser(getLayoutPosition()).getUser_id());
-                    bundle.putString(Constants.Intent.KEY_INTENT_PIC, getUser(getLayoutPosition()).getPic());
+                    bundle.putString(Constants.Intent.KEY_INTENT_PIC, getUser(getLayoutPosition()).getPublicPic());
                     update.setArguments(bundle);
                     update.show(activity.getSupportFragmentManager().beginTransaction(), "EXAMPLE");
-//                    DialogFragment fragment = ProfileImageView.newInstance(getUser(getAdapterPosition()).getUser_id(), getUser(getLayoutPosition()).getPic());
+//                    DialogFragment fragment = ProfileImageView.newInstance(getUser(getAdapterPosition()).getUser_id(), getUser(getLayoutPosition()).getPublicPic());
 //                    ViewCompat.setTransitionName(iv_profilePic, "item_image");
 //                    activity.getSupportFragmentManager().beginTransaction()
 //                            .addSharedElement(iv_profilePic, "max")

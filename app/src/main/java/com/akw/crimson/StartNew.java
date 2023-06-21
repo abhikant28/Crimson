@@ -170,7 +170,7 @@ public class StartNew extends BaseActivity {
         for (DocumentSnapshot doc : numsFound) {
 //            Log.i("Created User::::::", doc.getId());
             User user = new User(doc.getId(), doc.getString("name"), doc.getString("name")
-                    , allContacts.get(doc.getString("phone")).trim(), doc.getString("pic")
+                    , allContacts.get(doc.getString("phone")).trim(), doc.getString("publicPic")
                     , doc.getString("phone"), false,doc.getString("about"));
             dbViewModel.insertUser(user);
         }

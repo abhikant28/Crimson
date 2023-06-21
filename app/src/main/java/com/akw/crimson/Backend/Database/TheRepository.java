@@ -12,10 +12,9 @@ import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.DAOs.MessagesDao;
 import com.akw.crimson.Backend.Database.DAOs.UsersDao;
+import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.Chat.ChatActivity;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -25,9 +24,9 @@ public class TheRepository {
     private final UsersDao usersDao;
     private final MessagesDao messagesDao;
     private final LiveData<List<User>> getChatList;
-    private final LiveData<List<User>> getConnectedUsers;
     private LiveData<List<Message>> getLiveMessages;
     private final LiveData<List<Message>> pendingMessagesList;
+    private final LiveData<List<Message>> infoMessagesList;
     private final LiveData<List<Message>> receivedMessagesList;
     private final LiveData<List<User>> getAllUsers;
 
@@ -37,9 +36,9 @@ public class TheRepository {
         messagesDao = database.messagesDao();
 //        chatList= usersDao.getChatList();
         getChatList = usersDao.getChatList();
-        getConnectedUsers = usersDao.getConnectedUsers();
         getAllUsers = usersDao.getAllUsersList();
         pendingMessagesList = messagesDao.pendingMessages();
+        infoMessagesList = messagesDao.receivedInfoMessages();
         receivedMessagesList = messagesDao.receivedMessages();
 //        getLiveMessages=messagesDao.getLiveMessages(userID);
         getLiveMessages = null;
@@ -54,6 +53,10 @@ public class TheRepository {
         new InsertMessageAsyncTask(messagesDao, usersDao).execute(msg);
     }
 
+    public void deleteMessage(Message msg) {
+        new DeleteMessageAsyncTask(usersDao, messagesDao).execute(msg);
+    }
+
     public void updateMessage(Message msg) {
         new UpdateMessageAsyncTask(usersDao, messagesDao).execute(msg);
     }
@@ -61,6 +64,17 @@ public class TheRepository {
     public void updateAllMessage(List<Message> msg) {
         if (!msg.isEmpty()) {
             new UpdateMessageAllAsyncTask(messagesDao).execute(msg);
+        }
+    }
+
+    public void insertAllMessage(List<Message> msg) {
+        if (!msg.isEmpty()) {
+            new InsertAllMessageAsyncTask(messagesDao).execute(msg);
+        }
+    }
+    public void deleteAllMessage(List<Message> msg) {
+        if (!msg.isEmpty()) {
+            new DeleteAllMessageAsyncTask(messagesDao).execute(msg);
         }
     }
 
@@ -112,6 +126,10 @@ public class TheRepository {
         return null;
     }
 
+    public LiveData<List<Message>> getInfoMessagesList() {
+        return infoMessagesList;
+    }
+
     public LiveData<List<Message>> getPendingMessagesList() {
         return pendingMessagesList;
     }
@@ -124,9 +142,6 @@ public class TheRepository {
         return getChatList;
     }
 
-    public LiveData<List<User>> getConnectedUsers() {
-        return getConnectedUsers;
-    }
 
     public LiveData<List<User>> getGetAllUsersList() {
         return getAllUsers;
@@ -174,6 +189,17 @@ public class TheRepository {
     public List<User> searchUserByText(String num) {
         try {
             return new GetSearchUsersAsyncTask(usersDao).execute(num).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<User> getConnectedUsers() {
+        try {
+            return new GetConnectedUsersAsyncTask(usersDao).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -240,9 +266,8 @@ public class TheRepository {
            // Log.i("REPO NULL CHECK ::::: ", (user==null)+"_"+(messages[0]==null));
             if (user!=null && messages[0].getMsg() != null)
                 user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15, messages[0].getMsg().length())), messages[0].isMedia() ? messages[0].getMediaType() : Constants.Media.KEY_MESSAGE_MEDIA_TYPE_NONE);
-            Calendar sentTime = Calendar.getInstance();
-            user.setTime(String.format("%02d", sentTime.get(Calendar.HOUR_OF_DAY)) + ":" + String.format("%02d", sentTime.get(Calendar.MINUTE)) + ":" + String.format("%02d", sentTime.get(Calendar.SECOND)));
-            user.setDate(new SimpleDateFormat("yyyy/MM/dd").format(sentTime.getTime()));
+            user.setTime(UsefulFunctions.getTime());
+            user.setDate(UsefulFunctions.getDate());
             if (messages[0].isSelf()) {
                 user.setUnread_count(0);
                 user.setUnread(false);
@@ -255,10 +280,23 @@ public class TheRepository {
                 user.setUnread(true);
             }
             ChatActivity.updated = true;
-            ChatActivity.updateID = user.getUser_id();
             user.incMsgCount();
             user.setKnown(true);
             usersDao.update(user);
+            return null;
+        }
+    }
+
+    private static class InsertAllMessageAsyncTask extends AsyncTask<List<Message>, Void, Void> {
+        private final MessagesDao messagesDao;
+
+        private InsertAllMessageAsyncTask(MessagesDao msgDao) {
+            this.messagesDao = msgDao;
+        }
+
+        @Override
+        protected Void doInBackground(List<Message>... messages) {
+            messagesDao.insertAll(messages[0]);
             return null;
         }
     }
@@ -285,7 +323,7 @@ public class TheRepository {
             }
 
             ChatActivity.updated = true;
-            ChatActivity.updateID = messages[0].getUser_id();
+//            ChatActivity.updateID = messages[0].getUser_id();
             return null;
         }
     }
@@ -303,6 +341,38 @@ public class TheRepository {
             return null;
         }
     }
+
+    private static class DeleteMessageAsyncTask extends AsyncTask<Message, Void, Void> {
+        private final MessagesDao messagesDao;
+        private final UsersDao usersDao;
+
+        private DeleteMessageAsyncTask(UsersDao usersDao, MessagesDao msgDao) {
+            this.messagesDao = msgDao;
+            this.usersDao = usersDao;
+        }
+
+        @Override
+        protected Void doInBackground(Message... messages) {
+            messagesDao.delete(messages[0]);
+
+            return null;
+        }
+    }
+
+    private static class DeleteAllMessageAsyncTask extends AsyncTask<List<Message>, Void, Void> {
+        private final MessagesDao messagesDao;
+
+        private DeleteAllMessageAsyncTask(MessagesDao msgDao) {
+            this.messagesDao = msgDao;
+        }
+
+        @Override
+        protected Void doInBackground(List<Message>... messages) {
+            messagesDao.deleteAll(messages[0]);
+            return null;
+        }
+    }
+
 
     private static class GetMessageAsyncTask extends AsyncTask<String, Void, Message> {
         private final MessagesDao messagesDao;
@@ -436,6 +506,19 @@ public class TheRepository {
         @Override
         protected List<Message> doInBackground(String... strings) {
             return dao.getStarredUserMessages(strings[0]);
+        }
+    }
+
+    private static class GetConnectedUsersAsyncTask extends AsyncTask<Void, Void, List<User>> {
+        private final UsersDao dao;
+
+        private GetConnectedUsersAsyncTask(UsersDao dao) {
+            this.dao = dao;
+        }
+
+        @Override
+        protected List<User> doInBackground(Void... strings) {
+            return dao.getConnectedUsers();
         }
     }
 

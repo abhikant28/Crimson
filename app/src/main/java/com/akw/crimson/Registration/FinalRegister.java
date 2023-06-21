@@ -7,9 +7,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Ignore;
 
+import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
+import com.akw.crimson.BaseActivity;
 import com.akw.crimson.MainActivity;
 import com.akw.crimson.R;
 import com.google.firebase.database.DataSnapshot;
@@ -22,7 +25,7 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.util.Hashtable;
 
-public class FinalRegister extends AppCompatActivity {
+public class FinalRegister extends BaseActivity {
 
     DatabaseReference databaseReference = FirebaseDatabase.getInstance()
             .getReferenceFromUrl(Constants.FIREBASE_REALTIME_DATABASE_MSG_URL);
@@ -66,6 +69,8 @@ public class FinalRegister extends AppCompatActivity {
                     else
                         SharedPrefManager.storeUserProfile(null,userName, email, about);
                     Log.i("USERNAME::::",userName);
+                    Communicator.localDB.insertUser(SharedPrefManager.getLocalUser());
+
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);

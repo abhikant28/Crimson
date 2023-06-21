@@ -7,10 +7,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LifecycleService;
-import androidx.lifecycle.Observer;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.akw.crimson.Backend.AppObjects.Message;
@@ -19,7 +15,6 @@ import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
-import com.akw.crimson.Preferences.SettingsActivity;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -33,14 +28,13 @@ import java.util.List;
 import java.util.Map;
 
 public class UploadFileService extends IntentService {
+
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_FAIL = 0;
     public static final String EXTRA_RECEIVER = "extra_receiver";
     private StorageReference storageRef;
     private TheViewModel db;
-    LifecycleOwner lifecycleOwner;
     FirebaseFirestore fireDB = FirebaseFirestore.getInstance();
-    DocumentReference mediaDocRef;
 
     public UploadFileService() {
         super("UploadFileService");
@@ -62,7 +56,7 @@ public class UploadFileService extends IntentService {
         storageRef = FirebaseStorage.getInstance().getReference();
         db = Communicator.localDB;
         assert intent != null;
-        Log.i(this.getClass().getSimpleName() + ".UploadFileService.UPLOAD::::", "onHandleIntent");
+        Log.i(this.getClass().getSimpleName() + ".UploadFileService.UPLOAD::::", "Service Started");
 
         int uploadType = intent.getIntExtra(Constants.Intent.KEY_INTENT_UPLOAD_TYPE, Constants.Intent.KEY_INTENT_UPLOAD_TYPE_MEDIA);
 
@@ -73,7 +67,7 @@ public class UploadFileService extends IntentService {
             String id = intent.getStringExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID);
             Message msg = db.getMessage(id);
 
-            Communicator.uploading.add(msg.getMsg_ID());
+            Communicator.mediaUploading.add(msg.getMsg_ID());
 
             checkForDoc(msg);
         }
@@ -82,13 +76,15 @@ public class UploadFileService extends IntentService {
 
     public void profilePicUpload(String fileName) {
 
+        Log.i("UploadFileService.profilePicUpload:::::","Uploading::"+fileName );
         DocumentReference documentRef = fireDB.collection(Constants.KEY_FCM_ATTACHMENTS_REFERENCE).document();
 
-        List<User> users = db.getConnectedUsers().getValue();
+        List<User> users = db.getConnectedUsers();
 
+        Log.i(this.getClass().getSimpleName() + ".profilePicUpload.userSize  ::::", users.size()+"");
 
-        if (users.size() == 0)
-            return;
+        if (users == null || users.size() == 0) return;
+
 
         documentRef.get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -98,7 +94,7 @@ public class UploadFileService extends IntentService {
                     //Upload Profile
                     StorageReference fileRef = storageRef.child("profile" + "/" + documentRef.getId() + ".jpg");
 
-                    File file = UsefulFunctions.FileUtil.getFile(getApplicationContext(), fileName
+                    File file = UsefulFunctions.FileUtil.getFile(getApplicationContext(), "self"
                             , Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE, true);
 
                     Log.i("UploadFileService.MEDIA TYPE Upload:::::", Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE + "");
@@ -139,7 +135,7 @@ public class UploadFileService extends IntentService {
 
                 })
                 .addOnFailureListener(e -> {
-                    Log.i(this.getClass().getSimpleName() + ".profilePicUpload.addOnFailureListener::::", documentRef.getPath());
+                    Log.e(this.getClass().getSimpleName() + ".profilePicUpload.addOnFailureListener::::", documentRef.getPath()+e);
                     // Failed to get the document
                 });
 
@@ -149,7 +145,8 @@ public class UploadFileService extends IntentService {
 
         String mediaID = SharedPrefManager.getLocalUserID() + msg.getMediaID().replaceAll("_", "").replaceAll("IM", "")
                 .replaceAll("VI", "");
-        msg.setMediaUrl(SharedPrefManager.getLocalUserID() + msg.getMediaID().substring(0, msg.getMediaID().lastIndexOf(".")));
+        msg.setMediaUrl(SharedPrefManager.getLocalUserID() + msg.getMediaID().substring(0, msg.getMediaID().lastIndexOf(".")).replaceAll("_", "").replaceAll("IM", "")
+                .replaceAll("VI", ""));
         ArrayList<String> userID = null;
         userID = (msg.getGroupUserID() == null) ? new ArrayList<>(Arrays.asList(msg.getUser_id())) : db.getUser(msg.getUser_id()).getGroup().getUsers();
 
@@ -172,6 +169,12 @@ public class UploadFileService extends IntentService {
 
                         msg.setStatus(Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD);
                         db.updateMessage(msg);
+                        Intent resultIntent = new Intent(msg.getMsg_ID());
+                        resultIntent.putExtra(Constants.Intent.KEY_INTENT_RESULT_CODE, RESULT_SUCCESS);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
+                        Communicator.mediaUploading.remove(msg.getMsg_ID());
+
+                        stopSelf();
                     } else {
                         Log.i(this.getClass().getSimpleName() + ".documentRef.addOnSuccessListener::::", "NOT EXISTS");
                         uploadFile(msg, mediaID);
@@ -238,18 +241,18 @@ public class UploadFileService extends IntentService {
                     resultIntent.putExtra(Constants.Intent.KEY_INTENT_RESULT_CODE, RESULT_SUCCESS);
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
 
-                    Communicator.uploading.remove(msg.getMsg_ID());
+                    Communicator.mediaUploading.remove(msg.getMsg_ID());
                     stopSelf();
                 }).addOnFailureListener(e -> {
                     Log.e("UploadFileService.FileUploadService:::::::::", "Failed to upload file.", e);
-                    Communicator.uploading.remove(msg.getMsg_ID());
+                    Communicator.mediaUploading.remove(msg.getMsg_ID());
                     stopSelf();
                 }).addOnCanceledListener(() -> {
                     Log.e("UploadFileService.FileUploadService::::::", "Cancelled to upload file.");
-                    Intent resultIntent = new Intent("profilePicUpdate");
+                    Intent resultIntent = new Intent(msg.getMsg_ID());
                     resultIntent.putExtra(Constants.Intent.KEY_INTENT_RESULT_CODE, RESULT_FAIL);
                     LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
-                    Communicator.uploading.remove(msg.getMsg_ID());
+                    Communicator.mediaUploading.remove(msg.getMsg_ID());
                     stopSelf();
                 })
                 .addOnProgressListener(snapshot ->{

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -31,15 +32,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class Registration_Profile extends AppCompatActivity {
+public class Registration_PublicProfile extends AppCompatActivity {
 
     private EditText et_mail, et_pass, et_about;
     private Button b_verify;
     private ImageView iv_profilePic;
     private TextView tv_ImageText;
 
-    private String encodedImage="";
-    private boolean hasPic = false;
+    private Uri imageUri;
+    private String encodedImage = "";
+    private boolean hasPic = false, userExists = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,7 @@ public class Registration_Profile extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
                     if (result.getData() != null) {
-                        Uri imageUri = result.getData().getData();
+                        imageUri = result.getData().getData();
                         Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, imageUri);
                         iv_profilePic.setImageBitmap(bitmap);
                         tv_ImageText.setVisibility(View.GONE);
@@ -94,15 +96,16 @@ public class Registration_Profile extends AppCompatActivity {
                     String name = document.getString(Constants.KEY_FIRESTORE_USER_NAME);
                     String about = document.getString(Constants.KEY_FIRESTORE_USER_ABOUT);
                     String profilePic = document.getString(Constants.KEY_FIRESTORE_USER_PIC);
+                    userExists = true;
                     encodedImage = profilePic;
-                    if (encodedImage!=null && !encodedImage.isEmpty()) {
+                    if (encodedImage != null && !encodedImage.isEmpty()) {
                         hasPic = true;
                         Bitmap bitmap = UsefulFunctions.decodeImage(profilePic);
                         iv_profilePic.setImageBitmap(bitmap);
                     }
                     et_mail.setText(email);
                     et_pass.setText(name);
-                    if(about!=null)et_about.setText(about);
+                    if (about != null) et_about.setText(about);
                     tv_ImageText.setVisibility(View.GONE);
 //                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
                 }
@@ -114,7 +117,7 @@ public class Registration_Profile extends AppCompatActivity {
 
     private boolean checkFields() {
         if (et_pass.getText().toString().isEmpty()) {
-            return false;
+            return true;
         }
         String mail = et_mail.getText().toString().trim().toLowerCase();
 
@@ -129,6 +132,8 @@ public class Registration_Profile extends AppCompatActivity {
         b_verify = findViewById(R.id.Registration_Email_Button_Verify);
         iv_profilePic = findViewById(R.id.Registration_Email_iv_profilePic);
         tv_ImageText = findViewById(R.id.Registration_Email_tv_addPic);
+        ActionBar ab = getSupportActionBar();
+        ab.setTitle("Registration");
 
         iv_profilePic.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -143,12 +148,15 @@ public class Registration_Profile extends AppCompatActivity {
 
         b_verify.setOnClickListener(view -> {
             if (checkFields()) {
-                Intent intent = new Intent(getApplicationContext(), FinalRegister.class);
+                Intent intent = new Intent(getApplicationContext(), Registration_PrivateProfile.class);
                 intent.putExtra(Constants.Intent.KEY_INTENT_EMAIL, et_mail.getText().toString().toLowerCase().trim());
                 intent.putExtra(Constants.Intent.KEY_INTENT_USERNAME, et_pass.getText().toString().trim());
                 intent.putExtra(Constants.Intent.KEY_INTENT_ABOUT, et_about.getText().toString().trim());
+                intent.putExtra("isUser", userExists);
                 if (hasPic) {
                     intent.putExtra(Constants.Intent.KEY_INTENT_PIC, encodedImage);
+                    Log.i(getClass()+"putIntent", imageUri.toString()+"____"+imageUri.getPath());
+                    intent.putExtra(Constants.Intent.KEY_INTENT_FILE_PATH, imageUri.toString());
                 }
                 startActivity(intent);
             }

@@ -46,7 +46,7 @@ public class SettingsActivity extends AppCompatActivity {
         tv_userName = findViewById(R.id.settings_tv_userName);
 
         tv_userName.setText(SharedPrefManager.getLocalUser().getUserName());
-        iv_profilePic.setImageBitmap(SharedPrefManager.getLocalUser().getPicBitmap());
+        iv_profilePic.setImageBitmap(SharedPrefManager.getLocalUser().getUserPic(this));
 
 
         ab.setTitle("Settings");

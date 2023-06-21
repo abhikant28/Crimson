@@ -62,7 +62,7 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
         User user = getItem(position);
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText(user.getAbout());
-        holder.iv_profilePic.setImageBitmap(user.getPicBitmap());
+        holder.iv_profilePic.setImageBitmap(user.getUserPic(cxt));
         if (SelectContact.selectedUsers.contains(user)) {
             holder.itemView.setBackgroundColor(Color.parseColor("#C6C5C5"));
             holder.tv_lastMsg.setTextColor(Color.BLACK);
@@ -81,7 +81,7 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
                 ProfileImageView update = new ProfileImageView();
                 Bundle bundle = new Bundle();
                 bundle.putString(Constants.Intent.KEY_INTENT_USERID, getUser(holder.getAbsoluteAdapterPosition()).getUser_id());
-                bundle.putString(Constants.Intent.KEY_INTENT_PIC, getUser(holder.getAbsoluteAdapterPosition()).getPic());
+                bundle.putString(Constants.Intent.KEY_INTENT_PIC, getUser(holder.getAbsoluteAdapterPosition()).getPublicPic());
                 update.setArguments(bundle);
                 update.show(activity.getSupportFragmentManager().beginTransaction(), "EXAMPLE");
                 holder.tv_unreadCount.setText("");

@@ -113,7 +113,7 @@ public class PrepareMessageActivity extends BaseActivity {
         b_saveMsg.setOnClickListener(view -> {
 //                Log.i("SAVING::::::::",(!et_messageText.getText().toString().equals("")) +"_"+ (msgDate != null) +"_"+ (msgForUser != null));
             if (!et_messageText.getText().toString().equals("") && msgDate != null && msgForUser != null) {
-                Message message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), msgForUser.getUser_id(), null, et_messageText.getText().toString().trim(), true, false, null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD,SharedPrefManager.getLocalUserID());
+                Message message = new Message(Communicator.thisUserID, msgForUser.getUser_id(), null, et_messageText.getText().toString().trim(), true, false, null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD,SharedPrefManager.getLocalUserID());
                 PreparedMessage prep = new PreparedMessage(message, msgDate, msgForUser.getDisplayName(), msgForUser.getUser_id());
                 messageArrayList.add(0, prep);
                 setAlarm(prep);

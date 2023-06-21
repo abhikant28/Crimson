@@ -4,6 +4,112 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".Registration.Registration_PrivateProfile">
+
+    <TextView
+        android:id="@+id/registration_pvt_TextView_Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:text="Private Profile"
+        android:textColor="@color/white"
+        android:textSize="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="These will only be visible to contacts you connect with"
+        android:textColor="#A19F9F"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/registration_pvt_TextView_Title"
+        app:layout_constraintStart_toStartOf="@+id/registration_pvt_TextView_Title"
+        app:layout_constraintTop_toBottomOf="@+id/registration_pvt_TextView_Title" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/registration_pvt_cv_profilePic"
+        android:layout_width="150sp"
+        android:layout_height="150sp"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#FFFFFF"
+        app:cardCornerRadius="450dp"
+        app:layout_constraintEnd_toEndOf="@id/registration_pvt_TextView_Title"
+        app:layout_constraintStart_toStartOf="@id/registration_pvt_TextView_Title"
+        app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/registration_pvt_iv_profilePic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="2dp"
+                android:src="@drawable/ic_baseline_person_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/registration_pvt_tv_addPic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elevation="2dp"
+                android:text="Add Profile Picture"
+                android:textAlignment="center"
+                android:textColor="#9E4242"
+                android:textSize="10dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <EditText
+        android:id="@+id/registration_pvt_EditView_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_box_chat_message"
+        android:backgroundTint="#FFFFFF"
+        android:hint="Your Status                             "
+        android:paddingHorizontal="10dp"
+        android:layout_marginTop="40dp"
+        android:paddingVertical="10dp"
+        android:textColor="#C31034"
+        app:layout_constraintEnd_toEndOf="@+id/registration_pvt_cv_profilePic"
+        app:layout_constraintStart_toStartOf="@+id/registration_pvt_cv_profilePic"
+        app:layout_constraintTop_toBottomOf="@+id/registration_pvt_checkBox" />
+
+    <CheckBox
+        android:id="@+id/registration_pvt_checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Same as Public Profile"
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="@+id/registration_pvt_cv_profilePic"
+        app:layout_constraintStart_toStartOf="@+id/registration_pvt_cv_profilePic"
+        app:layout_constraintTop_toBottomOf="@+id/registration_pvt_cv_profilePic" />
+
+    <Button
+        android:id="@+id/registration_pvt_Button_Submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#857E7E"
+        android:text="      Submit      "
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/registration_pvt_EditView_status"
+        app:layout_constraintStart_toStartOf="@+id/registration_pvt_EditView_status"
+        app:layout_constraintTop_toBottomOf="@+id/registration_pvt_EditView_status" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

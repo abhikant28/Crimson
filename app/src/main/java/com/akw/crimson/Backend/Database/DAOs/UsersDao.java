@@ -37,7 +37,7 @@ public interface UsersDao {
     LiveData<List<User>> getChatList();
 
     @Query("SELECT * FROM user_table WHERE connected is 1 AND type is "+ Constants.User.USER_TYPE_USER+" ORDER BY date desc, lower(time) desc")
-    LiveData<List<User>> getConnectedUsers();
+    List<User> getConnectedUsers();
 
     @Query("SELECT * FROM user_table WHERE type="+ Constants.User.USER_TYPE_USER+" ORDER BY displayName")
     LiveData<List<User>> getAllUsersList();

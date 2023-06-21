@@ -7,126 +7,160 @@
     android:background="@color/black"
     tools:context=".MainChatList">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/MainChat_rv_post"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/user_display_list_item" />
-
-
-<!--        <LinearLayout-->
-<!--            android:id="@+id/MainChat_ll_post"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:padding="4sp">-->
-
-<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/imageButton"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:src="@mipmap/ic_launcher_round"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_gravity="bottom|center_horizontal"-->
-<!--                    android:alpha="0.8"-->
-<!--                    android:paddingHorizontal="10sp"-->
-<!--                    android:background="@drawable/round_box_chat_input"-->
-<!--                    android:backgroundTint="@color/black"-->
-<!--                    android:elevation="2sp"-->
-<!--                    android:text="User Name"-->
-<!--                    android:textColor="@color/white"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintStart_toStartOf="@+id/imageButton"-->
-<!--                    app:layout_constraintTop_toTopOf="@+id/imageButton" />-->
-<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-<!--        </LinearLayout>-->
-
         <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="15sp"
-            android:paddingVertical="1sp">
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/mainChat_BottomNavigationBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/MainChat_tv_chatCount"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/MainChat_tv_status"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Chats Count"
-                android:textColor="#B3B2B2"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="30sp"
+                android:layout_marginVertical="20sp"
+                android:background="@drawable/round_box_chat_message"
+                android:backgroundTint="#1A1A1B"
+                android:padding="10sp"
+                android:hint="Status"
+                android:textColorHint="@color/white"
+                android:textColor="#E1DFDF"
                 android:textStyle="bold" />
 
-            <View
-                android:layout_width="0sp"
-                android:layout_height="0sp"
-                android:layout_weight="1" />
+            <!--        <androidx.recyclerview.widget.RecyclerView-->
+            <!--            android:id="@+id/MainChat_rv_post"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content" />-->
+
+
+            <!--        <LinearLayout-->
+            <!--            android:id="@+id/MainChat_ll_post"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:orientation="horizontal"-->
+            <!--            android:padding="4sp">-->
+
+            <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:orientation="vertical">-->
+
+            <!--                <ImageButton-->
+            <!--                    android:id="@+id/imageButton"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:src="@mipmap/ic_launcher_round"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent"-->
+            <!--                    app:layout_constraintTop_toTopOf="parent" />-->
+
+            <!--                <TextView-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_gravity="bottom|center_horizontal"-->
+            <!--                    android:alpha="0.8"-->
+            <!--                    android:paddingHorizontal="10sp"-->
+            <!--                    android:background="@drawable/round_box_chat_input"-->
+            <!--                    android:backgroundTint="@color/black"-->
+            <!--                    android:elevation="2sp"-->
+            <!--                    android:text="User Name"-->
+            <!--                    android:textColor="@color/white"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                    app:layout_constraintStart_toStartOf="@+id/imageButton"-->
+            <!--                    app:layout_constraintTop_toTopOf="@+id/imageButton" />-->
+            <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+            <!--        </LinearLayout>-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="15sp"
+                android:paddingVertical="1sp">
+
+                <TextView
+                    android:id="@+id/MainChat_tv_chatCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chats Count"
+                    android:textColor="#B3B2B2"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="0sp"
+                    android:layout_height="0sp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/MainChat_tv_unreadCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Unread Count"
+                    android:textColor="#B3B2B2"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/MainChat_List_RecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/main_chatlist_item" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/MainChat_UserSearch_List_RecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toBottomOf="@+id/MainChat_List_RecyclerView"
+                tools:listitem="@layout/main_chatlist_item" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/MainChat_MessageSearch_List_RecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/main_chatlist_item" />
 
             <TextView
-                android:id="@+id/MainChat_tv_unreadCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Unread Count"
-                android:textColor="#B3B2B2"
-                android:textStyle="bold" />
+                android:id="@+id/MainChat_tv_Search_noResultsFound"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:text="No Results found."
+                android:visibility="gone" />
+
         </LinearLayout>
+    </ScrollView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/MainChat_List_RecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/main_chatlist_item" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/MainChat_UserSearch_List_RecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toBottomOf="@+id/MainChat_List_RecyclerView"
-            tools:listitem="@layout/main_chatlist_item" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/MainChat_MessageSearch_List_RecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/main_chatlist_item" />
-
-        <TextView
-            android:id="@+id/MainChat_tv_Search_noResultsFound"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:text="No Results found."
-            android:visibility="gone" />
-
-    </LinearLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/mainChat_BottomNavigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:backgroundTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/main_nav_bar_menu" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/MainChat_floatButton_newMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="15dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
         android:src="@drawable/ic_baseline_message_24"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/mainChat_BottomNavigationBar"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

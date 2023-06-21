@@ -1,6 +1,6 @@
 package com.akw.crimson.Preferences;
 
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,13 +17,8 @@ import androidx.annotation.RequiresApi;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
-import com.akw.crimson.MainActivity;
-import com.akw.crimson.Preferences.EditProfile;
 import com.akw.crimson.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -83,7 +77,21 @@ public class ProfileUpdate_BottomSheet_DialogBox extends BottomSheetDialogFragme
                             firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS)
                                     .document(SharedPrefManager.getLocalUserID()).set(data, SetOptions.merge())
                                     .addOnSuccessListener(documentReference -> {
-                                        if(act != null)act.tv_status.setText(et_input.getText().toString());
+                                        if(act != null)act.layout.editProfileTvAbout.setText(et_input.getText().toString());
+                                        dismiss();
+                                    })
+                                    .addOnFailureListener(documentReference -> {
+                                    });
+                            break;
+                        case Constants.KEY_FRAGMENT_TYPE_STATUS:
+                            tv_title.setText("What are you up to");
+                            user.setAbout(et_input.getText().toString().trim());
+                            SharedPrefManager.storeUser(user);
+                            data.put(Constants.KEY_FIRESTORE_USER_ABOUT, et_input.getText().toString().trim());
+                            firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS)
+                                    .document(SharedPrefManager.getLocalUserID()).set(data, SetOptions.merge())
+                                    .addOnSuccessListener(documentReference -> {
+                                        if(act != null)act.layout.editProfileTvStatus.setText(et_input.getText().toString());
                                         dismiss();
                                     })
                                     .addOnFailureListener(documentReference -> {
@@ -115,9 +123,18 @@ public class ProfileUpdate_BottomSheet_DialogBox extends BottomSheetDialogFragme
                 tv_title.setText("Something about yourself");
                 et_input.setText(act.tv_status.getText().toString());
                 break;
+            case Constants.KEY_FRAGMENT_TYPE_STATUS:
+                tv_title.setText("What are you up to");
+                et_input.setText(act.tv_status.getText().toString());
+                break;
         }
     }
 
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        et_input.setText("");
+    }
 }
 
 

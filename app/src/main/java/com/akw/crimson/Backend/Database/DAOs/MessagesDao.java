@@ -4,6 +4,7 @@ import android.database.Cursor;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -17,29 +18,38 @@ import java.util.List;
 @Dao
 public interface MessagesDao {
 
-    @Query("CREATE TRIGGER IF NOT EXISTS update_last_msg AFTER INSERT ON message_table\n" +
-            "FOR EACH ROW\n" +
-            "WHEN NEW.messageType = " +Constants.Message.MESSAGE_TYPE_TEXT+
-            "BEGIN\n" +
-            "    UPDATE user_table\n" +
-            "    SET last_msg = SUBSTR(NEW.msg, 1, 10)\n" +
-            "    WHERE ROWID = 1;\n" +
-            "END;")
+//    @Query("CREATE TRIGGER IF NOT EXISTS update_last_msg AFTER INSERT ON message_table\n" +
+//            "FOR EACH ROW\n" +
+//            "WHEN NEW.messageType = " +Constants.Message.MESSAGE_TYPE_TEXT+
+//            "BEGIN\n" +
+//            "    UPDATE user_table\n" +
+//            "    SET last_msg = SUBSTR(NEW.msg, 1, 10)\n" +
+//            "    WHERE ROWID = 1;\n" +
+//            "END;")
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Message msg);
+    void insert(Message message);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<Message> msgs);
+    void insertAll(List<Message> messages);
 
     @Update
-    void update(Message msg);
+    void update(Message message);
 
     @Update
     void updateAll(List<Message> messages);
 
+    @Delete
+    void delete(Message message);
+
+    @Delete
+    void deleteAll(List<Message> messages);
+
     //    @Query("SELECT * from messages_Table where user_id= :user_id LIMIT 100")
 //    LiveData<List<Message>> getMessages(String user_id);
+    @Query("SELECT * FROM MESSAGES_TABLE WHERE msgType="+ Constants.Message.MESSAGE_TYPE_INFO+" AND status="+Constants.Message.MESSAGE_STATUS_RECEIVED)
+    LiveData<List<Message>> receivedInfoMessages();
+
     @Query("SELECT * FROM MESSAGES_TABLE WHERE status="+ Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD)
     LiveData<List<Message>> pendingMessages();
 
@@ -58,7 +68,7 @@ public interface MessagesDao {
     @Query("SELECT * from messages_Table where starred is 1 AND user_id= :userID")
     List<Message> getStarredUserMessages(String userID);
 
-    @Query("SELECT * from messages_Table where user_id= :user_ID LIMIT 50")
+    @Query("SELECT * from messages_Table where user_id= :user_ID AND msgType="+Constants.Message.MESSAGE_TYPE_INFO)
     LiveData<List<Message>> getLiveMessages(String user_ID);
 
     @Query("SELECT * from messages_Table where msg LIKE'%' || :query || '%'")

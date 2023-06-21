@@ -25,7 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Crimson">
         <activity
-            android:name=".Registration_PrivateProfile"
+            android:name=".Registration.Registration_PrivateProfile"
+            android:parentActivityName=".Registration.Registration_PublicProfile"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -161,7 +162,7 @@
             android:name=".MainChatList"
             android:exported="false" />
         <activity
-            android:name=".Registration.Registration_Profile"
+            android:name=".Registration.Registration_PublicProfile"
             android:exported="false" />
         <activity
             android:name=".Registration.Registration_PhoneVerification"

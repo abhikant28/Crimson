@@ -1,5 +1,6 @@
 package com.akw.crimson.Backend.AppObjects;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
@@ -25,7 +26,7 @@ public class User {
     @NonNull
     private String user_id;
     private String _id;
-    private String last_msg, name, userName, displayName, time, pic, phoneNumber, date, about, wallpaper, status, groupData;
+    private String last_msg, name, userName, displayName, time, publicPic, profilePic, phoneNumber, date, about, wallpaper, status, groupData;
     private boolean unread, connected, blocked, mute, known, pinned;
     private int unread_count, last_msg_type = 0, vidCount = 0, imgCount = 0, docCount = 0, msg_count = 0, type = 0;
     private long mediaSize;
@@ -36,47 +37,47 @@ public class User {
 
     //Used For Groups
     @Ignore
-    public User(@NonNull String user_id, String displayName, String pic, String groupData, int type, Group group) {
+    public User(@NonNull String user_id, String displayName, String publicPic, String groupData, int type, Group group) {
         this.user_id = user_id;
         this.displayName = displayName;
-        this.pic = pic;
+        this.publicPic = publicPic;
         this.groupData = groupData;
-        this.connected=true;
-        this.known=true;
-        this.group=group;
+        this.connected = true;
+        this.known = true;
+        this.group = group;
         this.type = type;
     }
 
-    public User(@NonNull String user_id, String name, String displayName, String pic, String phoneNumber, boolean connected, String about) {
+    public User(@NonNull String user_id, String name, String displayName, String publicPic, String phoneNumber, boolean connected, String about) {
         this.user_id = user_id;
         this.name = name;
         this.displayName = displayName;
-        this.pic = pic;
+        this.publicPic = publicPic;
         this.phoneNumber = phoneNumber;
         this.connected = connected;
         this.about = about;
     }
 
-    public User(@NonNull String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected) {
+    public User(@NonNull String user_id, String username, String name, String displayName, String publicPic, String phoneNumber, boolean connected) {
         this.user_id = user_id;
         this.name = name;
         this.userName = username;
         this.displayName = displayName;
-        this.pic = pic;
+        this.publicPic = publicPic;
         this.phoneNumber = phoneNumber;
         this.connected = connected;
     }
 
-    public User(@NonNull String user_id, String username, String name, String displayName, String pic, String phoneNumber, boolean connected, String about) {
+    public User(@NonNull String user_id, String username, String name, String displayName, String publicPic, String phoneNumber, boolean connected, String about) {
         this.user_id = user_id;
         this.name = name;
         this.userName = username;
         this.displayName = displayName;
-        this.pic = pic;
+        this.publicPic = publicPic;
         this.phoneNumber = phoneNumber;
         this.connected = connected;
         this.about = about;
-        this.type=Constants.User.USER_TYPE_USER;
+        this.type = Constants.User.USER_TYPE_USER;
     }
 
     public User(String u) {
@@ -91,7 +92,7 @@ public class User {
         this.userName = user.userName;
         this.displayName = user.displayName;
         this.time = user.time;
-        this.pic = user.pic;
+        this.publicPic = user.publicPic;
         this.phoneNumber = user.phoneNumber;
         this.date = user.date;
         this.about = user.about;
@@ -125,6 +126,15 @@ public class User {
 
     public int getTotalMediaCount() {
         return getMedias().size() + getDocs().size() + getLinks().size();
+    }
+
+    public Bitmap getUserPic(Context cxt) {
+        if (profilePic == null) {
+            if (publicPic == null)
+                return UsefulFunctions.decodeImage(Constants.Media.DEFAULT_PROFILE_PIC);
+            return UsefulFunctions.decodeImage(getPublicPic());
+        }
+        return UsefulFunctions.fileToBitmap(UsefulFunctions.FileUtil.getFile(cxt, getProfilePic(), Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE));
     }
 
     public int getDocCount() {
@@ -206,7 +216,7 @@ public class User {
     }
 
     public String getAbout() {
-        return about;
+        return about+"";
     }
 
     public void setAbout(String about) {
@@ -265,20 +275,14 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getPic() {
-        if (pic == null)
+    public String getPublicPic() {
+        if (publicPic == null)
             return Constants.Media.DEFAULT_PROFILE_PIC;
-        return pic;
+        return publicPic;
     }
 
-    public void setPic(String pic) {
-        this.pic = pic;
-    }
-
-    public Bitmap getPicBitmap() {
-        if (pic == null)
-            return UsefulFunctions.decodeImage(Constants.Media.DEFAULT_PROFILE_PIC);
-        return UsefulFunctions.decodeImage(pic);
+    public void setPublicPic(String publicPic) {
+        this.publicPic = publicPic;
     }
 
     public String getUser_id() {
@@ -329,7 +333,7 @@ public class User {
     }
 
     public String getTime() {
-        if(time==null)
+        if (time == null)
             return "00:00";
         return time;
     }
@@ -406,6 +410,10 @@ public class User {
 
     public void incMsgCount() {
         msg_count++;
+    }
+
+    public void decMsgCount() {
+        msg_count--;
     }
 
     public int getMsg_count() {
@@ -488,5 +496,13 @@ public class User {
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 }

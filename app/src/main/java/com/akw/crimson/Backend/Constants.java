@@ -28,8 +28,8 @@ public class Constants {
     public static final String KEY_FIRESTORE_USER_ONLINE = "online";
     public static final String KEY_FIRESTORE_USER_NAME = "name";
     public static final String KEY_FIRESTORE_USER_ID = "userID";
-    public static final String KEY_FIRESTORE_USER_PIC = "pic";
-    public static final String KEY_FIRESTORE_USER_PROFILE_PIC = "profilePic";
+    public static final String KEY_FIRESTORE_USER_PIC = "publicPic";
+    public static final String KEY_FIRESTORE_USER_PROFILE_PIC = "privateProfilePic";
     public static final String KEY_FIRESTORE_USER_PHONE = "phone";
     public static final String KEY_FIRESTORE_USER_EMAIL = "email";
     public static final String KEY_FIRESTORE_USER_TOKEN = "token";
@@ -46,21 +46,16 @@ public class Constants {
 
     public static class Message {
 
-        public static final int MESSAGE_TYPE_INTERNAL_UPDATE_PROFILE = -2;
-        public static final int MESSAGE_TYPE_INTERNAL_UPDATE_ = -5;
+        public static final int MESSAGE_TYPE_PING = 0;
         public static final int MESSAGE_TYPE_TEXT = 1;
-        public static final int MESSAGE_TYPE_PING = 2;
-        public static final int MESSAGE_TYPE_INFO = 3;
-        public static final int MESSAGE_TYPE_REACTION = 4;
-        public static final int MESSAGE_TYPE_WALLPAPER = 5;
+        public static final int MESSAGE_TYPE_INFO = 2;
+        public static final int MESSAGE_TYPE_STATUS = 3;
+        public static final int MESSAGE_TYPE_INFO_INTERNAL_UPDATE_PROFILE = 22;
+        public static final int MESSAGE_TYPE_INFO_INTERNAL_UPDATE_PROFILE_PICTURE = 26;
+        public static final int MESSAGE_TYPE_INFO_REACTION = 24;
+        public static final int MESSAGE_TYPE_INTERNAL_UPDATE_ = -5;
         public static final int MESSAGE_TYPE_STATUS_IMAGE = 31;
         public static final int MESSAGE_TYPE_STATUS_VIDEO = 32;
-
-        public static final int BOX_TYPE_NEW_GROUP = 10;
-        public static final int BOX_TYPE_GROUP_MESSAGE = 11;
-        public static final int BOX_TYPE_GROUP_UPDATE = 14;
-        public static final int BOX_TYPE_FORWARD = 5;
-        public static final int BOX_TYPE_TEXT_MESSAGE = 1;
 
         public static final int MESSAGE_STATUS_MEDIA_TRANSFER_PENDING = -1;
         public static final int MESSAGE_STATUS_PENDING_UPLOAD = 0;
@@ -71,8 +66,20 @@ public class Constants {
         public static final int MESSAGE_STATUS_BULK = 21;
         public static final int MESSAGE_STATUS_BULK_PENDING = 22;
         public static final int MESSAGE_STATUS_BULK_MEDIA_UPLOAD_PENDING = -23;
-        public static final int BOX_TYPE_BULK_MESSAGE = 24;
 
+    }
+
+    public static class Box{
+
+        public static final int BOX_TYPE_TEXT_MESSAGE = 1;
+        public static final int BOX_TYPE_INFO_MESSAGE = 2;
+        public static final int BOX_TYPE_INFO_PROFILE_UPDATE = 3;
+        public static final int BOX_TYPE_INFO_PIC_UPDATE = 4;
+        public static final int BOX_TYPE_FORWARD = 5;
+        public static final int BOX_TYPE_NEW_GROUP = 10;
+        public static final int BOX_TYPE_GROUP_MESSAGE = 11;
+        public static final int BOX_TYPE_GROUP_UPDATE = 14;
+        public static final int BOX_TYPE_BULK_MESSAGE = 24;
     }
 
     public static class User {
@@ -84,9 +91,8 @@ public class Constants {
 
     public static class Media {
 
-        public static final int MESSAGE_MEDIA_TYPE_NONE = 0;
-        public static final int KEY_MESSAGE_MEDIA_TYPE_IMAGE = 1;
         public static final int KEY_MESSAGE_MEDIA_TYPE_NONE = 0;
+        public static final int KEY_MESSAGE_MEDIA_TYPE_IMAGE = 1;
         public static final int KEY_MESSAGE_MEDIA_TYPE_VIDEO = 2;
         public static final int KEY_MESSAGE_MEDIA_TYPE_DOCUMENT = 3;
         public static final int KEY_MESSAGE_MEDIA_TYPE_LOCATION = 4;
@@ -94,10 +100,11 @@ public class Constants {
         public static final int KEY_MESSAGE_MEDIA_TYPE_CANVAS = 6;
         public static final int KEY_MESSAGE_MEDIA_TYPE_AUDIO = 7;
         public static final int KEY_MESSAGE_MEDIA_TYPE_WALLPAPER = 8;
-        public static final int KEY_MESSAGE_MEDIA_TYPE_PROFILE = 17;
-        public static final int KEY_MESSAGE_MEDIA_TYPE_STATUS = 11;
         public static final int KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE = 9;
         public static final int KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO = 10;
+        public static final int KEY_MESSAGE_MEDIA_TYPE_STATUS = 11;
+        public static final int KEY_MESSAGE_MEDIA_TYPE_STICKER = 12;
+        public static final int KEY_MESSAGE_MEDIA_TYPE_PROFILE = 17;
         public static final String DEFAULT_PROFILE_PIC = "/9j/4AAQSkZJRgABAQAAAQABAAD/4gIoSUNDX1BST0ZJTEUAAQEAAAIYA" +
                 "AAAAAQwAABtbnRyUkdCIFhZWiAAAAAAAAAAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQ" +
                 "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAAHRyWFlaAAABZAAAABRnWFl" +
@@ -127,8 +134,10 @@ public class Constants {
     public static final String KEY_FRAGMENT_TYPE = "fragmentType";
     public static final String KEY_FRAGMENT_TYPE_NAME = "name";
     public static final String KEY_FRAGMENT_TYPE_ABOUT = "about";
+    public static final String KEY_FRAGMENT_TYPE_STATUS = "status";
     public static final String KEY_MESSAGE_MEDIA_TYPE = "mediaType";
     public static final String KEY_FIRESTORE_USER_ABOUT = "about";
+    public static final String KEY_FIRESTORE_USER_STATUS = "status";
     public static HashMap<String, String> remoteMsgHeaders = null;
     public static JSONObject FcmJsonObject = null;
 

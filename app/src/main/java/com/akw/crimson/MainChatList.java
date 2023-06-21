@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.FileProvider;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -241,7 +240,6 @@ public class MainChatList extends BaseActivity {
     private void connectLocalDatabase() {
 //        if(Communicator.localDB==null)startService(new Intent(new Intent(this, Communicator.class)));
         dbViewModel = Communicator.localDB;
-        dbViewModel.insertUser(SharedPrefManager.getLocalUser());
 
         dbViewModel.getChatListUsers().observe(this, users -> {
             chatList_recyclerListAdapter.submitList(users);
@@ -354,6 +352,8 @@ public class MainChatList extends BaseActivity {
         ab = getSupportActionBar();
         ColorDrawable colorDrawable = new ColorDrawable(Color.BLACK);
         ab.setBackgroundDrawable(colorDrawable);
+        ab.setDisplayHomeAsUpEnabled(false);
+        ab.setTitle(UsefulFunctions.getGreeting());
 
         tv_noResults = findViewById(R.id.MainChat_tv_Search_noResultsFound);
         tv_convCount = findViewById(R.id.MainChat_tv_chatCount);
@@ -367,9 +367,5 @@ public class MainChatList extends BaseActivity {
 
     }
 
-    public static LifecycleOwner getMainLifeCycleOwner(){
-        LifecycleOwner lo = this;
-        return lo;
-    }
 }
 

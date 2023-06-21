@@ -100,7 +100,7 @@ public class ImportChatService extends Service {
 
     private Message parseMessage(String timestamp, String data, String author, String userName, int count) {
 
-        Message msg = new Message(SharedPrefManager.getLocalUserID(), user.getUser_id(), data, false, null, SharedPrefManager.getLocalUserID());
+        Message msg = new Message(SharedPrefManager.getLocalUserID(), user.getUser_id(), data, false, null, SharedPrefManager.getLocalUserID(),null);
 //        Log.i("Import.parseMessage::::::", count + "_" + timestamp + "::" + author + " ::" + data);
         if (author.equals(userName)) {
             msg.setSelf(false);

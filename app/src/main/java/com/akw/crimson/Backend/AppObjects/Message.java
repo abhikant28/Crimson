@@ -6,6 +6,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.google.gson.Gson;
@@ -20,7 +21,7 @@ public class Message {
     @NonNull
     private String msg_ID;
 
-    private String user_id, _id, taggedMsgID, msg, sentTime, receivedTime, readTime, mediaID
+    private String user_id, _id, taggedMsg, msg, sentTime, receivedTime, readTime, mediaID
             , source, reaction, author, groupUserID, groupData, mediaUrl;
     private long mediaSize;
     private double latitude, longitude;
@@ -51,11 +52,27 @@ public class Message {
 
 
     @Ignore
-    public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, boolean self,
+    public Message(@NonNull String thisUserID, String user_id, String taggedMsgID, String msg, boolean self,
                    boolean media, String mediaID, int status, String author) {
-        this.msg_ID = msg_ID;
+        this.msg_ID = thisUserID+UsefulFunctions.getCurrentMmTimeStamp();
         this.user_id = user_id;
-        this.taggedMsgID = taggedMsgID;
+        this.taggedMsg = taggedMsgID;
+        this.msg = msg;
+        this.sentTime = UsefulFunctions.getCurrentTimestamp();
+        this.unread = true;
+        this.media = media;
+        this.mediaID = mediaID;
+        this.status = status;
+        this.self = self;
+        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.author = author;
+    }
+    @Ignore
+    public Message(String user_id, String taggedMsgID, String msg, boolean self,
+                   boolean media, String mediaID, int status, String author) {
+        this.msg_ID = Communicator.thisUserID +UsefulFunctions.getCurrentMmTimeStamp();
+        this.user_id = user_id;
+        this.taggedMsg = taggedMsgID;
         this.msg = msg;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.unread = true;
@@ -69,10 +86,9 @@ public class Message {
 
     //For Chat Import
     @Ignore
-    public Message(@NonNull String msg_ID, String user_id, String msg,
+    public Message(@NonNull String thisUserID, String user_id, String msg,
                    boolean media, String mediaID, String author, String mediaUrl) {
-        Calendar c = Calendar.getInstance();
-        this.msg_ID = msg_ID + c.getTime().getTime();
+        this.msg_ID = thisUserID + UsefulFunctions.getCurrentMmTimeStamp();
         this.user_id = user_id;
         this.msg = msg;
         this.unread = true;
@@ -89,8 +105,7 @@ public class Message {
     public Message(@NonNull String thisUserID, String user_id, String msg
             , boolean hasMedia, String groupUserID, boolean self, int status, int msgType
             ,int mediaType, String mediaID, String mediaUrl) {
-        Calendar c = Calendar.getInstance();
-        this.msg_ID = thisUserID + c.getTime().getTime();
+        this.msg_ID = thisUserID +UsefulFunctions.getCurrentMmTimeStamp();
         this.user_id = user_id;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.msg = msg;
@@ -107,11 +122,10 @@ public class Message {
     @Ignore
     public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, String mediaID
             , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType, String author) {
-        Calendar c = Calendar.getInstance();
-        this.msg_ID = msg_ID + c.getTime().getTime();
+        this.msg_ID = msg_ID + UsefulFunctions.getCurrentMmTimeStamp();
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.user_id = user_id;
-        this.taggedMsgID = taggedMsgID;
+        this.taggedMsg = taggedMsgID;
         this.msg = msg;
         this.mediaID = mediaID;
         this.mediaSize = mediaSize;
@@ -126,10 +140,9 @@ public class Message {
 
     @Ignore
     public Message(String msg_ID, String taggedMsgID, String msg, String source, String reaction, int status, int msgType, String author) {
-        Calendar sentTime = Calendar.getInstance();
-        this.msg_ID = msg_ID + sentTime.getTime().getTime();
+        this.msg_ID = msg_ID + UsefulFunctions.getCurrentMmTimeStamp();
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
-        this.taggedMsgID = taggedMsgID;
+        this.taggedMsg = taggedMsgID;
         this.msg = msg;
         this.source = source;
         this.reaction = reaction;
@@ -143,9 +156,8 @@ public class Message {
     @Ignore
     public Message(String taggedMsgID, String msg, String mediaID
             , long mediaSize, boolean self, boolean unread, boolean media, int status, int mediaType, String author) {
-        Calendar c = Calendar.getInstance();
-        this.msg_ID = msg_ID + c.getTime().getTime();
-        this.taggedMsgID = taggedMsgID;
+        this.msg_ID = msg_ID + UsefulFunctions.getCurrentMmTimeStamp();
+        this.taggedMsg = taggedMsgID;
         this.msg = msg;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.mediaID = mediaID;
@@ -165,7 +177,7 @@ public class Message {
     public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, double latitude, double longitude, boolean self, String msg, int status, String author) {
         this.msg_ID = msg_ID;
         this.user_id = user_id;
-        this.taggedMsgID = taggedMsgID;
+        this.taggedMsg = taggedMsgID;
         this.msg = msg;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.source = user_id;
@@ -178,7 +190,7 @@ public class Message {
         this.author = author;
     }
 
-
+    @Ignore
     public Message(String s) {
         Gson gson = new Gson();
         Type type = new TypeToken<Message>() {
@@ -187,7 +199,7 @@ public class Message {
         this.receivedTime = UsefulFunctions.getCurrentTimestamp();
         this.msg_ID = message.msg_ID;
         this.user_id = message.user_id;
-        this.taggedMsgID = message.taggedMsgID;
+        this.taggedMsg = message.taggedMsg;
         this.msg = message.msg;
         this.sentTime = message.sentTime;
         this.readTime = message.readTime;
@@ -212,11 +224,12 @@ public class Message {
         this.mediaUrl=message.mediaUrl;
     }
 
+    @Ignore
     public Message(@NonNull Message message) {
         this.msg_ID = message.msg_ID;
         this.user_id = message.user_id;
         this._id = message._id;
-        this.taggedMsgID = message.taggedMsgID;
+        this.taggedMsg = message.taggedMsg;
         this.msg = message.msg;
         this.sentTime = message.sentTime;
         this.receivedTime = message.receivedTime;
@@ -298,12 +311,12 @@ public class Message {
         this.user_id = user_id;
     }
 
-    public String getTaggedMsgID() {
-        return taggedMsgID;
+    public String getTaggedMsg() {
+        return taggedMsg;
     }
 
-    public void setTaggedMsgID(String taggedMsgID) {
-        this.taggedMsgID = taggedMsgID;
+    public void setTaggedMsg(String taggedMsg) {
+        this.taggedMsg = taggedMsg;
     }
 
     public String getMsg() {
@@ -477,10 +490,10 @@ public class Message {
         this.mediaUrl = mediaUrl;
     }
 
-    public Message(@NonNull String msg_ID, String user_id, String taggedMsgID, String msg, String sentTime, String receivedTime, String readTime, String mediaID, String source, String reaction, String author, String groupUserID, String groupData, long mediaSize, double latitude, double longitude, boolean self, boolean unread, boolean starred, boolean media, boolean forwarded, boolean link, int status, int mediaType, int msgType, String mediaUrl) {
+    public Message(@NonNull String msg_ID, String user_id, String taggedMsg, String msg, String sentTime, String receivedTime, String readTime, String mediaID, String source, String reaction, String author, String groupUserID, String groupData, String mediaUrl, long mediaSize, double latitude, double longitude, boolean self, boolean unread, boolean starred, boolean media, boolean forwarded, boolean link, int status, int mediaType, int msgType) {
         this.msg_ID = msg_ID;
         this.user_id = user_id;
-        this.taggedMsgID = taggedMsgID;
+        this.taggedMsg = taggedMsg;
         this.msg = msg;
         this.sentTime = sentTime;
         this.receivedTime = receivedTime;
@@ -491,6 +504,7 @@ public class Message {
         this.author = author;
         this.groupUserID = groupUserID;
         this.groupData = groupData;
+        this.mediaUrl = mediaUrl;
         this.mediaSize = mediaSize;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -503,6 +517,5 @@ public class Message {
         this.status = status;
         this.mediaType = mediaType;
         this.msgType = msgType;
-        this.mediaUrl=mediaUrl;
     }
 }

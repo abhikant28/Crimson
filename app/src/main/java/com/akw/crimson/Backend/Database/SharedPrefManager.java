@@ -47,7 +47,7 @@ public class SharedPrefManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("USER_ID", user.getUser_id());
         editor.putString("USER_NAME", user.getName());
-        editor.putString("USER_PIC", user.getPic());
+        editor.putString("USER_PIC", user.getPublicPic());
         editor.putString("USER_PHONE", user.getPhoneNumber());
         editor.putString("USER_TOKEN", token);
         editor.apply();
@@ -60,7 +60,7 @@ public class SharedPrefManager {
         editor.putString("USER_ID", user.getUser_id());
         editor.putString("USER_ABOUT", user.getAbout());
         editor.putString("USER_NAME", user.getName());
-        editor.putString("USER_PIC", user.getPic());
+        editor.putString("USER_PIC", user.getPublicPic());
         editor.putString("USER_PHONE", user.getPhoneNumber());
         editor.apply();
         return true;

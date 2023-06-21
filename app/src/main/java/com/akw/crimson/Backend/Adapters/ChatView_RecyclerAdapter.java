@@ -159,15 +159,17 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
                 openMedia(mediaPos, view.getContext());
             });
 
-            if (this.cursor.getInt(this.cursor.getColumnIndexOrThrow("status")) == Constants.Message.MESSAGE_STATUS_BULK_MEDIA_UPLOAD_PENDING) {
-                if (Communicator.uploading.contains(this.cursor.getString(this.cursor.getColumnIndexOrThrow("msg_ID")))) {
+            if (this.cursor.getInt(this.cursor.getColumnIndexOrThrow("status")) == Constants.Message.MESSAGE_STATUS_MEDIA_TRANSFER_PENDING) {
+                if (Communicator.mediaUploading.contains(this.cursor.getString(this.cursor.getColumnIndexOrThrow("msg_ID")))) {
                     messageCvImageSize.setVisibility(View.GONE);
                     messagePbProgressBarMedia.setVisibility(View.VISIBLE);
                     messageIvMediaCancel.setVisibility(View.VISIBLE);
                 } else {
+                    Log.i(this.getClass()+".setImage:::", "Setting Image Size Button");
+
                     messageCvImageSize.setVisibility(View.VISIBLE);
                     messageTvImageSize.setVisibility(View.VISIBLE);
-                    String s = this.cursor.getLong(this.cursor.getColumnIndexOrThrow("mediaSize")) + " Kb ";
+                    String s = UsefulFunctions.getSizeValue(this.cursor.getLong(this.cursor.getColumnIndexOrThrow("mediaSize")));
                     messageTvImageSize.setText(s);
                     messageCvImageSize.setOnClickListener(view -> {
                         this.cursor.moveToPosition(adapterPosition);
@@ -250,7 +252,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             });
             if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
                 Log.i("Adapter.setDocument::::::", "Doc Pending Upload");
-                if (Communicator.uploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
+                if (Communicator.mediaUploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
                     messageIvDocUpload.setVisibility(View.GONE);
                     messagePbDocTransferProgress.setVisibility(View.VISIBLE);
                     messageIvDocCancel.setVisibility(View.VISIBLE);
@@ -457,7 +459,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
 
             });
             if (cursor.getInt(cursor.getColumnIndexOrThrow("status")) == -1) {
-                if (Communicator.uploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
+                if (Communicator.mediaUploading.contains(cursor.getString(cursor.getColumnIndexOrThrow("msg_ID")))) {
                     messageCvVideoSize.setVisibility(View.GONE);
                     messagePbProgressBarMedia.setVisibility(View.VISIBLE);
                     messageIvMediaCancel.setVisibility(View.VISIBLE);

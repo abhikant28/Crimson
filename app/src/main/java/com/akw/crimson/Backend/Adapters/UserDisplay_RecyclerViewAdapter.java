@@ -63,7 +63,7 @@ public class UserDisplay_RecyclerViewAdapter extends ListAdapter<User, UserDispl
         User user = getItem(position);
         Log.i(" Element :::::", position+"_");
 //        holder.iv_profile.setImageResource(R.drawable.ic_baseline_download_24);
-        holder.iv_profile.setImageBitmap(UsefulFunctions.getCircularBitmap(UsefulFunctions.decodeImage(user.getPic())));
+        holder.iv_profile.setImageBitmap(UsefulFunctions.getCircularBitmap(UsefulFunctions.decodeImage(user.getPublicPic())));
         holder.iv_close.setOnClickListener(view -> {
             if (listener != null && position != -1) listener.OnItemClick(getItem(position), false);
         });

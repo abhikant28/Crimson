@@ -211,8 +211,8 @@
                     android:id="@+id/attachment_popup_cl_attachmentOptions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:background="#303030">
+                    android:background="#303030"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:id="@+id/attachment_popup_ll_document"
@@ -228,17 +228,17 @@
                             android:id="@+id/Message_media_popup_cv_doc"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
+                            android:backgroundTint="#D84315"
                             app:cardCornerRadius="200sp"
-                            android:backgroundTint="@color/black"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:id="@+id/chatAttachment_popup_iv_doc"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:cropToPadding="true"
+                                android:layout_width="35sp"
+                                android:layout_height="35sp"
+                                android:layout_gravity="center"
                                 android:src="@drawable/ic_twotone_insert_drive_file_24"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -266,20 +266,16 @@
                             android:id="@+id/chatAttachment_popup_cv_gal"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
-                            app:cardCornerRadius="600sp"
-                            android:backgroundTint="@color/black" app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
+                            android:layout_gravity="center"
+                            android:backgroundTint="#AD1457"
+                            app:cardCornerRadius="600sp">
 
                             <ImageView
                                 android:id="@+id/chatAttachment_popup_iv_gal"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:cropToPadding="true"
-                                android:src="@drawable/ic_twotone_perm_media_24"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                android:layout_width="35sp"
+                                android:layout_height="35sp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_twotone_perm_media_24" />
                         </androidx.cardview.widget.CardView>
 
                         <TextView
@@ -302,8 +298,8 @@
                             android:id="@+id/chatAttachment_popup_cv_cam"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
+                            android:backgroundTint="#C62828"
                             app:cardCornerRadius="600sp"
-                            android:backgroundTint="@color/black"
 
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -311,9 +307,9 @@
 
                             <ImageView
                                 android:id="@+id/chatAttachment_popup_iv_cam"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:cropToPadding="true"
+                                android:layout_width="35sp"
+                                android:layout_height="35sp"
+                                android:layout_gravity="center"
                                 android:src="@drawable/ic_baseline_camera_alt_24"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -327,7 +323,7 @@
                             android:textColor="@color/white"
                             android:textSize="10sp" />
                     </LinearLayout>
-                    
+
                     <LinearLayout
                         android:id="@+id/attachment_popup_ll_location"
                         android:layout_width="wrap_content"
@@ -343,18 +339,17 @@
                             android:id="@+id/chatAttachment_popup_cv_"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
+                            android:backgroundTint="#2E7D32"
                             app:cardCornerRadius="600sp"
-                            android:backgroundTint="@color/black"
-
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:id="@+id/chatAttachment_popup_iv_location"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:cropToPadding="true"
+                                android:layout_width="35sp"
+                                android:layout_height="35sp"
+                                android:layout_gravity="center"
                                 android:src="@drawable/ic_baseline_location_on_24"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -382,18 +377,17 @@
                             android:id="@+id/chatAttachment_popup_cv_audio"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
+                            android:backgroundTint="#FF8F00"
                             app:cardCornerRadius="600sp"
-                            android:backgroundTint="@color/black"
-
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:id="@+id/chatAttachment_popup_iv_audio"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:cropToPadding="true"
+                                android:layout_width="35sp"
+                                android:layout_height="35sp"
+                                android:layout_gravity="center"
                                 android:src="@drawable/ic_baseline_library_music_24"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -424,18 +418,17 @@
                             android:id="@+id/chatAttachment_popup_cv_contact"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
+                            android:backgroundTint="#1565C0"
                             app:cardCornerRadius="600sp"
-                            android:backgroundTint="@color/black"
-
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:id="@+id/chatAttachment_popup_iv_contact"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:cropToPadding="true"
+                                android:layout_width="35sp"
+                                android:layout_height="35sp"
+                                android:layout_gravity="center"
                                 android:src="@drawable/ic_baseline_person_24"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -466,18 +459,17 @@
                             android:id="@+id/chatAttachment_popup_cv_poll"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
+                            android:backgroundTint="#00838F"
                             app:cardCornerRadius="600sp"
-                            android:backgroundTint="@color/black"
-
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:id="@+id/chatAttachment_popup_iv_poll"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:cropToPadding="true"
+                                android:layout_width="35sp"
+                                android:layout_height="35sp"
+                                android:layout_gravity="center"
                                 android:src="@drawable/ic_twotone_poll_24"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -505,18 +497,17 @@
                             android:id="@+id/chatAttachment_popup_cv_canvas"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
-                            app:cardCornerRadius="600sp"
                             android:backgroundTint="@color/black"
-
+                            app:cardCornerRadius="600sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
                                 android:id="@+id/chatAttachment_popup_iv_canvas"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:cropToPadding="true"
+                                android:layout_width="35sp"
+                                android:layout_height="35sp"
+                                android:layout_gravity="center"
                                 android:src="@drawable/ic_baseline_edit_24"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -546,8 +537,8 @@
                             android:id="@+id/chatAttachment_popup_cv_payment"
                             android:layout_width="45sp"
                             android:layout_height="45sp"
-                            app:cardCornerRadius="600sp"
                             android:backgroundTint="@color/black"
+                            app:cardCornerRadius="600sp"
 
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"

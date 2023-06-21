@@ -18,9 +18,9 @@ public class TheViewModel extends AndroidViewModel {
     private Cursor chatMessages;
     private Cursor chatList;
     private final LiveData<List<User>> getChatList;
-    private final LiveData<List<User>> getConnectedUsers;
     private LiveData<List<Message>> getLiveMessagesList;
     private final LiveData<List<Message>> pendingMessagesList;
+    private final LiveData<List<Message>> infoMessagesList;
     private final LiveData<List<Message>> receivedMessagesList;
     private final LiveData<List<User>> getAllUsers;
 
@@ -29,14 +29,17 @@ public class TheViewModel extends AndroidViewModel {
         repository = new TheRepository(application);
 //        chatList=repository.getChatList();
         getChatList = repository.getGetChatList();
-        getConnectedUsers = repository.getConnectedUsers();
         getAllUsers = repository.getGetAllUsersList();
         pendingMessagesList = repository.getPendingMessagesList();
+        infoMessagesList = repository.getInfoMessagesList();
         receivedMessagesList = repository.getReceivedMessagesList();
     }
 
     public void insertMessage(Message msg) {
         repository.insertMessage(msg);
+    }
+    public void deleteMessage(Message msg) {
+        repository.deleteMessage(msg);
     }
 
     public void updateMessage(Message msg) {
@@ -45,6 +48,13 @@ public class TheViewModel extends AndroidViewModel {
 
     public void updateAllMessage(List<Message> msg) {
         repository.updateAllMessage(msg);
+    }
+
+    public void insertAllMessage(List<Message> msg) {
+        repository.insertAllMessage(msg);
+    }
+    public void deleteAllMessage(List<Message> msg) {
+        repository.deleteAllMessage(msg);
     }
 
     public Cursor getChatMessages(String user_ID) {
@@ -66,6 +76,9 @@ public class TheViewModel extends AndroidViewModel {
     public LiveData<List<Message>> getLiveMessagesList(String userId) {
         getLiveMessagesList = repository.getLiveMessages(userId);
         return getLiveMessagesList;
+    }
+    public LiveData<List<Message>> getReceivedInfoMessagesList() {
+        return pendingMessagesList;
     }
 
     public LiveData<List<Message>> getUploadPendingMessagesList() {
@@ -92,7 +105,7 @@ public class TheViewModel extends AndroidViewModel {
     public LiveData<List<User>> getChatListUsers() {
         return repository.getGetChatList();
     }
-    public LiveData<List<User>> getConnectedUsers() {
+    public List<User> getConnectedUsers() {
         return repository.getConnectedUsers();
     }
 

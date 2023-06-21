@@ -184,8 +184,8 @@ public class CreateGroup extends BaseActivity {
                     group.setGroupId(userID);
                     groupUser = new User(userID, name, encodedImage, group.getGroupId(), Constants.User.USER_TYPE_GROUP, group);
                     if (hasPic) {
-                        groupUser.setPic(imageUri.getPath());
-                        groupUser.setPic(encodedImage);
+                        groupUser.setPublicPic(imageUri.getPath());
+                        groupUser.setPublicPic(encodedImage);
                     }
                     documentRef.update(Constants.KEY_FIRESTORE_GROUP_ID, group.getGroupId());
                     documentRef.update(Constants.KEY_FIRESTORE_GROUP_ADMINS, group.getAdmins());
@@ -193,8 +193,8 @@ public class CreateGroup extends BaseActivity {
                     documentRef.update(Constants.KEY_FIRESTORE_GROUP_CREATED_BY, group.getCreatedBy());
                     documentRef.update(Constants.KEY_FIRESTORE_GROUP_CREATED_TIME, group.getCreatedTime());
                     documentRef.update(Constants.KEY_FIRESTORE_GROUP_USERS, group.getUsers().toString());
-                    Message msg = new Message(SharedPrefManager.getLocalUserID(), group.getGroupId(), "Added you", SharedPrefManager.getLocalUserID(), true
-                            , Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD, Constants.Message.BOX_TYPE_NEW_GROUP);
+                    Message msg = new Message(SharedPrefManager.getLocalUserID(), group.getGroupId(), "Added you", false, Communicator.thisUserID
+                            , true, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD, Constants.Message.MESSAGE_TYPE_INFO, Constants.Box.BOX_TYPE_NEW_GROUP, null,null);
                     Communicator.localDB.insertUser(groupUser);
                     Communicator.localDB.insertMessage(msg);
                     finish();

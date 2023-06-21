@@ -1,6 +1,5 @@
 package com.akw.crimson.Backend.AppObjects;
 
-import com.akw.crimson.Backend.Constants;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -8,8 +7,8 @@ import java.lang.reflect.Type;
 
 public class Box {
 
-    private int type = 0;
-    private String data,appendix;
+    private int type;
+    private String data,userID,appendix;
 
     public Box(int type, String data) {
         this.type = type;
@@ -52,5 +51,13 @@ public class Box {
 
     public void setAppendix(String appendix) {
         this.appendix = appendix;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

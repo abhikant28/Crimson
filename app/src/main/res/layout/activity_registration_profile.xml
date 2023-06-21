@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".Registration.Registration_Profile">
+    tools:context=".Registration.Registration_PublicProfile">
 
     <TextView
         android:id="@+id/Registration_Email_TextView_Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:text="Registration "
+        android:text="Public Profile"
         android:textColor="@color/white"
         android:textSize="24dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -86,7 +86,7 @@
         android:layout_marginTop="44dp"
         android:background="@drawable/round_box_chat_message"
         android:backgroundTint="#FFFFFF"
-        android:hint="Email                                       "
+        android:hint="Email (Optional)                        "
         android:paddingHorizontal="10dp"
         android:paddingVertical="10dp"
         android:textColor="#C31034"

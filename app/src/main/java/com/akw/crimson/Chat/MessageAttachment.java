@@ -292,7 +292,7 @@ public class MessageAttachment extends AppCompatActivity {
                 }
                 if(user.getType()==Constants.User.USER_TYPE_GROUP){
                     msg.setGroupUserID(SharedPrefManager.getLocalUserID());
-                    msg.setMsgType(Constants.Message.BOX_TYPE_GROUP_MESSAGE);
+                    msg.setMsgType(Constants.Box.BOX_TYPE_GROUP_MESSAGE);
                 }
                 user.setLast_msg(null);
                 user.setLast_msg_type(msg.getMediaType());

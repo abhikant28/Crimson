@@ -2,11 +2,9 @@ package com.akw.crimson.Backend.Communications;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.akw.crimson.Backend.AppObjects.Message;
 import com.akw.crimson.Backend.AppObjects.User;
@@ -14,8 +12,6 @@ import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.Database.TheViewModel;
 import com.akw.crimson.Backend.UsefulFunctions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
@@ -45,16 +41,13 @@ public class DownloadFileService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         db = Communicator.localDB;
         new SharedPrefManager(this);
+        storageRef = FirebaseStorage.getInstance().getReference();
+
         String id = intent.getStringExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID);
         Message msg = db.getMessage(id);
 
-        Communicator.downloading.add(msg.getMsg_ID());
+        Communicator.mediaDownloading.add(msg.getMsg_ID());
 
-        FirebaseStorage fireStore = FirebaseStorage.getInstance();
-        storageRef = fireStore.getReference();
-
-        ResultReceiver receiver = intent.getParcelableExtra(EXTRA_RECEIVER);
-        Bundle resultData = new Bundle();
 
         User user = db.getUser(msg.getUser_id());
         Log.i("DownloadFileService.DOWNLOAD::::", "Started");
@@ -82,21 +75,24 @@ public class DownloadFileService extends IntentService {
         }
         File outFile;
         if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT) {
-            String docName = msg.getMediaID().substring(Math.min(msg.getMediaID().length() - 1, msg.getMediaID().indexOf('_') + 1));
-            outFile = UsefulFunctions.FileUtil.makeOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(), docName);
+            outFile = UsefulFunctions.FileUtil.makeOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(),msg.getMediaID());
             assert outFile != null;
             user.addDoc(outFile.getName());
-        } else {
+        } else if(msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE){
+            outFile = UsefulFunctions.FileUtil.makeOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType(),user.getPhoneNumber());
+        }else {
             outFile = UsefulFunctions.FileUtil.makeOutputMediaFile(getApplicationContext(), msg.isSelf(), msg.getMediaType());
             Log.i("DownloadFileService.FILENAME:::::::::", outFile.getName());
             user.addMedia(outFile.getName());
         }
 
-        getReference(outFile, folder, user, msg, receiver, resultData);
+        assert outFile != null;
+        getReference(outFile, folder, user, msg);
     }
 
-    public boolean getReference(File outFile, String folder, User user, Message msg, ResultReceiver receiver, Bundle resultData) {
-        String docID = (msg.getGroupUserID()==null?msg.getUser_id():msg.getGroupUserID()) +"_"+ msg.getMediaID().substring(0, msg.getMediaID().lastIndexOf('.'));
+
+    public boolean getReference(File outFile, String folder, User user, Message msg) {
+        String docID = msg.getMediaUrl();
         String currentUserID = SharedPrefManager.getLocalUserID();
         mediaDocRef = fireDB.collection(Constants.KEY_FCM_ATTACHMENTS_REFERENCE).document(docID);
         Log.i("DownloadFileService.getReference:::::::::", outFile.getName());
@@ -109,7 +105,7 @@ public class DownloadFileService extends IntentService {
                         // Check if 'id' field exists
                         if (documentSnapshot.contains("id")) {
                             String idValue = documentSnapshot.getString("id");
-                            beginDownload(idValue, outFile, folder, user, msg, receiver, resultData);
+                            beginDownload(idValue, outFile, folder, user, msg);
                             Log.i("Document ID:", idValue);
                         }
 
@@ -140,7 +136,7 @@ public class DownloadFileService extends IntentService {
     }
 
 
-    public void beginDownload(String mediaID, File outFile, String folder, User user, Message msg, ResultReceiver receiver, Bundle resultData) {
+    public void beginDownload(String mediaID, File outFile, String folder, User user, Message msg) {
         final StorageReference fileRef = storageRef.child(folder + "/" + mediaID);
         fileRef.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
             Log.i("DownloadFileService.DOWNLOAD::::", "Success");
@@ -151,31 +147,31 @@ public class DownloadFileService extends IntentService {
                 e.printStackTrace();
             }
             if (name != null) {
-                msg.setMediaID(name);
-                db.updateMessage(msg);
-                user.incMediaSize(outFile.length());
-                db.updateUser(user);
-                resultData.putInt("result", RESULT_SUCCESS);
-                receiver.send(RESULT_SUCCESS, resultData);
+                if(user.getType()==Constants.User.USER_TYPE_USER){
+                    msg.setMediaID(name);
+                    msg.setMediaUrl(null);
+                    db.updateMessage(msg);
+                    user.incMediaSize(outFile.length());
+                    db.updateUser(user);
+                }else if(user.getType()==Constants.User.USER_TYPE_GROUP){
+                    user.setProfilePic(name);
+                    db.deleteMessage(msg);
+                }
             } else {
-                resultData.putInt("result", RESULT_FAIL);
-                receiver.send(RESULT_FAIL, resultData);
                 outFile.delete();
             }
-            checkForLast(fileRef);
-            Communicator.downloading.remove(msg.getMsg_ID());
-            stopSelf();
+            checkForLast(fileRef,msg.getMsg_ID());
+
         }).addOnFailureListener(e -> {
             Log.i("DownloadFileService.DOWNLOAD FAILED::::", msg.getUser_id() + "_" + msg.getMediaID() + "_FAILED_" + e);
             // Send the result
-            resultData.putInt("result", RESULT_FAIL);
-            receiver.send(RESULT_FAIL, resultData);
-            Communicator.downloading.remove(msg.getMsg_ID());
+
+            Communicator.mediaDownloading.remove(msg.getMsg_ID());
             stopSelf();
         });
     }
 
-    private void checkForLast(StorageReference fileRef) {
+    private void checkForLast(StorageReference fileRef, String msg_id) {
         Log.i("DownloadFileService.checkForLast:::::::::", "CHECKING");
 
         mediaDocRef.get()
@@ -185,24 +181,33 @@ public class DownloadFileService extends IntentService {
                     if (documentSnapshot.getData() != null && documentSnapshot.getData().size() == 1) {
                         // Delete the whole document
                         mediaDocRef.delete();
-                        fileRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Log.i("DownloadFileService.checkForLast:::::::::", "Doc DELETED");
+                        fileRef.delete().addOnSuccessListener(unused -> {
+                            Log.i("DownloadFileService.checkForLast:::::::::", "Doc DELETED");
+                            Communicator.mediaDownloading.remove(msg_id);
 
+                            //Send Broadcast receiver Result
+                            Intent resultIntent = new Intent(msg_id);
+                            resultIntent.putExtra(Constants.Intent.KEY_INTENT_RESULT_CODE, RESULT_SUCCESS);
+                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
+                            stopSelf();
 
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.i("DownloadFileService.checkForLast:::::::::", "Doc NOT DELETED");
+                        }).addOnFailureListener(e -> {
+                            Log.i("DownloadFileService.checkForLast:::::::::", "Doc NOT DELETED");
+                            Intent resultIntent = new Intent(msg_id);
+                            resultIntent.putExtra(Constants.Intent.KEY_INTENT_RESULT_CODE, RESULT_FAIL);
+                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
 
-                            }
                         });
                     }
+                    Intent resultIntent = new Intent(msg_id);
+                    resultIntent.putExtra(Constants.Intent.KEY_INTENT_RESULT_CODE, RESULT_SUCCESS);
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
+
                 })
                 .addOnFailureListener(e -> {
                     // Failed to retrieve the document
+                    Communicator.mediaDownloading.remove(msg_id);
+                    stopSelf();
                 });
 
     }

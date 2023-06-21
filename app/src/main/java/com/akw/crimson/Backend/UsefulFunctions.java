@@ -38,15 +38,58 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
 public class UsefulFunctions {
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static String formatDate(String timeStamp) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd, HH:mm:ss");
+        LocalDate currentDate = LocalDate.now();
+        LocalDate inputDate = LocalDate.parse(timeStamp, formatter);
+
+        if (inputDate.isEqual(currentDate)) {
+            return "Today";
+        } else if (inputDate.isEqual(currentDate.minusDays(1))) {
+            return "Yesterday";
+        } else if (inputDate.isAfter(currentDate.minusDays(7))) {
+            return inputDate.getDayOfWeek().toString();
+        } else if (inputDate.getYear() == currentDate.getYear()) {
+            return inputDate.format(DateTimeFormatter.ofPattern("dd/MMMM"));
+        } else {
+            return inputDate.format(formatter);
+        }
+    }
+
+
     public static String getCurrentMmTimeStamp(){
         return String.valueOf(System.currentTimeMillis());
     }
+
+    public static String getGreeting() {
+        LocalTime t = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            t = LocalTime.now();
+        }
+        int hour = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            hour = t.getHour();
+        }
+
+        if (hour >= 6 && hour < 12) {
+            return "Good Morning";
+        } else if (hour >= 12 && hour < 18) {
+            return "Good Afternoon";
+        } else {
+            return "Good Evening";
+        }
+    }
+
 
     public static String getCurrentTimestamp() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm:ss", Locale.getDefault());
@@ -294,15 +337,24 @@ public class UsefulFunctions {
                     init = "VID";
                     format = ".mp4";
                     break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE:
+                    folder = "";
+                    init = docName;
+                    format = ".jpg";
+                    break;
             }
             String fol = sent ? (type == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE || type == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO ? "" : "/Sent") : "";
-            File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
-                    + "/Android/media" +
-                    "" +
-                    "/"
-                    + context.getApplicationContext().getPackageName()
-                    + "/Media/Crimson " + folder + fol);
-
+            File mediaStorageDir = null;
+            if (type != Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE) {
+                mediaStorageDir = new File(Environment.getExternalStorageDirectory()
+                        + "/Android/media" +
+                        "" +
+                        "/"
+                        + context.getApplicationContext().getPackageName()
+                        + "/Media/Crimson " + folder + fol);
+            } else {
+                return new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),docName+format);
+            }
             // This location works best if you want the created images to be shared
             // between applications and persist after your app has been uninstalled.
 
@@ -342,6 +394,9 @@ public class UsefulFunctions {
             // using Environment.getExternalStorageState() before doing this.
 
             String folder = "";
+            String subFolder = sent ? "/Sent" : "";
+
+
             switch (type) {
                 case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
                     folder = "Images";
@@ -359,14 +414,20 @@ public class UsefulFunctions {
                 case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO:
                     folder = "Camera";
                     break;
+                case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE:
+
             }
-            String subFolder = sent ? "/Sent" : "";
             String mediaStorageDir = Environment.getExternalStorageDirectory()
                     + "/Android/media" +
                     "" +
                     "/"
                     + context.getApplicationContext().getPackageName()
                     + "/Media/Crimson " + folder + subFolder;
+            if(type==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE){
+                mediaStorageDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "";
+                id="self.jpg";
+            }
+
 
             // This location works best if you want the created images to be shared
             // between applications and persist after your app has been uninstalled.
@@ -465,6 +526,17 @@ public class UsefulFunctions {
     public static Bitmap decodeImage(String input) {
         byte[] decoded = Base64.decode(input, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+    }
+
+    public static Bitmap fileToBitmap(File file) {
+        Bitmap bitmap = null;
+        try {
+            // Decode the file path into a Bitmap
+            bitmap = BitmapFactory.decodeFile(file.getPath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 
     public static String encodeText(String input) {
