@@ -120,6 +120,11 @@ public class User {
         this.group = user.group;
     }
 
+    //For Communicator
+    public User(String userID, String dummy) {
+        this.user_id = userID;
+    }
+
     public int getGroupCount() {
         return getGroups().size();
     }
@@ -216,7 +221,7 @@ public class User {
     }
 
     public String getAbout() {
-        return about+"";
+        return about + "";
     }
 
     public void setAbout(String about) {
@@ -455,24 +460,6 @@ public class User {
         return mediaSize;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(user_id, displayName);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-
-        if (!(obj instanceof User)) {
-            return false;
-        }
-
-        User other = (User) obj;
-        return this.user_id.equals(other.user_id);
-    }
 
     public int getType() {
         return type;
@@ -504,5 +491,24 @@ public class User {
 
     public void setProfilePic(String profilePic) {
         this.profilePic = profilePic;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user_id, displayName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+
+        if (!(obj instanceof User)) {
+            return false;
+        }
+
+        User other = (User) obj;
+        return this.user_id.equals(other.user_id);
     }
 }

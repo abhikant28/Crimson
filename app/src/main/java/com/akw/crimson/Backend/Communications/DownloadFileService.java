@@ -45,6 +45,8 @@ public class DownloadFileService extends IntentService {
 
         String id = intent.getStringExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID);
         Message msg = db.getMessage(id);
+        Log.d("DownloadFileService.:::::::","MsgID::"+id+"____"+(msg==null));
+        Log.d("DownloadFileService.:::::::","MsgID::"+msg.getMsg_ID()+":: MSG URL::"+msg.getMediaUrl());
 
         Communicator.mediaDownloading.add(msg.getMsg_ID());
 
@@ -94,6 +96,11 @@ public class DownloadFileService extends IntentService {
     public boolean getReference(File outFile, String folder, User user, Message msg) {
         String docID = msg.getMediaUrl();
         String currentUserID = SharedPrefManager.getLocalUserID();
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+
+        }
         mediaDocRef = fireDB.collection(Constants.KEY_FCM_ATTACHMENTS_REFERENCE).document(docID);
         Log.i("DownloadFileService.getReference:::::::::", outFile.getName());
 
@@ -147,15 +154,16 @@ public class DownloadFileService extends IntentService {
                 e.printStackTrace();
             }
             if (name != null) {
-                if(user.getType()==Constants.User.USER_TYPE_USER){
+                if(msg.getMsgType()==Constants.Message.MESSAGE_TYPE_TEXT){
                     msg.setMediaID(name);
                     msg.setMediaUrl(null);
                     db.updateMessage(msg);
                     user.incMediaSize(outFile.length());
                     db.updateUser(user);
-                }else if(user.getType()==Constants.User.USER_TYPE_GROUP){
+                }else if(msg.getMsgType()==Constants.Message.MESSAGE_TYPE_INFO && msg.getMediaType()==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE){
                     user.setProfilePic(name);
                     db.deleteMessage(msg);
+                    db.updateUser(user);
                 }
             } else {
                 outFile.delete();

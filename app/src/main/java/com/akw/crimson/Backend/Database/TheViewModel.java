@@ -2,6 +2,7 @@ package com.akw.crimson.Backend.Database;
 
 import android.app.Application;
 import android.database.Cursor;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -39,6 +40,7 @@ public class TheViewModel extends AndroidViewModel {
         repository.insertMessage(msg);
     }
     public void deleteMessage(Message msg) {
+        Log.d("THE VIEW MODEL::::::", "DELETING MESSAGE::");
         repository.deleteMessage(msg);
     }
 
@@ -78,7 +80,7 @@ public class TheViewModel extends AndroidViewModel {
         return getLiveMessagesList;
     }
     public LiveData<List<Message>> getReceivedInfoMessagesList() {
-        return pendingMessagesList;
+        return infoMessagesList;
     }
 
     public LiveData<List<Message>> getUploadPendingMessagesList() {

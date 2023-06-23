@@ -221,14 +221,14 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
     }
 
     private void setDocument(boolean sent, File file, int adapterPosition, CardView messageCvDoc, TextView messageTvDocName, TextView messageTvImageSize, TextView messageTvDocType, ImageView messageIvDocUpload, ProgressBar messagePbDocTransferProgress, ImageView messageIvDocCancel) {
-        Log.i("Adapter.setDocument::::::", "setting Docs");
+//        Log.i("Adapter.setDocument::::::", "setting Docs");
         messageCvDoc.setVisibility(View.VISIBLE);
         messageTvDocName.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")));
         messageTvImageSize.setText(UsefulFunctions.getSizeValue(cursor.getLong(cursor.getColumnIndexOrThrow("mediaSize"))));
         int l = cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).lastIndexOf('.');
         messageTvDocType.setText(cursor.getString(cursor.getColumnIndexOrThrow("mediaID")).substring(l + 1).toUpperCase());
         if (file.exists()) {
-            Log.i("Adapter.setDocument::::::", "Doc Found");
+//            Log.i("Adapter.setDocument::::::", "Doc Found");
             messageCvDoc.setOnClickListener(view -> {
 
                 Uri fileUri = FileProvider.getUriForFile(mContext, "com.akw.crimson.fileprovider", file);

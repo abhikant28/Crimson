@@ -15,6 +15,13 @@ public class Box {
         this.data = data;
     }
 
+    public Box(int type, String data, String userID, String appendix) {
+        this.type = type;
+        this.data = data;
+        this.userID = userID;
+        this.appendix = appendix;
+    }
+
     public Box(String src) {
         Gson gson = new Gson();
         Type type = new TypeToken<Box>() {
@@ -22,7 +29,8 @@ public class Box {
         Box box = gson.fromJson(src, type);
         this.data= box.data;
         this.type=box.type;
-    }
+        this.userID = box.userID;
+        this.appendix = box.appendix;   }
 
     public String asString(){
             Gson gson = new Gson();

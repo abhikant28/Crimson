@@ -51,7 +51,6 @@ public class Communicator extends LifecycleService {
 
     static BroadcastReceiver profileUploadBroadcastReceiver;
     private final LinkedBlockingDeque<String> messageQueue = new LinkedBlockingDeque<>(), uploadInfoMessageQueue = new LinkedBlockingDeque<>();
-    ;
     private final LinkedBlockingDeque<Message> receivedInfoMessageQueue = new LinkedBlockingDeque<>();
 
     private static Communicator instance = null;
@@ -70,7 +69,7 @@ public class Communicator extends LifecycleService {
 
         instance = this;
 
-        Log.i("COMMUNICATOR:::", "STARTED ");
+        Log.i("COMM:::", "STARTED ");
 
         String fcmSenderUserID = null;
 
@@ -82,23 +81,23 @@ public class Communicator extends LifecycleService {
 
         thisUserID = SharedPrefManager.getLocalUserID();
 
-        Log.i("COMMUNICATOR:::", "onStart Started");
+        Log.i("COMM:::", "onStart Started");
         DatabaseReference userData = databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(thisUserID);
 
         if (serviceStarter == Constants.Intent.KEY_INTENT_START_FCM) {
-            Log.i("COMMUNICATOR:::", "Started by FCM");
+            Log.i("COMM:::", "Started by FCM");
             Log.i("USER ID::::", thisUserID);
 
             String finalFcmSenderUserID = fcmSenderUserID;
             userData.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Log.i("COMMUNICATOR:::", "DATA CHANGE DETECTED from" + finalFcmSenderUserID);
+                    Log.i("COMM:::", "DATA CHANGE DETECTED from" + finalFcmSenderUserID);
 
                     DataSnapshot child = snapshot.child(finalFcmSenderUserID);
 
                     if (child.exists()) {
-                        Log.i("COMMUNICATOR:::", "DATA FROM > " + child.getValue());
+                        Log.i("COMM:::", "DATA FROM > " + child.getValue());
                         // Get the key value of the child
                         String key = child.getKey();
                         // Get the value of the child
@@ -126,32 +125,32 @@ public class Communicator extends LifecycleService {
                                 e.printStackTrace();
                             }
                             // Log the element
-                            Log.d("TAG", element);
+//                            Log.d("TAG", element);
                         }
                         child.getRef().removeValue();
                     } else {
-                        Log.i("COMMUNICATOR:::", "DATA FROM > " + finalFcmSenderUserID + " Not Found");
+                        Log.i("COMM:::", "DATA FROM > " + finalFcmSenderUserID + " Not Found");
                     }
                     stopSelf();
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.i("COMMUNICATOR:::", "Cancelled 1");
+                    Log.i("COMM:::", "Cancelled 1");
                 }
             });
         } else {
-            Log.i("COMMUNICATOR:::", "Started in Default Mode");
+            Log.i("COMM:::", "Started in Default Mode");
             userData.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Log.i("COMMUNICATOR:::", "Database Change Detected");
+                    Log.i("COMM:::", "Database Change Detected");
 
                     for (DataSnapshot child : snapshot.getChildren()) {
 
                         // Get the key value of the child
                         String key = child.getKey();
-                        Log.i("COMMUNICATOR:::", "Messages by: " + key);
+                        Log.i("COMM:::", "Messages by: " + key);
 
                         // Get the value of the child
                         String str = child.getValue(String.class);
@@ -159,29 +158,29 @@ public class Communicator extends LifecycleService {
                         try {
                             value = new JSONArray(str);
                             // Iterate over the elements in the array
+                                Log.i("COMM:::", "Box COUNT: " + value.length());
                             for (int i = 0; i < Objects.requireNonNull(value).length(); i++) {
-                                Log.i("COMMUNICATOR:::", "Messages COUNT: " + value.length());
 
                                 // Get the string value of the element
                                 String element = null;
                                 element = value.getString(i);
                                 Box box = new Box(UsefulFunctions.decodeText(element));
-                                Log.i("COMMUNICATOR:::", "Box type: " + box.getType());
+                                Log.i("COMM:::", "168 Box type: " + box.getType());
 
                                 if (box.getType() == Constants.Box.BOX_TYPE_TEXT_MESSAGE) {
 
                                     Message msg = new Message(box.getData());
                                     msg.setStatus(Constants.Message.MESSAGE_STATUS_RECEIVED);
                                     msg.setMsgType(Constants.Message.MESSAGE_TYPE_TEXT);
-                                    Log.i("Communicator.Downloaded.Adding", msg.getMsg_ID());
+                                    Log.i("Comm.Downloaded.Adding", msg.getMsg_ID());
 
                                     if (localDB.getUser(key) == null) {
-                                        Log.i("Communicator.Downloaded.User Unknown", msg.getMsg_ID());
+                                        Log.i("Comm.Downloaded.User Unknown", msg.getMsg_ID());
 
                                         fetchUserDetails(key, msg);
 
                                     } else {
-                                        Log.i("Communicator.Downloaded.UserExists", msg.getMsg_ID());
+                                        Log.i("Comm.Downloaded.UserExists", msg.getMsg_ID());
 
                                         localDB.insertMessage(msg);
                                     }
@@ -197,6 +196,8 @@ public class Communicator extends LifecycleService {
                                     switch (box.getData()) {
                                         case Constants.Box.BOX_TYPE_INFO_PIC_UPDATE + "":
 
+                                            Log.i("Comm.ReceivedFromFirebase:::", "::199 Box Type::BOX_TYPE_INFO_PIC_UPDATE:" + Constants.Box.BOX_TYPE_INFO_PIC_UPDATE);
+
                                             msg = new Message(thisUserID, box.getUserID(), null, true, null
                                                     , false, Constants.Message.MESSAGE_STATUS_RECEIVED, Constants.Message.MESSAGE_TYPE_INFO
                                                     , Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE, null, box.getAppendix());
@@ -205,6 +206,7 @@ public class Communicator extends LifecycleService {
                                             break;
 
                                         case Constants.Box.BOX_TYPE_INFO_PROFILE_UPDATE + "":
+                                            Log.i("Comm.ReceivedFromFirebase:::", "::209 Box Type:BOX_TYPE_INFO_PROFILE_UPDATE::" + Constants.Box.BOX_TYPE_INFO_PROFILE_UPDATE);
 
                                             msg = new Message(thisUserID, box.getUserID(), null, false, null
                                                     , false, Constants.Message.MESSAGE_STATUS_RECEIVED, Constants.Message.MESSAGE_TYPE_INFO
@@ -219,7 +221,7 @@ public class Communicator extends LifecycleService {
                                     }
                                 }
                                 // Log the element
-                                Log.d("TAG", element);
+//                                Log.d("TAG", element);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -230,7 +232,7 @@ public class Communicator extends LifecycleService {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Log.i("COMMUNICATOR:::", "Cancelled 2");
+                    Log.i("COMM:::", "Cancelled 2");
 
                 }
             });
@@ -241,7 +243,7 @@ public class Communicator extends LifecycleService {
 
     @Override
     public void onCreate() {
-        Log.i("COMMUNICATOR:::", "CREATED ");
+        Log.i("COMM:::", "CREATED ");
 
 
         //UPLOADING MESSAGES
@@ -250,45 +252,52 @@ public class Communicator extends LifecycleService {
         localDB.getUploadPendingMessagesList().observe(this, messages -> {
 
             //For concurrency
-            List<Message> newMessages= new ArrayList<>(messages);
+            List<Message> newMessages = new ArrayList<>(messages);
             //Filter Messages
             if (prevMsgList == null) {
+
                 prevMsgList = newMessages;
                 addMsgToUploadQueue(newMessages);
                 return;
             }
 
             for (Message m : messages) {
+
                 if (prevMsgList.contains(m))
                     newMessages.remove(m);
+
             }
             prevMsgList = newMessages;
-            addMsgToUploadQueue(newMessages);
 
+            addMsgToUploadQueue(newMessages);
 
         });
 
         localDB.getReceivedInfoMessagesList().observe(this, messages -> {
 
+            if(messages.size()==0)
+                return;
             //Filter New Messages
-            Log.i("Communicator.getReceivedInfoMessagesList:::", "274 INFO MESSAGE FOUND:::"+messages);
+            Log.i("Comm.getReceivedInfoMessagesList:::", "279 INFO MESSAGE FOUND:::" + messages);
 
-            List<Message> newInfoMessages=new ArrayList<>(messages);
+            List<Message> newInfoMessages = new ArrayList<>(messages);
             if (prevInfoMsgList == null) {
                 prevInfoMsgList = newInfoMessages;
                 addMsgToReceivedInfoQueue(newInfoMessages);
                 return;
             }
+            Log.i("Comm.getReceivedInfoMessagesList:::", "285 INFO MESSAGE FOUND:::" + messages);
 
             for (Message m : messages) {
                 if (prevInfoMsgList.contains(m))
                     newInfoMessages.remove(m);
             }
+            Log.i("Comm.getReceivedInfoMessagesList:::", "291 INFO MESSAGE FOUND:::" + messages);
             prevInfoMsgList = newInfoMessages;
             addMsgToReceivedInfoQueue(newInfoMessages);
         });
 //        localDB.getReceivedMessagesList().observe(this, messages -> {
-//            Log.i("COMMUNICATOR:::", "New Messages Found - " + messages.size());
+//            Log.i("COMM:::", "New Messages Found - " + messages.size());
 //            List<Message> msgs = localDB.getReceivedMessagesList().getValue();
 //            if (msgs != null) msgs.retainAll(messages);
 //            HashMap<String, HashSet<Message>> map = makeUsernameMap(localDB, msgs);
@@ -301,21 +310,23 @@ public class Communicator extends LifecycleService {
     private void addMsgToReceivedInfoQueue(List<Message> messages) {
 
         receivedInfoMessageQueue.addAll(messages);
-        Log.i("Communicator.getReceivedInfoMessagesList:::", "304 ADDING INFO MESSAGE FOUND");
+        Log.i("Comm.getReceivedInfoMessagesList:::", "308 ADDING INFO MESSAGE FOUND::" + messages.size());
 
         if (!receivedInfoProcessing) {
             Runnable myRunnable = () -> {
-                Log.i("Communicator.InfoMessageThread:::", "INFO ID QUEUE::::" + receivedInfoMessageQueue);
+
+                Log.i("Comm.InfoMessageThread:::", "314 INFO ID QUEUE::::" + receivedInfoMessageQueue);
 
                 receivedInfoProcessing = true;
                 Message msg;
 
                 while (!receivedInfoMessageQueue.isEmpty()) {
                     msg = receivedInfoMessageQueue.pop();
+                    Log.i("Comm.addMsgToInfoQueue:::", "323 while. ::::" + msg.getMediaType());
 
-                    if (msg.getMediaType() == Constants.Message.MESSAGE_TYPE_INFO_INTERNAL_UPDATE_PROFILE_PICTURE) {
+                    if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE) {
                         downloadProfilePic(this, msg);
-                        Log.i("Communicator.addMsgToReceivedInfoQueue.:::::::::", "UPDATE PROFILE INFO FOUND");
+                        Log.i("Comm.addMsgToReceivedInfoQueue.:::::::::", "325 UPDATE PROFILE INFO FOUND");
 
                     }
                 }
@@ -334,9 +345,12 @@ public class Communicator extends LifecycleService {
         boolean msgFound = false;
         ArrayList<Message> list = new ArrayList<>();
         for (Message m : messages) {
-//            Log.i("Communicator.addMsgToQueue:::", "MSG USER ID::::" + m.getUser_id());
+//            Log.i("Comm.addMsgToQueue:::", "MSG USER ID::::" + m.getUser_id());
             if (m.getMsgType() != Constants.Message.MESSAGE_TYPE_INFO) {
                 msgFound = true;
+            } else {
+                Log.i("Comm.addMsgToQueue:::", "348 ::INFO MESSAGE::" + m.getUser_id());
+
             }
             if (userMsgMap.containsKey(m.getUser_id())) {
 
@@ -350,12 +364,12 @@ public class Communicator extends LifecycleService {
                 if (m.getGroupUserID() != null) {
                     messageQueue.offerFirst(m.getUser_id());
                 } else {
-//                    Log.i("Communicator.addMessageToQueue:::::", "MsgType::"+m.getMsgType()+"_"+ Constants.Message.MESSAGE_TYPE_INFO);
+//                    Log.i("Comm.addMessageToQueue:::::", "MsgType::"+m.getMsgType()+"_"+ Constants.Message.MESSAGE_TYPE_INFO);
 
                     messageQueue.add(m.getUser_id());
                 }
             }
-//            Log.i("Communicator.addMsgToQueue:::", "352USER ID Queue::::" + messageQueue);
+//            Log.i("Comm.addMsgToQueue:::", "352USER ID Queue::::" + messageQueue);
 
             if (m.getGroupUserID() != null) {
                 ArrayList<String> grpUser = localDB.getUser(m.getUser_id()).group.getUsers();
@@ -382,18 +396,26 @@ public class Communicator extends LifecycleService {
 
     private void startMessageUploadThread() {
         Runnable myRunnable = () -> {
-            Log.i("Communicator.startUploadThread:::", "378 ID QUEUE::::" + messageQueue);
+            Log.i("Comm.startUploadThread:::", "395 ID QUEUE::::" + messageQueue);
 
             uploadingMessages = true;
             String userID = "";
+
             //For User Messages
             while (!messageQueue.isEmpty()) {
-                userID = messageQueue.pop();
-                ArrayList<Message> messageList = userMsgMap.get(userID);
-                userMsgMap.remove(userID);
-                Log.i("Communicator.startUploadThread:::", "387 USER ID::::" + userID);
-                User user = localDB.getUser(userID);
-                putUserMessage(user, messageList);
+                while (!messageQueue.isEmpty()) {
+
+                    userID = messageQueue.pop();
+                    ArrayList<Message> messageList = userMsgMap.get(userID);
+                    userMsgMap.remove(userID);
+                    Log.i("Comm.startUploadThread:::", "407 USER ID::::" + userID);
+
+                    User user = localDB.getUser(userID);
+                    putUserMessage(user, messageList);
+                }
+
+                if (!userMsgMap.isEmpty())
+                    messageQueue.addAll(userMsgMap.keySet());
             }
 
             uploadingMessages = false;
@@ -403,68 +425,87 @@ public class Communicator extends LifecycleService {
         thread.start();
     }
 
-    private void putUserMessage(User user, ArrayList<Message> userMessages)  {
+    private void putUserMessage(User user, ArrayList<Message> userMessages) {
         if (user.getType() == Constants.User.USER_TYPE_USER) {
+
             databaseReference.child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_MSG).child(user.getUser_id()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    Log.i("COMMUNICATOR:::", "Pending Messages: Adding message");
+                    Log.i("COMM:::", "431 Pending Messages: Adding message");
                     // Check if the user ID node exists
                     JSONArray array = null;
+
                     if (dataSnapshot.hasChild(thisUserID)) {
-                        Log.i("COMMUNICATOR:::", "Pending Messages: Previous Messages Exist");
+                        Log.i("COMM:::", "436 Pending Messages: Previous Messages Exist");
                         // Get the array from the snapshot
                         try {
+
                             array = new JSONArray(dataSnapshot.child(thisUserID).getValue(String.class));
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     } else {
+
                         array = new JSONArray();
+
                     }
 
                     // Add the new values to the array
                     for (Message msg : userMessages) {
+
                         if (msg.getMsgType() == Constants.Message.MESSAGE_TYPE_TEXT) {
+
                             if (msg.getGroupUserID() == null) {
+
                                 Box box = new Box(Constants.Box.BOX_TYPE_TEXT_MESSAGE, msg.asString(thisUserID));
                                 array.put(UsefulFunctions.encodeText(box.asString()));
+
                             } else {
+
                                 Box box = new Box(Constants.Box.BOX_TYPE_GROUP_MESSAGE, msg.getMsg_ID());
                                 array.put(UsefulFunctions.encodeText(box.asString()));
 
-                                Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
+                                Log.i("COMM:::", "466 Pending Messages: Add Message to Array");
                             }
 
                         } else if (msg.getMsgType() == Constants.Message.MESSAGE_TYPE_INFO) {
-                            if (msg.getMediaType() == Constants.Message.MESSAGE_TYPE_INFO_INTERNAL_UPDATE_PROFILE_PICTURE) {
+                            if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE) {
+
                                 Box box = new Box(Constants.Box.BOX_TYPE_INFO_MESSAGE, Constants.Box.BOX_TYPE_INFO_PIC_UPDATE + "");
-                                box.setAppendix(msg.getMediaUrl());
                                 box.setUserID(thisUserID);
+                                box.setAppendix(msg.getMediaUrl());
+
                                 array.put(UsefulFunctions.encodeText(box.asString()));
                             } else if (msg.getMediaType() == Constants.Box.BOX_TYPE_NEW_GROUP) {
+
                                 Box newBox = new Box(Constants.Box.BOX_TYPE_INFO_MESSAGE, Constants.Box.BOX_TYPE_NEW_GROUP + "");
                                 newBox.setAppendix(msg.getUser_id());
                                 array.put(UsefulFunctions.encodeText(newBox.asString()));
+
                             }
+                            Log.i("Comm.putMessage:::", "484 INFO MSG Deleted::::" );
+
                             localDB.deleteMessage(msg);
                         }
                     }
                     // Update the array in the database
                     dataSnapshot.child(thisUserID).getRef().setValue(array.toString()).addOnSuccessListener(unused -> {
                         for (Message msg : userMessages) {
+
                             msg.setStatus(Constants.Message.MESSAGE_STATUS_SENT);
                         }
+
                         localDB.updateAllMessage(userMessages);
 
                     });
-                    Log.i("COMMUNICATOR:::", "Pending Messages: Message Sent");
+                    Log.i("COMM:::", "499 Pending Messages: Message Sent");
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.i("COMMUNICATOR:::", "Cancelled 3: " + databaseError);
+                    Log.i("COMM:::", "504 Cancelled 3: " + databaseError);
 
                 }
             });
@@ -472,21 +513,28 @@ public class Communicator extends LifecycleService {
             DatabaseReference groupDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.FIREBASE_REALTIME_DATABASE_CHILD_GRP_MSG);
 
             for (Message msg : userMessages) {
-                Log.i("COMMUNICATOR.UPLOADING MESSAGES:::", "Putting Messages ::::: For group");
+                Log.i("Comm.UPLOADING MESSAGES:::", "512 Putting Messages ::::: For group");
                 if (msg.getMsgType() == Constants.Box.BOX_TYPE_NEW_GROUP) continue;
+
                 DatabaseReference msgRef = groupDatabaseReference.child(msg.getMsg_ID());
                 Box box = new Box(Constants.Message.MESSAGE_TYPE_TEXT, msg.asString(thisUserID));
+
                 msgRef.child(Constants.KEY_FIRESTORE_GROUP_MESSAGE_DATA).setValue(UsefulFunctions.encodeText(box.asString()));
+
                 ArrayList<String> groupUsersList = user.group.getUsers();
                 groupUsersList.remove(thisUserID);
 
                 for (String u : groupUsersList) {
                     msgRef.child(u).setValue("");
                 }
+
                 msgRef.child(groupUsersList.get(groupUsersList.size() - 1)).setValue("").addOnSuccessListener(unused -> {
                     for (Message m : userMessages) {
+
                         m.setStatus(Constants.Message.MESSAGE_STATUS_SENT);
+
                     }
+
                     localDB.updateAllMessage(userMessages);
                 });
             }
@@ -495,7 +543,7 @@ public class Communicator extends LifecycleService {
 
     private void getGroupMessage(String msgID) {
         //group_messages > groupID > msgID > data > delete if single
-        Log.i("COMMUNICATOR.getGroupMessage:::", "GETTING GROUP MESSAGE: " + msgID);
+        Log.i("Comm.getGroupMessage:::", "542 GETTING GROUP MESSAGE: " + msgID);
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference(Constants.FIREBASE_REALTIME_DATABASE_CHILD_GRP_MSG).child(msgID);
 
@@ -505,7 +553,7 @@ public class Communicator extends LifecycleService {
                 String data = dataSnapshot.child("data").getValue(String.class);
                 // do something with data
                 if (data != null) {
-                    Log.i("COMMUNICATOR.getGroupMessage:::", "Data Found ");
+                    Log.i("Comm.getGroupMessage:::", "552 Data Found ");
                     Box box = new Box(UsefulFunctions.decodeText(data));
                     Message msg = new Message(box.getData());
                     msg.setStatus(Constants.Message.MESSAGE_STATUS_RECEIVED);
@@ -513,10 +561,10 @@ public class Communicator extends LifecycleService {
                 }
                 if (dataSnapshot.hasChild(SharedPrefManager.getLocalUserID())) {
                     ref.child(SharedPrefManager.getLocalUserID()).removeValue().addOnCompleteListener(unused -> {
-                        Log.i("COMMUNICATOR.getGroupMessage:::", "UserID Deleted");
-                        Log.i("COMMUNICATOR.getGroupMessage:::", "Child KEYS:: " + ref.get().getResult().getKey());
+                        Log.i("Comm.getGroupMessage:::", "560 UserID Deleted");
+                        Log.i("Comm.getGroupMessage:::", "561 Child KEYS:: " + ref.get().getResult().getKey());
                         if (dataSnapshot.getChildrenCount() == 1) {
-                            Log.i("COMMUNICATOR.getGroupMessage:::", "Message Deleted");
+                            Log.i("Comm.getGroupMessage:::", "563 Message Deleted");
                             ref.removeValue();
                         }
                     });
@@ -533,7 +581,7 @@ public class Communicator extends LifecycleService {
     }
 
     private void fetchGroupDetails(String grpID) {
-        Log.i("COMMUNICATOR.fetchGroupDetails:::", "Fetching group: " + grpID);
+        Log.i("Comm.fetchGroupDetails:::", "580 Fetching group: " + grpID);
         Task<DocumentSnapshot> found = firestore.collection(Constants.KEY_FIRESTORE_GROUPS).document(grpID).get();
         found.addOnSuccessListener(doc -> {
             String users = doc.getString(Constants.KEY_FIRESTORE_GROUP_USERS);
@@ -562,7 +610,7 @@ public class Communicator extends LifecycleService {
     }
 
     private void fetchUserDetails(String user_id, Message msg) {
-        Log.i("COMMUNICATOR:::", "Fetching UserDetails");
+        Log.i("COMM:::", "609 Fetching UserDetails");
         Log.i("FETCH USER::::", user_id);
 
         Task<DocumentSnapshot> found = firestore.collection(Constants.KEY_FIRESTORE_USERS).document(user_id).get();
@@ -579,7 +627,7 @@ public class Communicator extends LifecycleService {
 
     //Notifications
 //    private HashMap<String, HashSet<Message>> makeUsernameMap(TheViewModel localDB, List<Message> messages) {
-//        Log.i("COMMUNICATOR:::", "New Messages Found: Making Name List");
+//        Log.i("COMM:::", "New Messages Found: Making Name List");
 //
 //        HashMap<String, HashMap<String, HashSet<Message>>> m = makeUserIdMap(messages);
 //        HashMap<String, HashSet<Message>> map = m.get(USER_MAP);
@@ -593,10 +641,10 @@ public class Communicator extends LifecycleService {
 //    }
 
 //    private void notifyUser(HashMap<String, HashSet<Message>> map) {
-//        Log.i("COMMUNICATOR:::", "New Messages Found: Making Notifying User");
+//        Log.i("COMM:::", "New Messages Found: Making Notifying User");
 //        String[] keys = map.keySet().toArray(new String[0]);
 //        Intent intent;
-//        Log.i("COMMUNICATOR:::", "New Messages Found: Making Notifying User Count > " + map.size());
+//        Log.i("COMM:::", "New Messages Found: Making Notifying User Count > " + map.size());
 //
 //        intent = new Intent(getApplicationContext(), MainChatList.class);
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
@@ -616,7 +664,7 @@ public class Communicator extends LifecycleService {
 //        int notificationID = new Random().nextInt();
 //
 //        for (String key : keys) {
-//            Log.i("COMMUNICATOR:::", "New Messages Found: Making Notifications");
+//            Log.i("COMM:::", "New Messages Found: Making Notifications");
 //            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
 //            builder.setSmallIcon(R.drawable.ic_launcher_foreground);
 //            ArrayList<Message> messages = new ArrayList<>(map.get(key));
@@ -643,7 +691,7 @@ public class Communicator extends LifecycleService {
 
     public static void updateProfilePic(Context cxt, String uri) {
 
-        Log.i("Communicator.updateProfilePic:::", "UPDATING PROFILE PIC PVT ONLINE");
+        Log.i("Comm.updateProfilePic:::", "690 UPDATING PROFILE PIC PVT ONLINE");
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         Task<DocumentSnapshot> found = firestore.collection(Constants.KEY_FIRESTORE_USERS).document(thisUserID).get();
         found.addOnSuccessListener(docSnap -> {
@@ -661,23 +709,31 @@ public class Communicator extends LifecycleService {
                     if (intent.getExtras().getInt(Constants.Intent.KEY_INTENT_RESULT_CODE, 0) == UploadFileService.RESULT_FAIL)
                         return;
                     // Handle the result received from the called Service
-                    Log.i("Communicator.updateProfilePic.:::::::::", "onReceive.Received");
+                    Log.i("Comm.updateProfilePic.:::::::::", " 708 onReceive.Received");
                     String mediaUrl = intent.getStringExtra(Constants.Intent.KEY_INTENT_URI);
                     // Process the result
                     ArrayList<User> users = (ArrayList<User>) localDB.getConnectedUsers();
                     if (users.size() != 0) {
                         ArrayList<Message> msgList = new ArrayList<>();
-                        for (User u : users)
-                            msgList.add(new Message(thisUserID, u.getUser_id(), null
+                        int i = 0;
+                        for (User u : users) {
+                            if (u.getUser_id().equals(thisUserID)) {
+                                continue;
+                            }
+                            msgList.add(new Message(thisUserID + (i++), u.getUser_id(), null
                                     , true, null, true, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD
                                     , Constants.Message.MESSAGE_TYPE_INFO, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE
                                     , thisUserID, mediaUrl));
+                        }
+                        Log.i("Comm.updateProfilePic:::", "721 onReceive.:::: Adding Info msg to DB");
+
                         localDB.insertAllMessage(msgList);
                     }
                     unregisterUploadBroadcastService(context);
                 }
             };
             LocalBroadcastManager.getInstance(instance.getApplicationContext()).registerReceiver(profileUploadBroadcastReceiver, new IntentFilter("profilePicUpdate"));
+            Log.i("Comm.updateProfilePic:::", "729 Starting UploadFileService");
 
             Intent intent = new Intent(cxt, UploadFileService.class);
             intent.putExtra(Constants.Intent.KEY_INTENT_FILE_PATH, uri);
@@ -689,24 +745,27 @@ public class Communicator extends LifecycleService {
 
 
     public void downloadProfilePic(Context cxt, Message msg) {
-
+        Log.d("Comm.downloadProfilePic:::::::","741 MsgID::"+msg.getMsg_ID()+"::"+msg.getStatus()+"::"+msg.getMsgType());
 
         //Download the profilePic
 
         profileDownloadBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i("Communicator.downloadProfilePic.:::::::::", "onReceive.Received");
+                Log.i("Comm.downloadProfilePic.:::::::::", "748 onReceive.Received");
                 if (intent.getExtras().getInt(Constants.Intent.KEY_INTENT_RESULT_CODE, 0) == DownloadFileService.RESULT_FAIL)
                     return;
                 // Handle the result received from the called Service
                 // Process the result
+                Log.i("Comm.downloadProfilePic.:::::::::", "753 onReceive. DELETING MESSAGE");
                 localDB.deleteMessage(msg);
                 unregisterDownloadBroadcastService(context);
             }
         };
 
         LocalBroadcastManager.getInstance(instance.getApplicationContext()).registerReceiver(profileDownloadBroadcastReceiver, new IntentFilter(msg.getMsg_ID()));
+
+        Log.d("Comm.downloadProPic:::::::","761 Starting Download::"+msg.getMsg_ID());
 
         Intent intent = new Intent(cxt, DownloadFileService.class);
         intent.putExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID, msg.getMsg_ID());
@@ -724,7 +783,7 @@ public class Communicator extends LifecycleService {
         DocumentReference mediaDocRef = FirebaseFirestore.getInstance().collection(Constants.KEY_FCM_ATTACHMENTS_REFERENCE).document(profileValue);
         final StorageReference mediaRef = FirebaseStorage.getInstance().getReference();
 
-        Log.i("Communicator.deleteDocAndPic:::::::::", "CHECKING");
+        Log.i("Comm.deleteDocAndPic:::::::::", "779 CHECKING");
 
         mediaDocRef.get().addOnSuccessListener(documentSnapshot -> {
             // Check if the document exists and contains the "data" field
@@ -736,15 +795,15 @@ public class Communicator extends LifecycleService {
                     mediaToDeleteRef.delete().addOnSuccessListener(unused ->
                                     // Delete the document after successful deletion of the media
                                     mediaDocRef.delete().addOnSuccessListener(unused2 ->
-                                                    Log.d("Communicator.deleteDocAndPic:::::::::", "Media and document deleted successfully"))
+                                                    Log.d("Comm.deleteDocAndPic:::::::::", "791 Media and document deleted successfully"))
                                             .addOnFailureListener(e ->
-                                                    Log.e("Communicator.deleteDocAndPic:::::::::", "Failed to delete the document: " + e.getMessage())))
+                                                    Log.e("Comm.deleteDocAndPic:::::::::", "Failed to delete the document: " + e.getMessage())))
                             .addOnFailureListener(e ->
-                                    Log.e("Communicator.deleteDocAndPic:::::::::", "Failed to delete the media: " + e.getMessage()));
+                                    Log.e("Comm.deleteDocAndPic:::::::::", "Failed to delete the media: " + e.getMessage()));
                 }
             }
         }).addOnFailureListener(e ->
-                Log.e("Communicator.deleteDocAndPic:::::::::", "Failed to retrieve the document: " + e.getMessage()));
+                Log.e("Comm.deleteDocAndPic:::::::::", "Failed to retrieve the document: " + e.getMessage()));
     }
 
     private static void unregisterUploadBroadcastService(Context context) {
@@ -756,7 +815,7 @@ public class Communicator extends LifecycleService {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i("SERVICE BINDING::::", "DONE");
+        Log.i("SERVICE BINDING::::", "811 DONE");
         super.onBind(intent);
 
         return null;

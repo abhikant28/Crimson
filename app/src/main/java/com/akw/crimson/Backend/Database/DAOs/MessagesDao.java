@@ -47,19 +47,19 @@ public interface MessagesDao {
 
     //    @Query("SELECT * from messages_Table where user_id= :user_id LIMIT 100")
 //    LiveData<List<Message>> getMessages(String user_id);
-    @Query("SELECT * FROM MESSAGES_TABLE WHERE msgType="+ Constants.Message.MESSAGE_TYPE_INFO+" AND status="+Constants.Message.MESSAGE_STATUS_RECEIVED)
+    @Query("SELECT * FROM MESSAGES_TABLE WHERE msgType=" + Constants.Message.MESSAGE_TYPE_INFO + " AND status=" + Constants.Message.MESSAGE_STATUS_RECEIVED)
     LiveData<List<Message>> receivedInfoMessages();
 
-    @Query("SELECT * FROM MESSAGES_TABLE WHERE status="+ Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD)
+    @Query("SELECT * FROM MESSAGES_TABLE WHERE status=" + Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD)
     LiveData<List<Message>> pendingMessages();
 
-    @Query("SELECT * FROM MESSAGES_TABLE WHERE status="+Constants.Message.MESSAGE_STATUS_RECEIVED)
+    @Query("SELECT * FROM MESSAGES_TABLE WHERE msgType=" + Constants.Message.MESSAGE_TYPE_TEXT + " AND status=" + Constants.Message.MESSAGE_STATUS_RECEIVED)
     LiveData<List<Message>> receivedMessages();
 
     @Query("SELECT * from messages_Table where msg_ID=:msgID LIMIT 1")
     Message getMessage(String msgID);
 
-    @Query("SELECT * FROM messages_Table WHERE user_id = :user_ID ORDER BY CASE WHEN self = 1 THEN sentTime ELSE receivedTime END ASC")
+    @Query("SELECT * FROM messages_Table WHERE user_id = :user_ID AND msgType=" + Constants.Message.MESSAGE_TYPE_TEXT + " ORDER BY CASE WHEN self = 1 THEN sentTime ELSE receivedTime END ASC")
     Cursor getMessages(String user_ID);
 
     @Query("SELECT * from messages_Table where starred is 1")
@@ -68,7 +68,7 @@ public interface MessagesDao {
     @Query("SELECT * from messages_Table where starred is 1 AND user_id= :userID")
     List<Message> getStarredUserMessages(String userID);
 
-    @Query("SELECT * from messages_Table where user_id= :user_ID AND msgType="+Constants.Message.MESSAGE_TYPE_INFO)
+    @Query("SELECT * from messages_Table where user_id= :user_ID AND msgType=" + Constants.Message.MESSAGE_TYPE_TEXT)
     LiveData<List<Message>> getLiveMessages(String user_ID);
 
     @Query("SELECT * from messages_Table where msg LIKE'%' || :query || '%'")

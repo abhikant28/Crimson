@@ -264,25 +264,26 @@ public class TheRepository {
             User user = usersDao.getUser(messages[0].getUser_id());
            // Log.i("REPO USER ID ::::: ", messages[0].getUser_id());
            // Log.i("REPO NULL CHECK ::::: ", (user==null)+"_"+(messages[0]==null));
-            if (user!=null && messages[0].getMsg() != null)
+            if (user!=null && messages[0].getMsg() != null) {
                 user.setLast_msg(messages[0].getMsg().substring(0, Math.min(15, messages[0].getMsg().length())), messages[0].isMedia() ? messages[0].getMediaType() : Constants.Media.KEY_MESSAGE_MEDIA_TYPE_NONE);
-            user.setTime(UsefulFunctions.getTime());
-            user.setDate(UsefulFunctions.getDate());
-            if (messages[0].isSelf()) {
-                user.setUnread_count(0);
-                user.setUnread(false);
-                if (!user.isConnected()) {
-                    user.setConnected(true);
-                    //Send Profile Pic
+                user.setTime(UsefulFunctions.getTime());
+                user.setDate(UsefulFunctions.getDate());
+                if (messages[0].isSelf()) {
+                    user.setUnread_count(0);
+                    user.setUnread(false);
+                    if (!user.isConnected()) {
+                        user.setConnected(true);
+                        //Send Profile Pic
+                    }
+                } else {
+                    user.setUnread_count(user.getUnread_count() + 1);
+                    user.setUnread(true);
                 }
-            } else {
-                user.setUnread_count(user.getUnread_count() + 1);
-                user.setUnread(true);
+                ChatActivity.updated = true;
+                user.incMsgCount();
+                user.setKnown(true);
+                usersDao.update(user);
             }
-            ChatActivity.updated = true;
-            user.incMsgCount();
-            user.setKnown(true);
-            usersDao.update(user);
             return null;
         }
     }

@@ -155,7 +155,7 @@ public class Registration_PublicProfile extends AppCompatActivity {
                 intent.putExtra("isUser", userExists);
                 if (hasPic) {
                     intent.putExtra(Constants.Intent.KEY_INTENT_PIC, encodedImage);
-                    Log.i(getClass()+"putIntent", imageUri.toString()+"____"+imageUri.getPath());
+//                    Log.i(getClass()+"putIntent", imageUri.toString()+"____"+imageUri.getPath());
                     intent.putExtra(Constants.Intent.KEY_INTENT_FILE_PATH, imageUri.toString());
                 }
                 startActivity(intent);
