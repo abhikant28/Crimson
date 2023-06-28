@@ -425,7 +425,6 @@ public class UsefulFunctions {
                     + "/Media/Crimson " + folder + subFolder;
             if(type==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE){
                 mediaStorageDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "";
-                id="self.jpg";
             }
 
 

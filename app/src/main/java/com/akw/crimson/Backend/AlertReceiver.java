@@ -76,7 +76,7 @@ public class AlertReceiver extends BroadcastReceiver {
                         e.printStackTrace();
                     }
                     Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
-                    array.put(UsefulFunctions.encodeText(prepMsg.getMessage().asString(thisUserID)));
+                    array.put(UsefulFunctions.encodeText(prepMsg.getMessage().encodeMessage(thisUserID)));
 
                     dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
                 } else {
@@ -84,7 +84,7 @@ public class AlertReceiver extends BroadcastReceiver {
                     // Create a new JSONArray
                     JSONArray array = new JSONArray();
                     Log.i("COMMUNICATOR:::", "Pending Messages: Add Message to Array");
-                    array.put(UsefulFunctions.encodeText(prepMsg.getMessage().asString(thisUserID)));
+                    array.put(UsefulFunctions.encodeText(prepMsg.getMessage().encodeMessage(thisUserID)));
 
                     dataSnapshot.child(thisUserID).getRef().setValue(array.toString());
                 }

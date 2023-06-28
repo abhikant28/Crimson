@@ -527,7 +527,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             setMsg(cursor, sent.MessageMsgBox, sent.MessageTime, true);
 
 
-            if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1 && !unreadFound) {
+            if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unreadUser")) == 1 && !unreadFound) {
                 sent.MessageLayout.addView(unreadDialog(), 0);
                 unreadFound = true;
             }
@@ -570,7 +570,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             MessageReceivedLayoutBinding received = viewHolder.receivedLayoutBinding;
             setMsg(cursor, received.MessageMsgBox, received.MessageTime, false);
 
-            if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1 && !unreadFound) {
+            if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unreadUser")) == 1 && !unreadFound) {
                 received.MessageLayout.addView(unreadDialog(), 0);
                 unreadFound = true;
             }

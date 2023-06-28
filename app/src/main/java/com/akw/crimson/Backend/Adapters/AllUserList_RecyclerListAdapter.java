@@ -62,7 +62,7 @@ public class AllUserList_RecyclerListAdapter extends ListAdapter<User, AllUserLi
         User user = getItem(position);
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText(user.getAbout());
-        holder.iv_profilePic.setImageBitmap(user.getUserPic(cxt));
+        holder.iv_profilePic.setImageBitmap(user.getUserPicBitmap(holder.iv_profilePic.getContext()));
         if (SelectContact.selectedUsers.contains(user)) {
             holder.itemView.setBackgroundColor(Color.parseColor("#C6C5C5"));
             holder.tv_lastMsg.setTextColor(Color.BLACK);

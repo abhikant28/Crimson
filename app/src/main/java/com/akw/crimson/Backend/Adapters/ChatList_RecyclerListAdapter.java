@@ -51,32 +51,32 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
 
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText(user.getLast_msg());
-        holder.iv_profilePic.setImageBitmap(user.getUserPic(holder.itemView.getContext()));
+        holder.iv_profilePic.setImageBitmap(user.getUserPicBitmap(holder.itemView.getContext()));
 
         if (user.getUnread_count() > 0) {
             holder.tv_unreadCount.setVisibility(View.VISIBLE);
             holder.tv_unreadCount.setText(String.valueOf(user.getUnread_count()));
         }
         holder.tv_time.setText((user.getTime() == null ? "12:00" : user.getTime().substring(0, 5)));
-        if (user.getLast_msg_type() != Constants.Media.KEY_MESSAGE_MEDIA_TYPE_NONE) {
-            switch (user.getLast_msg_type()) {
+        if (user.getLast_msg_media_type() != Constants.Media.KEY_MESSAGE_MEDIA_TYPE_NONE) {
+            switch (user.getLast_msg_media_type()) {
                 case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO:
-                    Log.e("VID:::::", user.getLast_msg_type() + "");
+                    Log.e("VID:::::", user.getLast_msg_media_type() + "");
                     holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_videocam_24, 0, 0, 0);
                     if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Video");
                     break;
                 case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE:
-                    Log.e("IMG:::::", user.getLast_msg_type() + "");
+                    Log.e("IMG:::::", user.getLast_msg_media_type() + "");
                     holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_insert_photo_24, 0, 0, 0);
                     if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Photo");
                     break;
                 case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_AUDIO:
-                    Log.i("AUD:::::", user.getLast_msg_type() + "");
+                    Log.i("AUD:::::", user.getLast_msg_media_type() + "");
                     holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_headphones_24, 0, 0, 0);
                     if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Audio");
                     break;
                 case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT:
-                    Log.i("DOC:::::", user.getLast_msg_type() + "");
+                    Log.i("DOC:::::", user.getLast_msg_media_type() + "");
                     holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_twotone_insert_drive_file_24, 0, 0, 0);
                     if (user.getLast_msg() == null) holder.tv_lastMsg.setText(" Document");
                     break;
@@ -111,31 +111,19 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
             iv_profilePic = view.findViewById(R.id.MainChatList_Item_ImageView_UserPic);
             tv_time = view.findViewById(R.id.MainChatList_Item_TextView_Time);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int p = getAdapterPosition();
-                    if (listener != null && p != -1) listener.OnItemClick(getUser(p));
-                }
+            itemView.setOnClickListener(view12 -> {
+                int p = getAdapterPosition();
+                if (listener != null && p != -1) listener.OnItemClick(getUser(p));
             });
-            iv_profilePic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    AppCompatActivity activity = (AppCompatActivity) view.getContext();
-                    ProfileImageView update = new ProfileImageView();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.Intent.KEY_INTENT_USERID, getUser(getLayoutPosition()).getUser_id());
-                    bundle.putString(Constants.Intent.KEY_INTENT_PIC, getUser(getLayoutPosition()).getPublicPic());
-                    update.setArguments(bundle);
-                    update.show(activity.getSupportFragmentManager().beginTransaction(), "EXAMPLE");
-//                    DialogFragment fragment = ProfileImageView.newInstance(getUser(getAdapterPosition()).getUser_id(), getUser(getLayoutPosition()).getPublicPic());
-//                    ViewCompat.setTransitionName(iv_profilePic, "item_image");
-//                    activity.getSupportFragmentManager().beginTransaction()
-//                            .addSharedElement(iv_profilePic, "max")
-//                            .replace(R.id.MainChat_frame_profilePic, fragment)
-//                            .addToBackStack(null)
-//                            .commit();
-                }
+            iv_profilePic.setOnClickListener(view1 -> {
+                AppCompatActivity activity = (AppCompatActivity) view1.getContext();
+                ProfileImageView update = new ProfileImageView();
+                Bundle bundle = new Bundle();
+                bundle.putString(Constants.Intent.KEY_INTENT_USERID, getUser(getLayoutPosition()).getUser_id());
+                bundle.putString(Constants.Intent.KEY_INTENT_PIC,getUser(getLayoutPosition()).getUserPic());
+                update.setArguments(bundle);
+                update.show(activity.getSupportFragmentManager().beginTransaction(), "EXAMPLE");
+
             });
         }
     }

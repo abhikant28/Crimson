@@ -1,20 +1,22 @@
 package com.akw.crimson;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.core.view.ViewCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.core.view.ViewCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.Chat.ChatActivity;
+
+import java.io.File;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,14 +38,6 @@ public class ProfileImageView extends DialogFragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileImageView.
-     */
     // TODO: Rename and change types and number of parameters
     public static ProfileImageView newInstance(String param1, String param2) {
         ProfileImageView fragment = new ProfileImageView();
@@ -70,25 +64,20 @@ public class ProfileImageView extends DialogFragment {
 
         // Inflate the layout for this fragment
         ImageView iv_profilePic=v.findViewById(R.id.profilePicFragment_iv_profilePic);
-        iv_profilePic.setImageBitmap(UsefulFunctions.decodeImage(pic));
+        File file= UsefulFunctions.FileUtil.getFile(v.getContext(),pic, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE);
+        iv_profilePic.setImageURI(Uri.fromFile(file));
         ViewCompat.setTransitionName(iv_profilePic,"hero_image");
 //        Transition transition = TransitionInflater.from(requireContext())
 //                .inflateTransition(R.transition.shared_image);
 //        setSharedElementEnterTransition(transition);
 
-        v.findViewById(R.id.profilePicFragment_ib_profile).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        v.findViewById(R.id.profilePicFragment_ib_profile).setOnClickListener(view -> {
 
-            }
         });
-        v.findViewById(R.id.profilePicFragment_ib_message).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(v.getContext(), ChatActivity.class);
-                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, userId);
-                startActivity(intent);
-            }
+        v.findViewById(R.id.profilePicFragment_ib_message).setOnClickListener(view -> {
+            Intent intent = new Intent(v.getContext(), ChatActivity.class);
+            intent.putExtra(Constants.Intent.KEY_INTENT_USERID, userId);
+            startActivity(intent);
         });
         return v;
     }

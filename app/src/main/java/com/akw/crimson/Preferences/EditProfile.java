@@ -71,7 +71,7 @@ public class EditProfile extends BaseActivity {
             u.setProfilePic(file.getName());
             Log.i("ActivityResult::::",file.getName()+"____"+result.getData() );
             SharedPrefManager.storeUser(u);
-            layout.editProfileImageViewPrivateUserPic.setImageBitmap(u.getUserPic(this));
+            layout.editProfileImageViewPrivateUserPic.setImageBitmap(u.getUserPicBitmap(this));
             Communicator.updateProfilePic(this, file.getPath());
         }
 
@@ -140,7 +140,7 @@ public class EditProfile extends BaseActivity {
         User u = SharedPrefManager.getLocalUser();
         layout.editProfileIvPublicUserPic.setImageBitmap(UsefulFunctions.decodeImage(u.getPublicPic()));
         Log.i(getClass() + ":::::", user.getProfilePic() + "");
-        layout.editProfileImageViewPrivateUserPic.setImageBitmap(user.getUserPic(this));
+        layout.editProfileImageViewPrivateUserPic.setImageBitmap(user.getUserPicBitmap(this));
 
         layout.editProfileTvStatus.setText(u.getStatus());
         layout.editProfileTvAbout.setText(u.getAbout());

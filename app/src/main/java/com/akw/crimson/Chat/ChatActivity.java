@@ -90,10 +90,9 @@ public class ChatActivity extends BaseActivity {
     private ActionBar ab;
 
     public static volatile User user;
-    public static volatile boolean updated = false;
+//    public static volatile boolean updated = false;
     public static volatile String userID;
     private Boolean isOnline = false;
-    private int searchPosition;
     GestureDetector sendButtonGestureDetector;
 
     @Override
@@ -112,7 +111,7 @@ public class ChatActivity extends BaseActivity {
         super.onStop();
         if (user != null) {
             user.setUnread_count(0);
-            user.setUnread(false);
+            user.setUnreadUser(false);
         }
         dbViewModel.updateUser(user);
         chatThread.interrupt();
@@ -219,7 +218,7 @@ public class ChatActivity extends BaseActivity {
                     user.addMedia(message.getMediaID());
                 }
                 user.setLast_msg(null);
-                user.setLast_msg_type(message.getMediaType());
+                user.setLast_msg_media_type(message.getMediaType());
                 dbViewModel.updateUser(user);
                 dbViewModel.insertMessage(message);
             }
@@ -691,13 +690,10 @@ public class ChatActivity extends BaseActivity {
                 = new ColorDrawable(Color.BLACK);
 
         ab.setBackgroundDrawable(colorDrawable);
-        findViewById(R.id.action_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), ProfileView.class);
-                i.putExtra(Constants.Intent.KEY_INTENT_USERID, userID);
-                startActivity(i);
-            }
+        findViewById(R.id.action_bar).setOnClickListener(v -> {
+             Intent i = new Intent(getApplicationContext(), ProfileView.class);
+            i.putExtra(Constants.Intent.KEY_INTENT_USERID, userID);
+            startActivity(i);
         });
 
     }
@@ -780,7 +776,7 @@ public class ChatActivity extends BaseActivity {
             loadChat();
             chatRecyclerView.smoothScrollToPosition(chatViewAdapter.getItemCount());
         });
-        updated = false;
+//        updated = false;
         user = dbViewModel.getUser(userID);
     }
 

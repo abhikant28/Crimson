@@ -66,7 +66,7 @@ public class ProfileView extends AppCompatActivity {
     }
 
     private void setValues() {
-        binding.profileViewIvProfilePic.setImageBitmap(user.getUserPic(this));
+        binding.profileViewIvProfilePic.setImageBitmap(user.getUserPicBitmap(this));
         binding.profileViewTvName.setText(user.getDisplayName());
         binding.profileViewTvAbout.setText(user.getAbout());
         binding.profileViewTvNumber.setText(user.getPhoneNumber());

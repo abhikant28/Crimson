@@ -106,7 +106,7 @@ public class GroupChatActivity extends BaseActivity {
         super.onStop();
         if (user != null) {
             user.setUnread_count(0);
-            user.setUnread(false);
+            user.setUnreadUser(false);
         }
         dbViewModel.updateUser(user);
         chatThread.interrupt();
@@ -212,7 +212,7 @@ public class GroupChatActivity extends BaseActivity {
                     user.addMedia(message.getMediaID());
                 }
                 user.setLast_msg(null);
-                user.setLast_msg_type(message.getMediaType());
+                user.setLast_msg_media_type(message.getMediaType());
                 dbViewModel.updateUser(user);
                 dbViewModel.insertMessage(message);
             }
@@ -577,7 +577,7 @@ public class GroupChatActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ImageView iv = new ImageView(getApplicationContext());
         iv.setPadding(50, 50, 50, 50);
-        iv.setImageBitmap(UsefulFunctions.getCircularBitmap(user.getUserPic(this)));
+        iv.setImageBitmap(UsefulFunctions.getCircularBitmap(user.getUserPicBitmap(this)));
 
         Drawable d = iv.getDrawable();
         getSupportActionBar().setIcon(d);

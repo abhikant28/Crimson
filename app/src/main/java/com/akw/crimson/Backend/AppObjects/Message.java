@@ -13,7 +13,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.Calendar;
 
 @Entity(tableName = "messages_Table")
 public class Message {
@@ -21,21 +20,23 @@ public class Message {
     @NonNull
     private String msg_ID;
 
-    private String user_id, _id, taggedMsg, msg, sentTime, receivedTime, readTime, mediaID
-            , source, reaction, author, groupUserID, groupData, mediaUrl;
+    private String user_id, _id, taggedMsg, msg, sentTime, receivedTime, readTime, mediaID, source, reaction, author, groupUserID, groupData, mediaUrl;
     private long mediaSize;
     private double latitude, longitude;
     private boolean self, unread, starred, media, forwarded, link;
     private int status, mediaType, msgType = Constants.Message.MESSAGE_TYPE_TEXT;
 
-    public String asString(String selfID) {
+    public String encodeMessage(String selfID) {
         Gson gson = new Gson();
         Message msg = new Message(this);
         if (msg.groupUserID == null) {
             msg.user_id = selfID;
         }
+        if (msg.getAuthor() != null && !msg.getAuthor().equals(Communicator.thisUserID)) {
+            msg.setForwarded(true);
+        }
         if (self && msg.author == null && !msg.isForwarded())
-            msg.author = selfID;
+            msg.setAuthor(selfID);
         if (msg.mediaType == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE)
             msg.mediaType = Constants.Media.KEY_MESSAGE_MEDIA_TYPE_IMAGE;
         if (msg.mediaType == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO)
@@ -54,7 +55,7 @@ public class Message {
     @Ignore
     public Message(@NonNull String thisUserID, String user_id, String taggedMsgID, String msg, boolean self,
                    boolean media, String mediaID, int status, String author) {
-        this.msg_ID = thisUserID+UsefulFunctions.getCurrentMmTimeStamp();
+        this.msg_ID = thisUserID + UsefulFunctions.getCurrentMmTimeStamp();
         this.user_id = user_id;
         this.taggedMsg = taggedMsgID;
         this.msg = msg;
@@ -67,10 +68,11 @@ public class Message {
         this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
         this.author = author;
     }
+
     @Ignore
     public Message(String user_id, String taggedMsgID, String msg, boolean self,
                    boolean media, String mediaID, int status, String author) {
-        this.msg_ID = Communicator.thisUserID +UsefulFunctions.getCurrentMmTimeStamp();
+        this.msg_ID = Communicator.thisUserID + UsefulFunctions.getCurrentMmTimeStamp();
         this.user_id = user_id;
         this.taggedMsg = taggedMsgID;
         this.msg = msg;
@@ -95,17 +97,17 @@ public class Message {
         this.media = media;
         this.mediaID = mediaID;
         this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
-        this.status=Constants.Message.MESSAGE_STATUS_READ;
+        this.status = Constants.Message.MESSAGE_STATUS_READ;
         this.author = author;
-        this.mediaUrl= mediaUrl;
+        this.mediaUrl = mediaUrl;
     }
 
     //For Info
     @Ignore
     public Message(@NonNull String thisUserID, String user_id, String msg
             , boolean hasMedia, String groupUserID, boolean self, int status, int msgType
-            ,int mediaType, String mediaID, String mediaUrl) {
-        this.msg_ID = thisUserID +UsefulFunctions.getCurrentMmTimeStamp();
+            , int mediaType, String mediaID, String mediaUrl) {
+        this.msg_ID = thisUserID + UsefulFunctions.getCurrentMmTimeStamp();
         this.user_id = user_id;
         this.sentTime = UsefulFunctions.getCurrentTimestamp();
         this.msg = msg;
@@ -113,10 +115,10 @@ public class Message {
         this.self = self;
         this.status = status;
         this.msgType = msgType;
-        this.media=hasMedia;
-        this.mediaUrl=mediaUrl;
-        this.mediaType= mediaType;
-        this.mediaID= mediaID;
+        this.media = hasMedia;
+        this.mediaUrl = mediaUrl;
+        this.mediaType = mediaType;
+        this.mediaID = mediaID;
     }
 
     @Ignore
@@ -221,7 +223,7 @@ public class Message {
         this.status = message.status;
         this.mediaType = message.mediaType;
         this.msgType = message.msgType;
-        this.mediaUrl=message.mediaUrl;
+        this.mediaUrl = message.mediaUrl;
     }
 
     @Ignore
@@ -252,7 +254,7 @@ public class Message {
         this.status = message.status;
         this.mediaType = message.mediaType;
         this.msgType = message.msgType;
-        this.mediaUrl=message.mediaUrl;
+        this.mediaUrl = message.mediaUrl;
     }
 
 
@@ -276,7 +278,9 @@ public class Message {
         return mediaSize;
     }
 
-    public void setMediaSize(long mediaSize) {this.mediaSize = mediaSize;}
+    public void setMediaSize(long mediaSize) {
+        this.mediaSize = mediaSize;
+    }
 
     public int getMediaType() {
         return mediaType;
@@ -329,8 +333,8 @@ public class Message {
 
     public String getTime() {
         if (self)
-            return sentTime.substring(sentTime.indexOf(",")+2,sentTime.lastIndexOf(":"));
-        return receivedTime.substring(receivedTime.indexOf(",")+2, receivedTime.lastIndexOf(":"));
+            return sentTime.substring(sentTime.indexOf(",") + 2, sentTime.lastIndexOf(":"));
+        return receivedTime.substring(receivedTime.indexOf(",") + 2, receivedTime.lastIndexOf(":"));
     }
 
     public String getDate() {
@@ -400,11 +404,11 @@ public class Message {
     }
 
     public void setStatus(int status) {
-        if(status==Constants.Message.MESSAGE_STATUS_SENT)
+        if (status == Constants.Message.MESSAGE_STATUS_SENT)
             setSentTime(UsefulFunctions.getCurrentTimestamp());
-        else if(status==Constants.Message.MESSAGE_STATUS_RECEIVED)
+        else if (status == Constants.Message.MESSAGE_STATUS_RECEIVED)
             setReceivedTime(UsefulFunctions.getCurrentTimestamp());
-        else if(status==Constants.Message.MESSAGE_STATUS_READ)
+        else if (status == Constants.Message.MESSAGE_STATUS_READ)
             setReadTime(UsefulFunctions.getCurrentTimestamp());
         this.status = status;
     }
@@ -442,7 +446,7 @@ public class Message {
     }
 
     public int getMsgType() {
-        if(msgType==0) return Constants.Message.MESSAGE_TYPE_TEXT;
+        if (msgType == 0) return Constants.Message.MESSAGE_TYPE_TEXT;
         return msgType;
     }
 

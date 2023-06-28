@@ -15,6 +15,7 @@ import com.akw.crimson.Backend.UsefulFunctions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -26,9 +27,9 @@ public class User {
     @NonNull
     private String user_id;
     private String _id;
-    private String last_msg, name, userName, displayName, time, publicPic, profilePic, phoneNumber, date, about, wallpaper, status, groupData;
-    private boolean unread, connected, blocked, mute, known, pinned;
-    private int unread_count, last_msg_type = 0, vidCount = 0, imgCount = 0, docCount = 0, msg_count = 0, type = 0;
+    private String last_msg, name, userName, displayName, updateTime, publicPic, profilePic, phoneNumber, about, wallpaper, status, groupData;
+    private boolean unreadUser, connected, blocked, mute, known, pinned;
+    private int unread_count, last_msg_media_type = 0, vidCount = 0, imgCount = 0, docCount = 0, msg_count = 0, type = 0;
     private long mediaSize;
     @TypeConverters(DataConverter.class)
     private ArrayList<String> groups, medias, links, docs;
@@ -91,22 +92,21 @@ public class User {
         this.name = user.name;
         this.userName = user.userName;
         this.displayName = user.displayName;
-        this.time = user.time;
+        this.updateTime = user.updateTime;
         this.publicPic = user.publicPic;
         this.phoneNumber = user.phoneNumber;
-        this.date = user.date;
         this.about = user.about;
         this.wallpaper = user.wallpaper;
         this.status = user.status;
         this.groupData = user.groupData;
-        this.unread = user.unread;
+        this.unreadUser = user.unreadUser;
         this.connected = user.connected;
         this.blocked = user.blocked;
         this.mute = user.mute;
         this.known = user.known;
         this.pinned = user.pinned;
         this.unread_count = user.unread_count;
-        this.last_msg_type = user.last_msg_type;
+        this.last_msg_media_type = user.last_msg_media_type;
         this.vidCount = user.vidCount;
         this.imgCount = user.imgCount;
         this.docCount = user.docCount;
@@ -133,13 +133,22 @@ public class User {
         return getMedias().size() + getDocs().size() + getLinks().size();
     }
 
-    public Bitmap getUserPic(Context cxt) {
+    public Bitmap getUserPicBitmap(Context cxt) {
         if (profilePic == null) {
             if (publicPic == null)
                 return UsefulFunctions.decodeImage(Constants.Media.DEFAULT_PROFILE_PIC);
             return UsefulFunctions.decodeImage(getPublicPic());
         }
-        return UsefulFunctions.fileToBitmap(UsefulFunctions.FileUtil.getFile(cxt, getProfilePic(), Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE));
+        File file=UsefulFunctions.FileUtil.getFile(cxt, getProfilePic(), Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE);
+        return UsefulFunctions.fileToBitmap(file);
+    }
+    public String getUserPic() {
+        if (profilePic == null) {
+            if (publicPic == null)
+                return Constants.Media.DEFAULT_PROFILE_PIC_NAME;
+            return getPublicPic();
+        }
+        return getProfilePic();
     }
 
     public int getDocCount() {
@@ -204,20 +213,16 @@ public class User {
         this.userName = userName;
     }
 
-    public boolean isUnread() {
-        return unread;
+    public boolean isUnreadUser() {
+        return unreadUser;
     }
 
-    public void setUnread(boolean unread) {
-        this.unread = unread;
+    public void setUnreadUser(boolean unreadUser) {
+        this.unreadUser = unreadUser;
     }
 
     public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+        return UsefulFunctions.getDate(updateTime);
     }
 
     public String getAbout() {
@@ -317,7 +322,7 @@ public class User {
     }
 
     public void setLast_msg(String last_msg, int last_msg_type) {
-        this.last_msg_type = last_msg_type;
+        this.last_msg_media_type = last_msg_type;
         this.last_msg = last_msg;
     }
 
@@ -338,13 +343,7 @@ public class User {
     }
 
     public String getTime() {
-        if (time == null)
-            return "00:00";
-        return time;
-    }
-
-    public void setTime(String sentTime) {
-        this.time = sentTime;
+        return UsefulFunctions.getDate(updateTime);
     }
 
     public ArrayList<String> getDocs() {
@@ -389,12 +388,12 @@ public class User {
         this.wallpaper = wallpaper;
     }
 
-    public int getLast_msg_type() {
-        return last_msg_type;
+    public int getLast_msg_media_type() {
+        return last_msg_media_type;
     }
 
-    public void setLast_msg_type(int last_msg_type) {
-        this.last_msg_type = last_msg_type;
+    public void setLast_msg_media_type(int last_msg_media_type) {
+        this.last_msg_media_type = last_msg_media_type;
     }
 
     public boolean isMute() {
@@ -460,6 +459,13 @@ public class User {
         return mediaSize;
     }
 
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public int getType() {
         return type;

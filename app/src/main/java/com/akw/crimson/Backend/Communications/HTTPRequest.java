@@ -31,10 +31,10 @@ public class HTTPRequest {
 
     public static void postMessage(Message message) {
         try {
-            outQueue.put(message.getUser_id(), outQueue.get(message.getUser_id()) + "," + message.asString(USER_ID).replaceAll(",,", ",_,"));
+            outQueue.put(message.getUser_id(), outQueue.get(message.getUser_id()) + "," + message.encodeMessage(USER_ID).replaceAll(",,", ",_,"));
         } catch (JSONException e) {
             try {
-                outQueue.put("1002", message.asString(USER_ID));
+                outQueue.put("1002", message.encodeMessage(USER_ID));
             } catch (JSONException ex) {
                 ex.printStackTrace();
             }

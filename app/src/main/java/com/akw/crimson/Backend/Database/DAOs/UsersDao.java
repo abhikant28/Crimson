@@ -1,7 +1,5 @@
 package com.akw.crimson.Backend.Database.DAOs;
 
-import android.database.Cursor;
-
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -30,13 +28,13 @@ public interface UsersDao {
     void delete(User user);
 
 
-    @Query("SELECT * FROM user_table ORDER BY time ASC")
-    Cursor getAllUsersCursor();
+//    @Query("SELECT * FROM user_table ORDER BY time ASC")
+//    Cursor getAllUsersCursor();
 
-    @Query("SELECT * FROM user_table WHERE known is 1 ORDER BY date desc, lower(time) desc")
+    @Query("SELECT * FROM user_table WHERE known is 1 ORDER BY updateTime desc")
     LiveData<List<User>> getChatList();
 
-    @Query("SELECT * FROM user_table WHERE connected is 1 AND type is "+ Constants.User.USER_TYPE_USER+" ORDER BY date desc, lower(time) desc")
+    @Query("SELECT * FROM user_table WHERE connected is 1 AND type is "+ Constants.User.USER_TYPE_USER+" ORDER BY updateTime desc")
     List<User> getConnectedUsers();
 
     @Query("SELECT * FROM user_table WHERE type="+ Constants.User.USER_TYPE_USER+" ORDER BY displayName")

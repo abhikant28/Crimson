@@ -44,16 +44,12 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
 public class MainChatList extends BaseActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 123;
-    private static final int REQUEST_WRITE_EXTERNAL_STORAGE = 289;
-    private static final String FILE_PROVIDER_AUTHORITY = "com.akw.crimson.fileprovider";
-    private String currentPhotoPath;
 
     ActionBar ab;
     TextView tv_noResults, tv_unreadCount, tv_convCount;
@@ -71,59 +67,6 @@ public class MainChatList extends BaseActivity {
 
 
     // Launch the camera intent
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        Log.i("CAMERA.dispatchTakePictureIntent:::::::", "Started");
-        // Ensure that there's a camera activity to handle the intent
-//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-        // Create a file to save the image
-        Log.i("CAMERA.dispatchTakePictureIntent:::::::", "takePictureIntent.resolveActivity(getPackageManager()) != null");
-        File photoFile = null;
-        try {
-            Log.i("CAMERA.dispatchTakePictureIntent:::::::", "try");
-            photoFile = createImageFile();
-        } catch (IOException ex) {
-            // Handle file creation error
-            Log.e("CAMERA.dispatchTakePictureIntent:::::::", "Failed::" + ex.getMessage());
-            ex.printStackTrace();
-        }
-
-        // Continue only if the file was successfully created
-        if (photoFile != null) {
-            Log.i("CAMERA.dispatchTakePictureIntent:::::::", "File created successfully");
-            Uri photoURI = FileProvider.getUriForFile(this,
-                    getPackageName() + ".fileprovider",
-                    photoFile);
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-//        }else{
-//            Log.i("CAMERA.dispatchTakePictureIntent:::::::","takePictureIntent.resolveActivity(getPackageManager()) == null");
-//
-//        }
-    }
-
-    // Create a file to save the image
-    private File createImageFile() throws IOException {
-        // Create an image file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-//        String imageFileName = "JPEG_" + timeStamp + "_";
-//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-//        File imageFile = File.createTempFile(
-//                imageFileName,  /* prefix */
-//                ".jpg",         /* suffix */
-//                storageDir      /* directory */
-//        );
-
-        File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE);
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = file.getAbsolutePath();
-        return file;
-    }
-
-
-    // Save the image in the best quality
 
 
     @Override
@@ -154,7 +97,6 @@ public class MainChatList extends BaseActivity {
             intent.putExtra(Constants.Intent.KEY_INTENT_USERID, new ArrayList<>());
             startActivity(intent);
 
-//            UsefulFunctions.FileUtil.saveImageInInternalStorage(this,imageBitmap);
         }
 
     }
@@ -237,8 +179,37 @@ public class MainChatList extends BaseActivity {
     }
 
 
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        Log.i("CAMERA.dispatchTakePictureIntent:::::::", "Started");
+        // Create a file to save the image
+        Log.i("CAMERA.dispatchTakePictureIntent:::::::", "takePictureIntent.resolveActivity(getPackageManager()) != null");
+        File photoFile = null;
+        try {
+            Log.i("CAMERA.dispatchTakePictureIntent:::::::", "try");
+            photoFile= UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE);
+            mCurrentPhotoPath = photoFile.getAbsolutePath();
+        } catch (Exception ex) {
+            // Handle file creation error
+            Log.e("CAMERA.dispatchTakePictureIntent:::::::", "Failed::" + ex.getMessage());
+            ex.printStackTrace();
+        }
+
+        // Continue only if the file was successfully created
+        if (photoFile != null) {
+            Log.i("CAMERA.dispatchTakePictureIntent:::::::", "File created successfully");
+            Uri photoURI = FileProvider.getUriForFile(this,
+                    getPackageName() + ".fileprovider",
+                    photoFile);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+
     private void connectLocalDatabase() {
-//        if(Communicator.localDB==null)startService(new Intent(new Intent(this, Communicator.class)));
+
         dbViewModel = Communicator.localDB;
 
         dbViewModel.getChatListUsers().observe(this, users -> {
@@ -250,7 +221,7 @@ public class MainChatList extends BaseActivity {
     private void updateCount(List<User> users) {
         int c = 0;
         for (User u : users) {
-            if (u.isUnread())
+            if (u.isUnreadUser())
                 c++;
         }
         tv_unreadCount.setText((c == 0) ? "" : c + " Unread");
@@ -259,7 +230,7 @@ public class MainChatList extends BaseActivity {
             int f = 0;
             for (User u : users) {
                 f++;
-                if (u.isUnread()) {
+                if (u.isUnreadUser()) {
                     rv_chatList.scrollToPosition(f);
                     return;
                 }
@@ -306,45 +277,36 @@ public class MainChatList extends BaseActivity {
     private void setChatList() {
         rv_chatList.setLayoutManager(new LinearLayoutManager(this));
         rv_chatList.setAdapter(chatList_recyclerListAdapter);
-        chatList_recyclerListAdapter.setOnItemCLickListener(new ChatList_RecyclerListAdapter.OnItemClickListener() {
-            @Override
-            public void OnItemClick(User user) {
-                Intent intent;
-                if (user.getType() == Constants.User.USER_TYPE_GROUP) {
-                    intent = new Intent(getApplicationContext(), GroupChatActivity.class);
-                } else {
-                    intent = new Intent(getApplicationContext(), ChatActivity.class);
-                }
-                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
-                Log.i("USER ID::::::", user.getDisplayName());
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        chatList_recyclerListAdapter.setOnItemCLickListener(user -> {
+            Intent intent;
+            if (user.getType() == Constants.User.USER_TYPE_GROUP) {
+                intent = new Intent(getApplicationContext(), GroupChatActivity.class);
+            } else {
+                intent = new Intent(getApplicationContext(), ChatActivity.class);
             }
+            intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
+            Log.i("USER ID::::::", user.getDisplayName());
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
         rv_searchUsers.setLayoutManager(new LinearLayoutManager(this));
         rv_searchUsers.setAdapter(searchUserList_rvAdapter);
-        searchUserList_rvAdapter.setOnItemCLickListener(new AllUserList_RecyclerListAdapter.OnItemClickListener() {
-            @Override
-            public void OnItemClick(User User, TextView tv_name, TextView tv_lastMsg, View view) {
-                Intent intent = new Intent(getApplicationContext(), ProfileView.class);
-                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, User.getUser_id());
-                startActivity(intent);
-            }
+        searchUserList_rvAdapter.setOnItemCLickListener((User, tv_name, tv_lastMsg, view) -> {
+            Intent intent = new Intent(getApplicationContext(), ProfileView.class);
+            intent.putExtra(Constants.Intent.KEY_INTENT_USERID, User.getUser_id());
+            startActivity(intent);
         });
 
         searchMessageList_rv_Adapter = new MessageSearch_RecyclerListAdapter(dbViewModel);
         rv_searchMessages.setLayoutManager(new LinearLayoutManager(this));
         rv_searchMessages.setAdapter(searchMessageList_rv_Adapter);
-        searchMessageList_rv_Adapter.setOnItemCLickListener(new MessageSearch_RecyclerListAdapter.OnItemClickListener() {
-            @Override
-            public void OnItemClick(Message message) {
-                Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
-                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, message.getUser_id());
-                intent.putExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID, message.getMsg_ID());
-                intent.putExtra(Constants.Intent.KEY_INTENT_STARTED_BY, Constants.Intent.KEY_INTENT_STARTED_BY_SEARCH);
-                startActivity(intent);
-            }
+        searchMessageList_rv_Adapter.setOnItemCLickListener(message -> {
+            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+            intent.putExtra(Constants.Intent.KEY_INTENT_USERID, message.getUser_id());
+            intent.putExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID, message.getMsg_ID());
+            intent.putExtra(Constants.Intent.KEY_INTENT_STARTED_BY, Constants.Intent.KEY_INTENT_STARTED_BY_SEARCH);
+            startActivity(intent);
         });
     }
 

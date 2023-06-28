@@ -123,6 +123,7 @@ public class Constants {
                 "jrT6z4KWTaMuX57zMenhCMAAAAAAAT49szY/q60elu1AA1cG2Y83ZPct6T5rLBX9h2qbT8LLbWfpmf4BfAAAAABBtszXZckxOnZp+7Ia23f2l/t/MMkAAAA" +
                 "AAAAAAArM1tFonSYnWABvAAAAAA4y44y45paZiJ9Fbd2Hivzj2ADd2Hivzj2N3YeK/OPYAN3YeK/OPY3dh4r849gA3dh4r849jd2Hivzj2ADd2Hivzj2N" +
                 "3YeK/OPYAN3YeK/OPY3dh4r849gA3dh4r849jd2Hivzj2AFwAAAH//Z";
+        public static final String DEFAULT_PROFILE_PIC_NAME = "p948gtaiba98nr9pv";
     }
 
     public static final String KEY_AVAILABILITY = "availability";

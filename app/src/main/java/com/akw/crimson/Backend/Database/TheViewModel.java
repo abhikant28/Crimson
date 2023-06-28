@@ -39,6 +39,7 @@ public class TheViewModel extends AndroidViewModel {
     public void insertMessage(Message msg) {
         repository.insertMessage(msg);
     }
+
     public void deleteMessage(Message msg) {
         Log.d("THE VIEW MODEL::::::", "DELETING MESSAGE::");
         repository.deleteMessage(msg);
@@ -55,6 +56,7 @@ public class TheViewModel extends AndroidViewModel {
     public void insertAllMessage(List<Message> msg) {
         repository.insertAllMessage(msg);
     }
+
     public void deleteAllMessage(List<Message> msg) {
         repository.deleteAllMessage(msg);
     }
@@ -107,6 +109,7 @@ public class TheViewModel extends AndroidViewModel {
     public LiveData<List<User>> getChatListUsers() {
         return repository.getGetChatList();
     }
+
     public List<User> getConnectedUsers() {
         return repository.getConnectedUsers();
     }

@@ -151,7 +151,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
             sent.MessageTime.setPadding(25, 1, 25, 1);
             sent.MessageClMedia.setVisibility(View.GONE);
             sent.MessageCvDoc.setVisibility(View.GONE);
-            if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1 && !unreadFound) {
+            if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unreadUser")) == 1 && !unreadFound) {
                 sent.MessageLayout.addView(unreadDialog(), 0);
                 unreadFound = true;
             }
@@ -439,7 +439,7 @@ public class GroupChatView_RecyclerAdapter extends RecyclerView.Adapter {
             String t= cursor.getString(cursor.getColumnIndexOrThrow("receivedTime"));
             received.MessageTime.setText(UsefulFunctions.getTimeHhMm(t));
             received.MessageTime.setPadding(25, 1, 25, 1);
-            if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unread")) == 1 && !unreadFound) {
+            if (active && cursor.getInt(cursor.getColumnIndexOrThrow("unreadUser")) == 1 && !unreadFound) {
                 received.MessageLayout.addView(unreadDialog(), 0);
                 unreadFound = true;
             }

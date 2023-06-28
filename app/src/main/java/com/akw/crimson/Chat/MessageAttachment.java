@@ -295,7 +295,7 @@ public class MessageAttachment extends AppCompatActivity {
                     msg.setMsgType(Constants.Box.BOX_TYPE_GROUP_MESSAGE);
                 }
                 user.setLast_msg(null);
-                user.setLast_msg_type(msg.getMediaType());
+                user.setLast_msg_media_type(msg.getMediaType());
                 dbViewModel.insertMessage(msg);
             }
             dbViewModel.updateUser(user);

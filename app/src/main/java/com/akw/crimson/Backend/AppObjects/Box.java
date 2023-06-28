@@ -32,7 +32,7 @@ public class Box {
         this.userID = box.userID;
         this.appendix = box.appendix;   }
 
-    public String asString(){
+    public String encodeBox(){
             Gson gson = new Gson();
             return gson.toJson(this);
 
