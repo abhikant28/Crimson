@@ -43,6 +43,7 @@ public class FinalRegister extends BaseActivity {
         String email = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_EMAIL);
         String profilePic = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_PIC);
         String about = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_ABOUT);
+        String status = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_RESULT_STATUS);
 
         Log.i("USERNAME_::::", name);
         makeCall(profilePic, name, email, about);
@@ -82,7 +83,7 @@ public class FinalRegister extends BaseActivity {
         vectorDrawable.draw(canvas);
 
 // Now, the bitmap contains the vector drawable as a raster image
-        File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, false, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE,Constants.Media.DEFAULT_PROFILE_PIC_NAME);
+        File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, false, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE, Constants.Media.DEFAULT_PROFILE_PIC_NAME);
         UsefulFunctions.FileUtil.saveImage(bitmap, false, file);
     }
 
@@ -104,10 +105,7 @@ public class FinalRegister extends BaseActivity {
                 .document(userID).set(data, SetOptions.merge())
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(getApplicationContext(), "User Registered on Crimson!", Toast.LENGTH_SHORT).show();
-                    if (profilePic != null)
-                        SharedPrefManager.storeUserProfile(profilePic, userName, email, about);
-                    else
-                        SharedPrefManager.storeUserProfile(null, userName, email, about);
+                    SharedPrefManager.storeUserProfile(profilePic, userName, email, about);
                     Log.i("USERNAME::::", userName);
                     Communicator.localDB.insertUser(SharedPrefManager.getLocalUser());
 
@@ -121,10 +119,10 @@ public class FinalRegister extends BaseActivity {
                     Toast.makeText(getApplicationContext(), "User Registration Failed", Toast.LENGTH_SHORT).show();
                 });
 
-        makeFireRealtimeDBCall(profilePic, userName, email);
+        makeFireRealtimeDBCall();
     }
 
-    private void makeFireRealtimeDBCall(String profilePic, String userName, String email) {
+    private void makeFireRealtimeDBCall() {
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
 

@@ -1,6 +1,7 @@
 package com.akw.crimson.Backend.Adapters;
 
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,6 +58,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
             holder.tv_unreadCount.setVisibility(View.VISIBLE);
             holder.tv_unreadCount.setText(String.valueOf(user.getUnread_count()));
         }
+        if(user.getLast_msg()==null) holder.tv_lastMsg.setTypeface(null, Typeface.ITALIC);
         holder.tv_time.setText((user.getTime() == null ? "12:00" : user.getTime().substring(0, 5)));
         if (user.getLast_msg_media_type() != Constants.Media.KEY_MESSAGE_MEDIA_TYPE_NONE) {
             switch (user.getLast_msg_media_type()) {

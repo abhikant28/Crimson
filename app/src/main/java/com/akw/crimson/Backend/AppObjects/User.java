@@ -517,4 +517,7 @@ public class User {
         User other = (User) obj;
         return this.user_id.equals(other.user_id);
     }
+
+    public User() {
+    }
 }

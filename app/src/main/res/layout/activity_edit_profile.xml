@@ -1,285 +1,310 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context=".Preferences.EditProfile">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:background="@color/black"
+        tools:context=".Preferences.EditProfile">
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="20sp">
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/editProfile_cv_privateUserPic"
-                android:layout_width="150sp"
-                android:layout_height="150sp"
-                android:layout_marginVertical="35sp"
-                android:backgroundTint="@color/purple_500"
-                android:elevation="5sp"
-                app:cardCornerRadius="600sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/editProfile_ImageView_privateUserPic"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:backgroundTint="@color/black"
-                    android:cropToPadding="true"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="20sp">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/editProfile_cv_privateUserPic"
+                    android:layout_width="150sp"
+                    android:layout_height="150sp"
+                    android:layout_marginVertical="35sp"
+                    android:backgroundTint="@color/purple_500"
                     android:elevation="5sp"
-                    android:src="@drawable/ic_baseline_person_24"
+                    app:cardCornerRadius="600sp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/editProfile_ImageView_privateUserPic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/black"
+                        android:cropToPadding="true"
+                        android:elevation="5sp"
+                        android:src="@drawable/ic_baseline_person_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/editProfile_cv_publicUserPic"
+                    android:layout_width="150sp"
+                    android:layout_height="150sp"
+                    android:layout_marginVertical="35sp"
+                    android:background="@color/black"
+                    android:backgroundTint="@color/teal_700"
+                    android:elevation="-5sp"
+                    app:cardCornerRadius="600sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-            </androidx.cardview.widget.CardView>
+                    <ImageView
+                        android:id="@+id/editProfile_iv_publicUserPic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/black"
+                        android:cropToPadding="true"
+                        android:elevation="-5sp"
+                        android:src="@drawable/ic_baseline_person_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/editProfile_cv_publicUserPic"
-                android:layout_width="150sp"
-                android:layout_height="150sp"
-                android:layout_marginVertical="35sp"
-                android:background="@color/black"
-                android:backgroundTint="@color/teal_700"
-                android:elevation="-5sp"
-                app:cardCornerRadius="600sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="10sp"
+                    android:text="Public"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/editProfile_cv_publicUserPic"
+                    app:layout_constraintStart_toStartOf="@+id/editProfile_cv_publicUserPic"
+                    app:layout_constraintTop_toBottomOf="@+id/editProfile_cv_publicUserPic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="10sp"
+                    android:text="Private"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/editProfile_cv_privateUserPic"
+                    app:layout_constraintStart_toStartOf="@+id/editProfile_cv_privateUserPic"
+                    app:layout_constraintTop_toBottomOf="@+id/editProfile_cv_privateUserPic" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/editProfile_ll_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20sp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="15sp"
+                android:paddingVertical="10sp"
+                android:weightSum="1">
 
                 <ImageView
-                    android:id="@+id/editProfile_iv_publicUserPic"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:backgroundTint="@color/black"
-                    android:cropToPadding="true"
-                    android:elevation="-5sp"
-                    android:src="@drawable/ic_baseline_person_24"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.cardview.widget.CardView>
+                    android:layout_width="35sp"
+                    android:layout_height="35sp"
+                    android:src="@drawable/ic_baseline_person_24" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:id="@+id/editProfile_ll_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20sp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="15sp"
-            android:paddingVertical="10sp"
-            android:weightSum="1">
-
-            <ImageView
-                android:layout_width="35sp"
-                android:layout_height="35sp"
-                android:src="@drawable/ic_baseline_person_24" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingHorizontal="15sp">
-
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name"
-                    android:textColor="#A19F9F"
-                    android:textSize="16sp"
-                    app:layout_constraintEnd_toEndOf="@+id/settings_cv_UserPic"
-                    app:layout_constraintStart_toStartOf="@+id/settings_cv_UserPic"
-                    app:layout_constraintTop_toBottomOf="@+id/settings_cv_UserPic" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="15sp">
 
-                <TextView
-                    android:id="@+id/editProfile_tv_name"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Name"
+                        android:textColor="#A19F9F"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="@+id/settings_cv_UserPic"
+                        app:layout_constraintStart_toStartOf="@+id/settings_cv_UserPic"
+                        app:layout_constraintTop_toBottomOf="@+id/settings_cv_UserPic" />
+
+                    <TextView
+                        android:id="@+id/editProfile_tv_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your Name"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="This is not your username or pin. This name is visible to your Crimson contacts."
+                        android:textColor="#A19F9F"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your Name"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="This is not your username or pin. This name is visible to your Crimson contacts."
-                    android:textColor="#A19F9F"
-                    android:textSize="12sp" />
+                    android:src="@drawable/ic_baseline_edit_24" />
             </LinearLayout>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_edit_24" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/editProfile_ll_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="15sp"
-            android:paddingVertical="10sp"
-            android:weightSum="1">
-
-            <ImageView
-                android:layout_width="35sp"
-                android:layout_height="35sp"
-                android:src="@drawable/ic_sharp_electric_bolt_24" />
-
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/editProfile_ll_status"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:paddingHorizontal="15sp">
+                android:orientation="horizontal"
+                android:paddingHorizontal="15sp"
+                android:paddingVertical="10sp"
+                android:weightSum="1">
 
-                <TextView
+                <ImageView
+                    android:layout_width="35sp"
+                    android:layout_height="35sp"
+                    android:src="@drawable/ic_sharp_electric_bolt_24" />
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Status"
-                    android:textColor="#A19F9F"
-                    android:textSize="16sp" />
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="15sp">
 
-                <TextView
-                    android:id="@+id/editProfile_tv_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Your Status"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="@+id/settings_cv_UserPic"
-                    app:layout_constraintStart_toStartOf="@+id/settings_cv_UserPic"
-                    app:layout_constraintTop_toBottomOf="@+id/settings_cv_UserPic" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Status"
+                        android:textColor="#A19F9F"
+                        android:textSize="16sp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Only visible to contacts you connect with."
-                    android:textColor="#A19F9F"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/editProfile_tv_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your Status"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        app:layout_constraintEnd_toEndOf="@+id/settings_cv_UserPic"
+                        app:layout_constraintStart_toStartOf="@+id/settings_cv_UserPic"
+                        app:layout_constraintTop_toBottomOf="@+id/settings_cv_UserPic" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Only visible to contacts you connect with."
+                        android:textColor="#A19F9F"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="35sp"
+                    android:layout_height="35sp"
+                    android:src="@drawable/ic_baseline_edit_24" />
             </LinearLayout>
-
-            <ImageView
-                android:layout_width="35sp"
-                android:layout_height="35sp"
-                android:src="@drawable/ic_baseline_edit_24" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/editProfile_ll_about"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="15sp"
-            android:paddingVertical="10sp"
-            android:weightSum="1">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_outline_info_24" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/editProfile_ll_about"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingHorizontal="15sp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="15sp"
+                android:paddingVertical="10sp"
+                android:weightSum="1">
 
-                <TextView
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="About"
-                    android:textColor="#A19F9F"
-                    android:textSize="16sp" />
+                    android:src="@drawable/ic_outline_info_24" />
 
-                <TextView
-                    android:id="@+id/editProfile_tv_about"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="About you"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="@+id/settings_cv_UserPic"
-                    app:layout_constraintStart_toStartOf="@+id/settings_cv_UserPic"
-                    app:layout_constraintTop_toBottomOf="@+id/settings_cv_UserPic" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="15sp">
 
-                <TextView
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="About"
+                        android:textColor="#A19F9F"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/editProfile_tv_about"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="About you"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        app:layout_constraintEnd_toEndOf="@+id/settings_cv_UserPic"
+                        app:layout_constraintStart_toStartOf="@+id/settings_cv_UserPic"
+                        app:layout_constraintTop_toBottomOf="@+id/settings_cv_UserPic" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Public"
+                        android:textColor="#A19F9F"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Public"
-                    android:textColor="#A19F9F"
-                    android:textSize="12sp" />
+                    android:src="@drawable/ic_baseline_edit_24" />
             </LinearLayout>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_edit_24" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/editProfile_ll_phone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="15sp"
-            android:paddingVertical="10sp"
-            android:weightSum="1">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_phone_24" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/editProfile_ll_phone"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingHorizontal="15sp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="15sp"
+                android:paddingVertical="10sp"
+                android:weightSum="1">
 
-                <TextView
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Phone"
-                    android:textColor="#A19F9F"
-                    android:textSize="16sp" />
+                    android:src="@drawable/ic_baseline_phone_24" />
 
-                <TextView
-                    android:id="@+id/editProfile_tv_phoneNum"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Phone number"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="15sp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phone"
+                        android:textColor="#A19F9F"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/editProfile_tv_phoneNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phone number"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
+
         </LinearLayout>
-
-
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
 
 
 

@@ -31,6 +31,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
+
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class Registration_PublicProfile extends AppCompatActivity {
 
@@ -42,6 +44,7 @@ public class Registration_PublicProfile extends AppCompatActivity {
     private Uri imageUri;
     private String encodedImage = "";
     private boolean hasPic = false, userExists = false;
+    private boolean storagePermission= false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,7 @@ public class Registration_PublicProfile extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
+            storagePermission=true;
 
         } else {
             ActivityCompat.requestPermissions(this,
@@ -89,25 +93,29 @@ public class Registration_PublicProfile extends AppCompatActivity {
         DocumentReference ref = firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS).document(userID);
         ref.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+
+                //Profile exists
+
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
-                    String phone = document.getString(Constants.KEY_FIRESTORE_USER_PHONE);
                     String email = document.getString(Constants.KEY_FIRESTORE_USER_EMAIL);
                     String name = document.getString(Constants.KEY_FIRESTORE_USER_NAME);
                     String about = document.getString(Constants.KEY_FIRESTORE_USER_ABOUT);
                     String profilePic = document.getString(Constants.KEY_FIRESTORE_USER_PIC);
                     userExists = true;
                     encodedImage = profilePic;
-                    if (encodedImage != null && !encodedImage.isEmpty()) {
+                    if (encodedImage != null) {
                         hasPic = true;
                         Bitmap bitmap = UsefulFunctions.decodeImage(profilePic);
+                        File file= UsefulFunctions.FileUtil.makeOutputMediaFile(this,true,Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE,"selfPublic");
+                        UsefulFunctions.FileUtil.saveImage(bitmap,true, file);
+                        imageUri= Uri.fromFile(file);
                         iv_profilePic.setImageBitmap(bitmap);
                     }
                     et_mail.setText(email);
                     et_pass.setText(name);
                     if (about != null) et_about.setText(about);
                     tv_ImageText.setVisibility(View.GONE);
-//                        Log.d("TAG", "DocumentSnapshot data: " + document.getData());
                 }
             } else {
                 Log.d("TAG", "get failed with ", task.getException());

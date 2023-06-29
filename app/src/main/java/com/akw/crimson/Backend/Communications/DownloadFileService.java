@@ -45,8 +45,8 @@ public class DownloadFileService extends IntentService {
 
         String id = intent.getStringExtra(Constants.Intent.KEY_INTENT_MESSAGE_ID);
         Message msg = db.getMessage(id);
-        Log.d("DownloadFileService.:::::::","MsgID::"+id+"____"+(msg==null));
-        Log.d("DownloadFileService.:::::::","MsgID::"+msg.getMsg_ID()+":: MSG URL::"+msg.getMediaUrl());
+//        Log.d("DownloadFileService.:::::::","MsgID::"+id+"____"+(msg==null));
+//        Log.d("DownloadFileService.:::::::","MsgID::"+msg.getMsg_ID()+":: MSG URL::"+msg.getMediaUrl());
 
         Communicator.mediaDownloading.add(msg.getMsg_ID());
 

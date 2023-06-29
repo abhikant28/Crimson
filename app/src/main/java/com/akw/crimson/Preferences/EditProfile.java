@@ -7,14 +7,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
-import androidx.cardview.widget.CardView;
 
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
@@ -22,7 +18,6 @@ import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.BaseActivity;
-import com.akw.crimson.R;
 import com.akw.crimson.databinding.ActivityEditProfileBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -33,11 +28,7 @@ public class EditProfile extends BaseActivity {
 
     private static final int PRIVATE_PROFILE_PIC = 1;
     private static final int PUBLIC_PROFILE_PIC = 2;
-    ImageView iv_profilePic;
-    CardView cv_profilePic;
-    public TextView tv_userName, tv_status;
-    TextView tv_phone;
-    LinearLayout ll_about, ll_name, ll_phone;
+
     ActionBar ab;
     ActivityEditProfileBinding layout;
 
@@ -69,7 +60,7 @@ public class EditProfile extends BaseActivity {
             File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE, "self");
             UsefulFunctions.FileUtil.saveFile(this, result.getData(), file);
             u.setProfilePic(file.getName());
-            Log.i("ActivityResult::::",file.getName()+"____"+result.getData() );
+            Log.i("ActivityResult::::", file.getName() + "____" + result.getData());
             SharedPrefManager.storeUser(u);
             layout.editProfileImageViewPrivateUserPic.setImageBitmap(u.getUserPicBitmap(this));
             Communicator.updateProfilePic(this, file.getPath());
@@ -91,7 +82,7 @@ public class EditProfile extends BaseActivity {
 
     private void clicks() {
 
-        ll_name.setOnClickListener(view -> {
+        layout.editProfileTvName.setOnClickListener(view -> {
             ProfileUpdate_BottomSheet_DialogBox update = new ProfileUpdate_BottomSheet_DialogBox();
             Bundle bundle = new Bundle();
             bundle.putString(Constants.KEY_FRAGMENT_TYPE, Constants.KEY_FRAGMENT_TYPE_NAME);
@@ -126,14 +117,6 @@ public class EditProfile extends BaseActivity {
     }
 
     private void init() {
-        tv_phone = findViewById(R.id.editProfile_tv_phoneNum);
-        tv_status = findViewById(R.id.editProfile_tv_status);
-        tv_userName = findViewById(R.id.editProfile_tv_name);
-        iv_profilePic = findViewById(R.id.editProfile_iv_publicUserPic);
-        cv_profilePic = layout.editProfileCvPublicUserPic;
-        ll_about = findViewById(R.id.editProfile_ll_about);
-        ll_name = findViewById(R.id.editProfile_ll_name);
-        ll_phone = findViewById(R.id.editProfile_ll_phone);
         ab = getSupportActionBar();
 
         User user = SharedPrefManager.getLocalUser();
@@ -146,7 +129,7 @@ public class EditProfile extends BaseActivity {
         layout.editProfileTvAbout.setText(u.getAbout());
 
         layout.editProfileTvName.setText(SharedPrefManager.getLocalUser().getUserName());
-        tv_phone.setText(SharedPrefManager.getLocalUser().getPhoneNumber());
+        layout.editProfileTvPhoneNum.setText(SharedPrefManager.getLocalUser().getPhoneNumber());
         ab.setTitle("Profile");
 
     }

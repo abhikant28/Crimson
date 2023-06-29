@@ -63,7 +63,7 @@ public class ProfileUpdate_BottomSheet_DialogBox extends BottomSheetDialogFragme
                             firebaseFirestore.collection(Constants.KEY_FIRESTORE_USERS)
                                     .document(SharedPrefManager.getLocalUserID()).set(data, SetOptions.merge())
                                     .addOnSuccessListener(documentReference -> {
-                                        if(act != null)act.tv_userName.setText(et_input.getText().toString());
+                                        if(act != null)act.layout.editProfileTvName.setText(et_input.getText().toString());
                                         dismiss();
                                     })
                                     .addOnFailureListener(documentReference -> {
@@ -117,15 +117,15 @@ public class ProfileUpdate_BottomSheet_DialogBox extends BottomSheetDialogFragme
         switch (getArguments().getString(Constants.KEY_FRAGMENT_TYPE)){
             case Constants.KEY_FRAGMENT_TYPE_NAME:
                 tv_title.setText("Enter your name");
-                et_input.setText(act.tv_userName.getText().toString());
+                et_input.setText(act.layout.editProfileTvName.getText().toString());
                 break;
             case Constants.KEY_FRAGMENT_TYPE_ABOUT:
                 tv_title.setText("Something about yourself");
-                et_input.setText(act.tv_status.getText().toString());
+                et_input.setText(act.layout.editProfileTvAbout.getText().toString());
                 break;
             case Constants.KEY_FRAGMENT_TYPE_STATUS:
                 tv_title.setText("What are you up to");
-                et_input.setText(act.tv_status.getText().toString());
+                et_input.setText(act.layout.editProfileTvStatus.getText().toString());
                 break;
         }
     }

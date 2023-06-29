@@ -12,8 +12,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class SharedPrefManager {
-    public static final String SHARED_PREF_NAME = "CRIMSON_SHAREDPREFERENCE";
-    public static final String KEY_ACCESS_TOKEN = "token";
+    public static final String SHARED_PREF_NAME = "CRIMSON_SHARED_PREFERENCE", KEY_ACCESS_TOKEN = "token";
+    public static String USERID = null;
+
 
     private static Context mctx;
     private static SharedPrefManager instance;
@@ -42,40 +43,37 @@ public class SharedPrefManager {
         return sharedPreferences.getString(KEY_ACCESS_TOKEN, null);
     }
 
-    public static boolean storeUser(User user, String token) {
-        SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("USER_ID", user.getUser_id());
-        editor.putString("USER_NAME", user.getName());
-        editor.putString("USER_PIC", user.getPublicPic());
-        editor.putString("USER_PHONE", user.getPhoneNumber());
-        editor.putString("USER_TOKEN", token);
-        editor.apply();
-        return true;
-    }
-
     public static boolean storeUser(User user) {
         SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("USER_ID", user.getUser_id());
-        editor.putString("USER_ABOUT", user.getAbout());
-        editor.putString("USER_NAME", user.getName());
-        editor.putString("USER_PIC", user.getPublicPic());
-        editor.putString("USER_PHONE", user.getPhoneNumber());
+        Gson gson = new Gson();
+        String json = gson.toJson(user);
+        editor.putString("USER", json);
+//        editor.putString("USER_ID", user.getUser_id());
+//        editor.putString("USER_ABOUT", user.getAbout());
+//        editor.putString("USER_NAME", user.getName());
+//        editor.putString("USER_PIC", user.getPublicPic());
+//        editor.putString("USER_PHONE", user.getPhoneNumber());
+//        editor.putString("USER_STATUS", user.getStatus());
+//        editor.putString("USER_PROFILE_PIC", user.getProfilePic());
         editor.apply();
+
         return true;
     }
 
-    public static boolean storeUserProfile(String profilePic, String userName, String address, String about) {
+    public static boolean storeUserProfile(String publicPic, String userName, String address, String about) {
         SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("USER_NAME", userName);
-        if (profilePic != null) {
-            editor.putString("USER_PIC", about);
+        User user = getLocalUser();
+        user.setUserName(userName);
+        user.setAbout(about);
+        Gson gson = new Gson();
+        if (publicPic != null) {
+            user.setPublicPic(publicPic);
         }
-        editor.putString("USER_EMAIL", address);
-        editor.putString("USER_ABOUT", address);
+        String json = gson.toJson(user);
         editor.putBoolean("LOGGED_IN", true);
+        editor.putString("USER", json);
         editor.apply();
         return true;
     }
@@ -88,31 +86,49 @@ public class SharedPrefManager {
     }
 
     public static boolean storeUserNumber(String num, String userID) {
+        Gson gson = new Gson();
         SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("USER_PHONE", num);
-        editor.putString("USER_ID", userID);
         editor.putBoolean("PHONE_VERIFIED", true);
+        User user = getLocalUser();
+        user.setPhoneNumber(num);
+        user.setUser_id(userID);
+        String json = gson.toJson(user);
+        editor.putString("USER", json);
         editor.apply();
         return true;
     }
 
     public static User getLocalUser() {
         SharedPreferences sp = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        User lUser = new User(sp.getString("USER_ID", null), null, sp.getString("USER_NAME", null)
-                , sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null), true, sp.getString("USER_ABOUT", null));
-        lUser.setUserName(sp.getString("USER_NAME", null));
-        return lUser;
+        String u = sp.getString("USER", null);
+        User user;
+        if (u == null) {
+            user = new User();
+        } else {
+            Gson gson = new Gson();
+            Type type = new TypeToken<User>() {
+            }.getType();
+            user = gson.fromJson(u, type);
+        }
+//        User lUser = new User(sp.getString("USER_ID", null), null, sp.getString("USER_NAME", null)
+//                , sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null)
+//                , true, sp.getString("USER_ABOUT", null));
+//        lUser.setProfilePic(sp.getString("USER_PROFILE_PIC", null));
+//        lUser.setStatus(sp.getString("USER_STATUS", null));
+//        lUser.setUserName(sp.getString("USER_NAME", null));
+        return user;
     }
 
     public static String getLocalUserID() {
-        SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString("USER_ID", null);
+        if (USERID == null) {
+            USERID = getLocalUser().getUser_id();
+        }
+        return USERID;
     }
 
     public static String getLocalPhoneNumber() {
-        SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString("USER_PHONE", null);
+        return getLocalUser().getPhoneNumber();
     }
 
     public static void putPreparedMessages(ArrayList<PreparedMessage> newMessages) {

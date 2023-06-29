@@ -187,6 +187,7 @@ public class Constants {
         public static final String KEY_INTENT_MESSENGER = "MESSENGER";
         public static final String KEY_INTENT_LIST_SIZE = "listSize";
         public static final String KEY_INTENT_ABOUT = "about";
+        public static final String KEY_INTENT_STATUS = "status";
         public static final String KEY_INTENT_RESULT_AUDIO_PATH = "audioPath";
         public static final String KEY_INTENT_RESULT_CODE = "resultCode";
         public static final int KEY_INTENT_RESULT_CODE_SUCCESS = 1;

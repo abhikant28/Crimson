@@ -40,13 +40,18 @@ public class Registration_PrivateProfile extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.i("resultCode:::::",resultCode+"");
         if(resultCode==RESULT_OK ){
             User u=SharedPrefManager.getLocalUser();
             File file= UsefulFunctions.FileUtil.makeOutputMediaFile(this,true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE,"self");
 
             u.setProfilePic(file.getName());
+            SharedPrefManager.storeUser(u);
             Communicator.updateProfilePic(this,file.getPath());
 
+            binding.registrationPvtIvProfilePic.setImageURI(Uri.fromFile(file));
+            binding.registrationPvtCheckBox.setChecked(false);
+            binding.registrationPvtTvAddPic.setVisibility(View.GONE);
 
         }
     }
@@ -62,11 +67,13 @@ public class Registration_PrivateProfile extends BaseActivity {
         forwardIntent = new Intent(this, FinalRegister.class);
         forwardIntent.putExtra(Constants.Intent.KEY_INTENT_USERNAME, getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_USERNAME));
         forwardIntent.putExtra(Constants.Intent.KEY_INTENT_EMAIL, getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_EMAIL));
-        forwardIntent.putExtra(Constants.Intent.KEY_INTENT_ABOUT, getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_PIC));
+        forwardIntent.putExtra(Constants.Intent.KEY_INTENT_PIC, getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_PIC));
         forwardIntent.putExtra(Constants.Intent.KEY_INTENT_ABOUT, getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_ABOUT));
         forwardIntent.putExtra(Constants.Intent.KEY_INTENT_PIC, getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_PIC));
         forwardIntent.putExtra(Constants.Intent.KEY_INTENT_FILE_PATH, getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_FILE_PATH));
         forwardIntent.putExtra("isUser", getIntent().getExtras().getBoolean("isUser", false));
+
+        checkFireStoreForProfile();
 
     }
 
@@ -89,9 +96,7 @@ public class Registration_PrivateProfile extends BaseActivity {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     String status = document.getString(Constants.KEY_FIRESTORE_USER_STATUS);
-                    String profilePic = document.getString(Constants.KEY_FIRESTORE_USER_PIC);
                     binding.registrationPvtEditViewStatus.setText(status);
-//                  Log.d("TAG", "DocumentSnapshot data: " + document.getData());
                 }
             } else {
                 Log.d("TAG", "get failed with ", task.getException());
@@ -107,7 +112,7 @@ public class Registration_PrivateProfile extends BaseActivity {
         binding.registrationPvtIvProfilePic.setOnClickListener(view -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(intent);
+            startActivityForResult(intent,99);
         });
 
         binding.registrationPvtCheckBox.setOnCheckedChangeListener((compoundButton, checked) -> {
@@ -131,6 +136,7 @@ public class Registration_PrivateProfile extends BaseActivity {
                             user.setStatus(binding.registrationPvtEditViewStatus.getText().toString().trim());
                             SharedPrefManager.storeUser(user);
                         });
+                forwardIntent.putExtra(Constants.Intent.KEY_INTENT_STATUS, binding.registrationPvtEditViewStatus.getText().toString().trim());
             }
             if (hasPic && imageUri != null) {
                 Communicator.updateProfilePic(this, imageUri);

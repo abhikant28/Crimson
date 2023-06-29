@@ -14,4 +14,9 @@
     <string name="mediaPlayVid">mediaPlayVid</string>
     <string name="select_file">Select File: </string>
     <string name="select_user">Select User</string>
+    <string name="status">Status</string>
+    <string name="help">Help</string>
+    <string name="public_profile">Public Profile</string>
+    <string name="private_profile">Private Profile</string>
+    <string name="add_profile_picture">Add Profile Picture</string>
 </resources>
