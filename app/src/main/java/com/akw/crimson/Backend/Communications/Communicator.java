@@ -119,7 +119,7 @@ public class Communicator extends LifecycleService {
                             try {
                                 element = value.getString(i);
                                 Box box = new Box(UsefulFunctions.decodeText(element));
-                                if (box.getType() == Constants.Message.MESSAGE_TYPE_TEXT) {
+                                if (box.getType() == Constants.Message.MESSAGE_TYPE_CHAT) {
                                     Message msg = new Message(box.getData());
                                     if (localDB.getUser(key) == null) {
                                         fetchUserDetails(key, msg);
@@ -180,7 +180,7 @@ public class Communicator extends LifecycleService {
 
                                     Message msg = new Message(box.getData());
                                     msg.setStatus(Constants.Message.MESSAGE_STATUS_RECEIVED);
-                                    msg.setMsgType(Constants.Message.MESSAGE_TYPE_TEXT);
+                                    msg.setMsgType(Constants.Message.MESSAGE_TYPE_CHAT);
                                     Log.i("COM.Downloaded.Adding","184 " + msg.getMsg_ID());
 
                                     if (localDB.getUser(key) == null) {
@@ -198,28 +198,28 @@ public class Communicator extends LifecycleService {
 
                                     getGroupMessage(box.getData());
 
-                                } else if (box.getType() == Constants.Box.BOX_TYPE_INFO_MESSAGE) {
+                                } else if (box.getType() == Constants.Box.BOX_TYPE_INTERNAL_MESSAGE) {
 
                                     Message msg;
 
                                     switch (box.getData()) {
-                                        case Constants.Box.BOX_TYPE_INFO_PIC_UPDATE + "":
+                                        case Constants.Box.BOX_TYPE_INTERNAL_PIC_UPDATE + "":
 
-                                            Log.i("COM.ReceivedFromFirebase:::", "::208 Box Type::BOX_TYPE_INFO_PIC_UPDATE:" + Constants.Box.BOX_TYPE_INFO_PIC_UPDATE);
+                                            Log.i("COM.ReceivedFromFirebase:::", "::208 Box Type::BOX_TYPE_INTERNAL_PIC_UPDATE:" + Constants.Box.BOX_TYPE_INTERNAL_PIC_UPDATE);
 
                                             msg = new Message(thisUserID, box.getUserID(), null, true, null
-                                                    , false, Constants.Message.MESSAGE_STATUS_RECEIVED, Constants.Message.MESSAGE_TYPE_INFO
+                                                    , false, Constants.Message.MESSAGE_STATUS_RECEIVED, Constants.Message.MESSAGE_TYPE_INTERNAL
                                                     , Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE, null, box.getAppendix());
                                             localDB.insertMessage(msg);
 
                                             break;
 
-                                        case Constants.Box.BOX_TYPE_INFO_PROFILE_UPDATE + "":
-                                            Log.i("COM.ReceivedFromFirebase:::", "::218 Box Type:BOX_TYPE_INFO_PROFILE_UPDATE::" + Constants.Box.BOX_TYPE_INFO_PROFILE_UPDATE);
+                                        case Constants.Box.BOX_TYPE_INTERNAL_PROFILE_UPDATE + "":
+                                            Log.i("COM.ReceivedFromFirebase:::", "::218 Box Type:BOX_TYPE_INTERNAL_PROFILE_UPDATE::" + Constants.Box.BOX_TYPE_INTERNAL_PROFILE_UPDATE);
 
                                             msg = new Message(thisUserID, box.getUserID(), null, false, null
-                                                    , false, Constants.Message.MESSAGE_STATUS_RECEIVED, Constants.Message.MESSAGE_TYPE_INFO
-                                                    , Constants.Message.MESSAGE_TYPE_INFO_INTERNAL_UPDATE_PROFILE, null, null);
+                                                    , false, Constants.Message.MESSAGE_STATUS_RECEIVED, Constants.Message.MESSAGE_TYPE_INTERNAL
+                                                    , Constants.Message.MESSAGE_TYPE_INTERNAL_UPDATE_PROFILE, null, null);
                                             localDB.insertMessage(msg);
                                             break;
 
@@ -394,7 +394,7 @@ public class Communicator extends LifecycleService {
         ArrayList<Message> list = new ArrayList<>();
         for (Message m : messages) {
 //            Log.i("COM.addMsgToQueue:::", "MSG USER ID::::" + m.getUser_id());
-            if (m.getMsgType() != Constants.Message.MESSAGE_TYPE_INFO) {
+            if (m.getMsgType() != Constants.Message.MESSAGE_TYPE_INTERNAL) {
                 msgFound = true;
             } else {
                 Log.i("COM.addMsgToQueue:::", "400 ::INFO MESSAGE::" + m.getUser_id());
@@ -412,7 +412,7 @@ public class Communicator extends LifecycleService {
                 if (m.getGroupUserID() != null) {
                     messageQueue.offerFirst(m.getUser_id());
                 } else {
-//                    Log.i("COM.addMessageToQueue:::::", "MsgType::"+m.getMsgType()+"_"+ Constants.Message.MESSAGE_TYPE_INFO);
+//                    Log.i("COM.addMessageToQueue:::::", "MsgType::"+m.getMsgType()+"_"+ Constants.Message.MESSAGE_TYPE_INTERNAL);
 
                     messageQueue.add(m.getUser_id());
                 }
@@ -503,7 +503,7 @@ public class Communicator extends LifecycleService {
                     // Add the new values to the array
                     for (Message msg : userMessages) {
 
-                        if (msg.getMsgType() == Constants.Message.MESSAGE_TYPE_TEXT) {
+                        if (msg.getMsgType() == Constants.Message.MESSAGE_TYPE_CHAT) {
 
                             if (msg.getGroupUserID() == null) {
 
@@ -518,17 +518,17 @@ public class Communicator extends LifecycleService {
                                 Log.i("COM:::", "518 Pending Messages: Add Message to Array");
                             }
 
-                        } else if (msg.getMsgType() == Constants.Message.MESSAGE_TYPE_INFO) {
+                        } else if (msg.getMsgType() == Constants.Message.MESSAGE_TYPE_INTERNAL) {
                             if (msg.getMediaType() == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE) {
 
-                                Box box = new Box(Constants.Box.BOX_TYPE_INFO_MESSAGE, Constants.Box.BOX_TYPE_INFO_PIC_UPDATE + "");
+                                Box box = new Box(Constants.Box.BOX_TYPE_INTERNAL_MESSAGE, Constants.Box.BOX_TYPE_INTERNAL_PIC_UPDATE + "");
                                 box.setUserID(thisUserID);
                                 box.setAppendix(msg.getMediaUrl());
 
                                 array.put(UsefulFunctions.encodeText(box.encodeBox()));
                             } else if (msg.getMediaType() == Constants.Box.BOX_TYPE_NEW_GROUP) {
 
-                                Box newBox = new Box(Constants.Box.BOX_TYPE_INFO_MESSAGE, Constants.Box.BOX_TYPE_NEW_GROUP + "");
+                                Box newBox = new Box(Constants.Box.BOX_TYPE_INTERNAL_MESSAGE, Constants.Box.BOX_TYPE_NEW_GROUP + "");
                                 newBox.setAppendix(msg.getUser_id());
                                 array.put(UsefulFunctions.encodeText(newBox.encodeBox()));
 
@@ -565,7 +565,7 @@ public class Communicator extends LifecycleService {
                 if (msg.getMsgType() == Constants.Box.BOX_TYPE_NEW_GROUP) continue;
 
                 DatabaseReference msgRef = groupDatabaseReference.child(msg.getMsg_ID());
-                Box box = new Box(Constants.Message.MESSAGE_TYPE_TEXT, msg.encodeMessage(thisUserID));
+                Box box = new Box(Constants.Message.MESSAGE_TYPE_CHAT, msg.encodeMessage(thisUserID));
 
                 msgRef.child(Constants.KEY_FIRESTORE_GROUP_MESSAGE_DATA).setValue(UsefulFunctions.encodeText(box.encodeBox()));
 
@@ -757,7 +757,7 @@ public class Communicator extends LifecycleService {
                             }
                             msgList.add(new Message(thisUserID + (i++), u.getUser_id(), null
                                     , true, null, true, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD
-                                    , Constants.Message.MESSAGE_TYPE_INFO, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE
+                                    , Constants.Message.MESSAGE_TYPE_INTERNAL, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE
                                     , thisUserID, mediaUrl));
                         }
                         Log.i("COM.updateProfilePic:::", "764 onReceive.:::: Adding Info msg to DB");

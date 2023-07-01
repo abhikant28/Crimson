@@ -154,13 +154,13 @@ public class DownloadFileService extends IntentService {
                 e.printStackTrace();
             }
             if (name != null) {
-                if(msg.getMsgType()==Constants.Message.MESSAGE_TYPE_TEXT){
+                if(msg.getMsgType()==Constants.Message.MESSAGE_TYPE_CHAT){
                     msg.setMediaID(name);
                     msg.setMediaUrl(null);
                     db.updateMessage(msg);
                     user.incMediaSize(outFile.length());
                     db.updateUser(user);
-                }else if(msg.getMsgType()==Constants.Message.MESSAGE_TYPE_INFO && msg.getMediaType()==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE){
+                }else if(msg.getMsgType()==Constants.Message.MESSAGE_TYPE_INTERNAL && msg.getMediaType()==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE){
                     user.setProfilePic(name);
                     db.deleteMessage(msg);
                     db.updateUser(user);

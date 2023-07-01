@@ -47,15 +47,16 @@ public class Constants {
     public static class Message {
 
         public static final int MESSAGE_TYPE_PING = 0;
-        public static final int MESSAGE_TYPE_TEXT = 1;
-        public static final int MESSAGE_TYPE_INFO = 2;
-        public static final int MESSAGE_TYPE_STATUS = 3;
-        public static final int MESSAGE_TYPE_INFO_INTERNAL_UPDATE_PROFILE = 22;
-        public static final int MESSAGE_TYPE_INFO_INTERNAL_UPDATE_PROFILE_PICTURE = 26;
-        public static final int MESSAGE_TYPE_INFO_REACTION = 24;
+        public static final int MESSAGE_TYPE_CHAT = 1;
+        public static final int MESSAGE_TYPE_INTERNAL = 2;
+        public static final int MESSAGE_TYPE_POST = 3;
+
+        public static final int MESSAGE_TYPE_INTERNAL_UPDATE_PROFILE = 22;
+        public static final int MESSAGE_TYPE_INTERNAL_UPDATE_PROFILE_PICTURE = 26;
+        public static final int MESSAGE_TYPE_INTERNAL_REACTION = 24;
         public static final int MESSAGE_TYPE_INTERNAL_UPDATE_ = -5;
-        public static final int MESSAGE_TYPE_STATUS_IMAGE = 31;
-        public static final int MESSAGE_TYPE_STATUS_VIDEO = 32;
+        public static final int MESSAGE_TYPE_POST_IMAGE = 31;
+        public static final int MESSAGE_TYPE_POST_VIDEO = 32;
 
         public static final int MESSAGE_STATUS_MEDIA_TRANSFER_PENDING = -1;
         public static final int MESSAGE_STATUS_PENDING_UPLOAD = 0;
@@ -72,10 +73,11 @@ public class Constants {
     public static class Box{
 
         public static final int BOX_TYPE_TEXT_MESSAGE = 1;
-        public static final int BOX_TYPE_INFO_MESSAGE = 2;
-        public static final int BOX_TYPE_INFO_PROFILE_UPDATE = 3;
-        public static final int BOX_TYPE_INFO_PIC_UPDATE = 4;
+        public static final int BOX_TYPE_INTERNAL_MESSAGE = 2;
+        public static final int BOX_TYPE_INTERNAL_PROFILE_UPDATE = 3;
+        public static final int BOX_TYPE_INTERNAL_PIC_UPDATE = 4;
         public static final int BOX_TYPE_FORWARD = 5;
+        public static final int BOX_TYPE_POST = 6;
         public static final int BOX_TYPE_NEW_GROUP = 10;
         public static final int BOX_TYPE_GROUP_MESSAGE = 11;
         public static final int BOX_TYPE_GROUP_UPDATE = 14;

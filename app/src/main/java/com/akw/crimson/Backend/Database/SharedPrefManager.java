@@ -49,13 +49,6 @@ public class SharedPrefManager {
         Gson gson = new Gson();
         String json = gson.toJson(user);
         editor.putString("USER", json);
-//        editor.putString("USER_ID", user.getUser_id());
-//        editor.putString("USER_ABOUT", user.getAbout());
-//        editor.putString("USER_NAME", user.getName());
-//        editor.putString("USER_PIC", user.getPublicPic());
-//        editor.putString("USER_PHONE", user.getPhoneNumber());
-//        editor.putString("USER_STATUS", user.getStatus());
-//        editor.putString("USER_PROFILE_PIC", user.getProfilePic());
         editor.apply();
 
         return true;
@@ -111,12 +104,7 @@ public class SharedPrefManager {
             }.getType();
             user = gson.fromJson(u, type);
         }
-//        User lUser = new User(sp.getString("USER_ID", null), null, sp.getString("USER_NAME", null)
-//                , sp.getString("USER_PIC", null), sp.getString("USER_PHONE", null)
-//                , true, sp.getString("USER_ABOUT", null));
-//        lUser.setProfilePic(sp.getString("USER_PROFILE_PIC", null));
-//        lUser.setStatus(sp.getString("USER_STATUS", null));
-//        lUser.setUserName(sp.getString("USER_NAME", null));
+
         return user;
     }
 

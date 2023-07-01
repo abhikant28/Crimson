@@ -603,7 +603,7 @@ public class GroupChatActivity extends BaseActivity {
         ib_attach = findViewById(R.id.Chat_Button_Attachment);
         et_message = findViewById(R.id.Chat_EditText_Message);
         ib_camera = findViewById(R.id.Chat_Button_Camera);
-        ll_full = findViewById(R.id.Chat_ll_Full);
+        ll_full = findViewById(R.id.Chat_ll_Background);
 
 
         et_message.addTextChangedListener(new TextWatcher() {

@@ -24,7 +24,7 @@ public class Message {
     private long mediaSize;
     private double latitude, longitude;
     private boolean self, unread, starred, media, forwarded, link;
-    private int status, mediaType, msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+    private int status, mediaType, msgType = Constants.Message.MESSAGE_TYPE_CHAT;
 
     public String encodeMessage(String selfID) {
         Gson gson = new Gson();
@@ -65,7 +65,7 @@ public class Message {
         this.mediaID = mediaID;
         this.status = status;
         this.self = self;
-        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.MESSAGE_TYPE_CHAT;
         this.author = author;
     }
 
@@ -82,7 +82,7 @@ public class Message {
         this.mediaID = mediaID;
         this.status = status;
         this.self = self;
-        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.MESSAGE_TYPE_CHAT;
         this.author = author;
     }
 
@@ -96,7 +96,7 @@ public class Message {
         this.unread = true;
         this.media = media;
         this.mediaID = mediaID;
-        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.MESSAGE_TYPE_CHAT;
         this.status = Constants.Message.MESSAGE_STATUS_READ;
         this.author = author;
         this.mediaUrl = mediaUrl;
@@ -136,7 +136,7 @@ public class Message {
         this.media = media;
         this.status = status;
         this.mediaType = mediaType;
-        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.MESSAGE_TYPE_CHAT;
         this.author = author;
     }
 
@@ -169,7 +169,7 @@ public class Message {
         this.media = media;
         this.status = status;
         this.mediaType = mediaType;
-        this.msgType = Constants.Message.MESSAGE_TYPE_TEXT;
+        this.msgType = Constants.Message.MESSAGE_TYPE_CHAT;
         this.author = author;
     }
 
@@ -446,7 +446,7 @@ public class Message {
     }
 
     public int getMsgType() {
-        if (msgType == 0) return Constants.Message.MESSAGE_TYPE_TEXT;
+        if (msgType == 0) return Constants.Message.MESSAGE_TYPE_CHAT;
         return msgType;
     }
 

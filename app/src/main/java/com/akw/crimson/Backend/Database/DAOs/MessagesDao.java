@@ -45,11 +45,11 @@ public interface MessagesDao {
             "last_msg = (SELECT SUBSTR(msg, 1, 10) FROM messages_Table WHERE user_id = :userID ORDER BY CASE WHEN self = 1 THEN sentTime ELSE receivedTime END ASC LIMIT 1), " +
             "updateTime = (SELECT CASE WHEN self = 1 THEN sentTime ELSE receivedTime END FROM messages_Table WHERE user_id = :userID ORDER BY CASE WHEN self = 1 THEN sentTime ELSE receivedTime END ASC LIMIT 1), " +
             "last_msg_media_type = (SELECT mediaType FROM messages_Table WHERE user_id = :userID ORDER BY CASE WHEN self = 1 THEN sentTime ELSE receivedTime END ASC LIMIT 1), " +
-            "msg_count = (SELECT COUNT(*) FROM messages_Table WHERE user_id = :userID AND msgType = " + Constants.Message.MESSAGE_TYPE_TEXT + "), " +
-            "connected = CASE WHEN (SELECT COUNT(*) FROM messages_Table WHERE user_id = :userID AND self = 1 AND msgType = " + Constants.Message.MESSAGE_TYPE_TEXT + ") > 0 THEN 1 ELSE 0 END, " +
-            "unread_Count = (SELECT COUNT(*) FROM messages_Table WHERE unreadUser is 1 AND user_id = :userID AND msgType = " + Constants.Message.MESSAGE_TYPE_TEXT + "), " +
-            "unreadUser = (SELECT COUNT(*) FROM messages_Table WHERE unreadUser is 1 AND user_id = :userID AND msgType = " + Constants.Message.MESSAGE_TYPE_TEXT + ") > 0, " +
-            "known = CASE WHEN (SELECT COUNT(*) FROM messages_Table WHERE user_id = :userID AND msgType = " + Constants.Message.MESSAGE_TYPE_TEXT + ") > 0 THEN 1 ELSE 0 END " +
+            "msg_count = (SELECT COUNT(*) FROM messages_Table WHERE user_id = :userID AND msgType = " + Constants.Message.MESSAGE_TYPE_CHAT + "), " +
+            "connected = CASE WHEN (SELECT COUNT(*) FROM messages_Table WHERE user_id = :userID AND self = 1 AND msgType = " + Constants.Message.MESSAGE_TYPE_CHAT + ") > 0 THEN 1 ELSE 0 END, " +
+            "unread_Count = (SELECT COUNT(*) FROM messages_Table WHERE unreadUser is 1 AND user_id = :userID AND msgType = " + Constants.Message.MESSAGE_TYPE_CHAT + "), " +
+            "unreadUser = (SELECT COUNT(*) FROM messages_Table WHERE unreadUser is 1 AND user_id = :userID AND msgType = " + Constants.Message.MESSAGE_TYPE_CHAT + ") > 0, " +
+            "known = CASE WHEN (SELECT COUNT(*) FROM messages_Table WHERE user_id = :userID AND msgType = " + Constants.Message.MESSAGE_TYPE_CHAT + ") > 0 THEN 1 ELSE 0 END " +
             "WHERE user_id = :userID")
     void updateLastMessageForUser(String userID);
 
@@ -57,19 +57,19 @@ public interface MessagesDao {
     void deleteUserMsgs(String userID);
 
 
-    @Query("SELECT * FROM MESSAGES_TABLE WHERE msgType=" + Constants.Message.MESSAGE_TYPE_INFO + " AND status=" + Constants.Message.MESSAGE_STATUS_RECEIVED)
+    @Query("SELECT * FROM MESSAGES_TABLE WHERE msgType=" + Constants.Message.MESSAGE_TYPE_INTERNAL + " AND status=" + Constants.Message.MESSAGE_STATUS_RECEIVED)
     LiveData<List<Message>> receivedInfoMessages();
 
     @Query("SELECT * FROM MESSAGES_TABLE WHERE status=" + Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD)
     LiveData<List<Message>> pendingMessages();
 
-    @Query("SELECT * FROM MESSAGES_TABLE WHERE msgType=" + Constants.Message.MESSAGE_TYPE_TEXT + " AND status=" + Constants.Message.MESSAGE_STATUS_RECEIVED)
+    @Query("SELECT * FROM MESSAGES_TABLE WHERE msgType=" + Constants.Message.MESSAGE_TYPE_CHAT + " AND status=" + Constants.Message.MESSAGE_STATUS_RECEIVED)
     LiveData<List<Message>> receivedMessages();
 
     @Query("SELECT * from messages_Table where msg_ID=:msgID LIMIT 1")
     Message getMessage(String msgID);
 
-    @Query("SELECT * FROM messages_Table WHERE user_id = :user_ID AND msgType=" + Constants.Message.MESSAGE_TYPE_TEXT + " ORDER BY CASE WHEN self = 1 THEN sentTime ELSE receivedTime END ASC")
+    @Query("SELECT * FROM messages_Table WHERE user_id = :user_ID AND msgType=" + Constants.Message.MESSAGE_TYPE_CHAT + " ORDER BY CASE WHEN self = 1 THEN sentTime ELSE receivedTime END ASC")
     Cursor getMessages(String user_ID);
 
     @Query("SELECT * from messages_Table where starred is 1")
@@ -78,7 +78,7 @@ public interface MessagesDao {
     @Query("SELECT * from messages_Table where starred is 1 AND user_id= :userID")
     List<Message> getStarredUserMessages(String userID);
 
-    @Query("SELECT * from messages_Table where user_id= :user_ID AND msgType=" + Constants.Message.MESSAGE_TYPE_TEXT)
+    @Query("SELECT * from messages_Table where user_id= :user_ID AND msgType=" + Constants.Message.MESSAGE_TYPE_CHAT)
     LiveData<List<Message>> getLiveMessages(String user_ID);
 
     @Query("SELECT * from messages_Table where msg LIKE'%' || :query || '%'")

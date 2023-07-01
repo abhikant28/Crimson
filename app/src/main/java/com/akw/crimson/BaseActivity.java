@@ -21,6 +21,7 @@ import java.util.List;
 public class BaseActivity extends AppCompatActivity {
 
     DocumentReference documentReference;
+    protected ActionBar baseActionBar;
 
     @Override
     protected void onPause() {
@@ -49,21 +50,26 @@ public class BaseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         documentReference.update(Constants.KEY_FIRESTORE_USER_ONLINE,1);
-//        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-//        List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
-//
-//        boolean found = false;
-//        for (ActivityManager.RunningServiceInfo runningServiceInfo : runningServices) {
-//            if (runningServiceInfo.service.getClassName().equals(Communicator.class.getName())) {
-//                found=true;
-//                break;
-//            }
-//        }
-//        if(!found){
-//            Intent intent= new Intent(new Intent(this, Communicator.class));
-//            Log.i("STARTING::::::::::","Communicator");
+//        if(Communicator.localDB==null) {
+//            Intent intent = new Intent(new Intent(this, Communicator.class));
 //            startService(intent);
 //        }
+
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
+
+        boolean found = false;
+        for (ActivityManager.RunningServiceInfo runningServiceInfo : runningServices) {
+            if (runningServiceInfo.service.getClassName().equals(Communicator.class.getName())) {
+                found=true;
+                break;
+            }
+        }
+        if(!found){
+            Intent intent= new Intent(new Intent(this, Communicator.class));
+            Log.i("STARTING::::::::::","Communicator");
+            startService(intent);
+        }
     }
 
     @Override
@@ -77,9 +83,9 @@ public class BaseActivity extends AppCompatActivity {
 
         new SharedPrefManager(this);
 
-        ActionBar ab = getSupportActionBar();
+        baseActionBar = getSupportActionBar();
 
-        if (ab!=null) ab.setDisplayHomeAsUpEnabled(true);
+        if (baseActionBar!=null) baseActionBar.setDisplayHomeAsUpEnabled(true);
 
         boolean found = false;
         for (ActivityManager.RunningServiceInfo runningServiceInfo : runningServices) {

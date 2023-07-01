@@ -53,7 +53,6 @@ import com.akw.crimson.databinding.MessageReceivedLayoutBinding;
 import com.akw.crimson.databinding.MessageSentLayoutBinding;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -612,25 +611,6 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
     }
 
 
-    private void startAudioMediaPlayer(String filePath, SeekBar seekBar) {
-        Log.i("ChatView_Adapter startAudioMediaPlayer:::::::", "");
-        try {
-            audioMediaPlayer = new MediaPlayer();
-            audioMediaPlayer.setDataSource(filePath);
-            audioMediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        audioMediaPlayer.start();
-        isAudioPlaying = true;
-        if (ib_currAudioButton != null)
-            ib_currAudioButton.setImageResource(R.drawable.ic_baseline_pause_24);
-        audioMediaPlayer.setOnCompletionListener(audioMediaPlayer -> stopAudioMediaPlayer(seekBar));
-        // Update progress bar
-        updateAudioProgressBar();
-    }
-
     private void stopAudioMediaPlayer(SeekBar seekBar) {
         audioMediaPlayer.pause();
         audioMediaPlayer.seekTo(0);
@@ -638,16 +618,6 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         ib_currAudioButton.setImageResource(R.drawable.ic_baseline_audio_play_24);
         seekBar.setProgress(0);
         audioMediaPlayer.release();
-    }
-
-    private void audioTogglePlayPause() {
-        if (isAudioPlaying) {
-            audioMediaPlayer.pause();
-            isAudioPlaying = false;
-        } else {
-            audioMediaPlayer.start();
-            isAudioPlaying = true;
-        }
     }
 
 

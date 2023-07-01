@@ -5,9 +5,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.ImageView;
 
-public class TouchImageView extends ImageView implements View.OnTouchListener {
+public class TouchImageView extends androidx.appcompat.widget.AppCompatImageView implements View.OnTouchListener {
 
     private ScaleGestureDetector mScaleGestureDetector;
 

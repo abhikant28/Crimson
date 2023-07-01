@@ -29,7 +29,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -60,6 +59,8 @@ import com.akw.crimson.ProfileView;
 import com.akw.crimson.R;
 import com.akw.crimson.StarredMessages;
 import com.akw.crimson.Utilities.SelectAudio;
+import com.akw.crimson.Utilities.Wallpaper;
+import com.akw.crimson.databinding.ActivityChatBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -77,10 +78,11 @@ public class ChatActivity extends BaseActivity {
     private static final int REQUEST_CALL_PERMISSION = 243;
 
     private ChatView_RecyclerAdapter chatViewAdapter;
+    private ActivityChatBinding layoutBinding;
     private RecyclerView chatRecyclerView;
     private ImageButton ib_send, ib_attach, ib_camera, ib_emoji;
     private EditText et_message;
-    LinearLayout ll_full;
+
 
     private final FirebaseFirestore fireStoreDB = FirebaseFirestore.getInstance();
     private TheViewModel dbViewModel;
@@ -90,7 +92,7 @@ public class ChatActivity extends BaseActivity {
     private ActionBar ab;
 
     public static volatile User user;
-//    public static volatile boolean updated = false;
+    //    public static volatile boolean updated = false;
     public static volatile String userID;
     private Boolean isOnline = false;
     GestureDetector sendButtonGestureDetector;
@@ -207,7 +209,7 @@ public class ChatActivity extends BaseActivity {
                 File file = UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, f);
                 UsefulFunctions.FileUtil.saveFile(this, data.getData(), file);
                 message = new Message(SharedPrefManager.getLocalUserID() + Calendar.getInstance().getTime().getTime(), userID, null
-                        , null, file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_TRANSFER_PENDING , Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, SharedPrefManager.getLocalUserID());
+                        , null, file.getName(), (file.length() / (1024)), true, false, true, Constants.Message.MESSAGE_STATUS_MEDIA_TRANSFER_PENDING, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_DOCUMENT, SharedPrefManager.getLocalUserID());
 
             }
 
@@ -255,8 +257,18 @@ public class ChatActivity extends BaseActivity {
             case R.id.chat_menu_call:
                 requestCallPermission();
                 break;
+            case R.id.chat_menu_wallpaper:
+                setChatWallpaper();
         }
         return true;
+    }
+
+    private void setChatWallpaper() {
+
+        Intent intent = new Intent(this, Wallpaper.class);
+        intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
+        startActivity(intent);
+
     }
 
 
@@ -277,14 +289,15 @@ public class ChatActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        layoutBinding = ActivityChatBinding.inflate(getLayoutInflater());
+        setContentView(layoutBinding.getRoot());
 
-        attachViews();
 
         new SharedPrefManager(this);
         dbViewModel = Communicator.localDB;
         user = dbViewModel.getUser(getIntent().getStringExtra(Constants.Intent.KEY_INTENT_USERID));
         userID = user.getUser_id();
+        setViews();
 
         setMyActionBar();
         setClicks();
@@ -470,10 +483,10 @@ public class ChatActivity extends BaseActivity {
     private void attachmentPopUp() {
 
 
-        if(findViewById(R.id.attachment_popup_cl_attachmentOptions).getVisibility()==View.VISIBLE){
+        if (findViewById(R.id.attachment_popup_cl_attachmentOptions).getVisibility() == View.VISIBLE) {
             findViewById(R.id.attachment_popup_cl_attachmentOptions).setVisibility(View.GONE);
 
-        }else {
+        } else {
             findViewById(R.id.attachment_popup_cl_attachmentOptions).setVisibility(View.VISIBLE);
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -536,7 +549,7 @@ public class ChatActivity extends BaseActivity {
                 intent.setType("*/*");
 
 //                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_DOCUMENT);
+                startActivityForResult(intent, Constants.Intent.KEY_INTENT_REQUEST_CODE_DOCUMENT);
 //                }
             });
             findViewById(R.id.attachment_popup_ll_contact).setOnClickListener(view -> {
@@ -691,7 +704,7 @@ public class ChatActivity extends BaseActivity {
 
         ab.setBackgroundDrawable(colorDrawable);
         findViewById(R.id.action_bar).setOnClickListener(v -> {
-             Intent i = new Intent(getApplicationContext(), ProfileView.class);
+            Intent i = new Intent(getApplicationContext(), ProfileView.class);
             i.putExtra(Constants.Intent.KEY_INTENT_USERID, userID);
             startActivity(i);
         });
@@ -699,7 +712,7 @@ public class ChatActivity extends BaseActivity {
     }
 
 
-    private void attachViews() {
+    private void setViews() {
         new SharedPrefManager(getApplicationContext());
         chatRecyclerView = findViewById(R.id.Chat_RecyclerView);
         ib_send = findViewById(R.id.Chat_Button_Send);
@@ -707,8 +720,14 @@ public class ChatActivity extends BaseActivity {
         ib_attach = findViewById(R.id.Chat_Button_Attachment);
         et_message = findViewById(R.id.Chat_EditText_Message);
         ib_camera = findViewById(R.id.Chat_Button_Camera);
-        ll_full = findViewById(R.id.Chat_ll_Full);
 
+        if (user.getWallpaper() != null) {
+            File file = UsefulFunctions.FileUtil.getFile(this, user.getWallpaper(), Constants.Media.KEY_MESSAGE_MEDIA_TYPE_WALLPAPER);
+            if (file.exists()) {
+                Drawable drawable = Drawable.createFromPath(file.getAbsolutePath());
+                layoutBinding.ChatLlBackground.setBackground(drawable);
+            }
+        }
 
         et_message.addTextChangedListener(new TextWatcher() {
             @Override

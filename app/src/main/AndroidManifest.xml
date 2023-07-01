@@ -25,9 +25,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Crimson">
         <activity
-            android:name=".SettingsActivity2"
-            android:exported="false"
-            android:label="@string/title_activity_settings2">
+            android:name=".Utilities.CropImage"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".AdjustWallpaper"
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -120,6 +126,25 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name=".Utilities.Wallpaper"
+            android:exported="false"
+            android:parentActivityName=".Preferences.SettingsActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity> <!-- <activity -->
+        <!-- android:name=".AdjustWallpaper" -->
+        <!-- android:exported="false" -->
+        <!-- android:parentActivityName=".Preferences.SettingsActivity" -->
+        <!-- android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" -->
+        <!-- android:windowSoftInputMode="adjustResize"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.app.lib_name" -->
+        <!-- android:value="" /> -->
+        <!-- </activity> -->
         <activity
             android:name=".StartNew"
             android:exported="true"
