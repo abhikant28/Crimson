@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
+import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.ProfileImageView;
 import com.akw.crimson.R;
 
@@ -59,7 +60,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
             holder.tv_unreadCount.setText(String.valueOf(user.getUnread_count()));
         }
         if(user.getLast_msg()==null) holder.tv_lastMsg.setTypeface(null, Typeface.ITALIC);
-        holder.tv_time.setText((user.getTime() == null ? "12:00" : user.getTime().substring(0, 5)));
+        holder.tv_time.setText(UsefulFunctions.getTimeHhMm(user.getTime()));
         if (user.getLast_msg_media_type() != Constants.Media.KEY_MESSAGE_MEDIA_TYPE_NONE) {
             switch (user.getLast_msg_media_type()) {
                 case Constants.Media.KEY_MESSAGE_MEDIA_TYPE_VIDEO:

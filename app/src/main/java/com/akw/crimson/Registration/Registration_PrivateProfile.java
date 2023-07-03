@@ -4,12 +4,14 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -37,10 +39,11 @@ public class Registration_PrivateProfile extends BaseActivity {
     private String imageUri = null;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i("resultCode:::::",resultCode+"");
+//        Log.i("resultCode:::::",resultCode+"");
         if(resultCode==RESULT_OK ){
             User u=SharedPrefManager.getLocalUser();
             File file= UsefulFunctions.FileUtil.makeOutputMediaFile(this,true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE,"self");
@@ -49,7 +52,7 @@ public class Registration_PrivateProfile extends BaseActivity {
             SharedPrefManager.storeUser(u);
             Communicator.updateProfilePic(this,file.getPath());
 
-            binding.registrationPvtIvProfilePic.setImageURI(Uri.fromFile(file));
+            binding.registrationPvtIvProfilePic.setImageBitmap(UsefulFunctions.FileUtil.getImageFromUri(this,Uri.fromFile(file)));
             binding.registrationPvtCheckBox.setChecked(false);
             binding.registrationPvtTvAddPic.setVisibility(View.GONE);
 

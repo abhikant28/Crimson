@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -121,15 +122,15 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         return null;
     }
 
-    private void setMsg(Cursor cursor, TextView msgBox, TextView time, boolean sent) {
+    private void setMsg(Cursor cursor, TextView msgBox, TextView timeBox, boolean sent) {
         String t;
         if (sent) {
             t = cursor.getString(cursor.getColumnIndexOrThrow("sentTime"));
         } else {
             t = cursor.getString(cursor.getColumnIndexOrThrow("receivedTime"));
         }
-        time.setText(UsefulFunctions.getTimeHhMm(t));
-        time.setPadding(25, 1, 25, 1);
+        timeBox.setText(UsefulFunctions.getTimeHhMm(t));
+        timeBox.setPadding(25, 1, 25, 1);
 
 
         if (cursor.getString(cursor.getColumnIndexOrThrow("msg")) != null) {
@@ -140,12 +141,62 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             msgBox.setText(msg);
             msgBox.setPadding(25, 1, 25, 1);
             msgBox.setMovementMethod(LinkMovementMethod.getInstance());
+            int len= msg.length()%25;
+            boolean lastLineIndex = msgBox.getLineCount() > 1;
+            boolean isLastLineShort=false;
+            if (msg.length() > 25) {
+                isLastLineShort = len < 22 && len!=0;
+            }
 
+
+
+
+            ConstraintLayout parentView = (ConstraintLayout) msgBox.getParent();
+
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(parentView); // Replace constraintLayout with your actual ConstraintLayout reference
+            Log.i("TEXT ::"+msg.length()+":"+len+"::",msg);
+
+            if (msg.length()<23) {
+                Log.i("Alignment:::::","155");
+                // If the message is short, align the messageTextView and timeTextView side by side at the bottom of the parent view
+//                constraintSet.connect(msgBox.getId(), ConstraintSet.START, parentView.getId(), ConstraintSet.START);
+                constraintSet.connect(msgBox.getId(), ConstraintSet.END, timeBox.getId(), ConstraintSet.START);
+                constraintSet.connect(msgBox.getId(), ConstraintSet.BOTTOM, parentView.getId(), ConstraintSet.BOTTOM,12);
+////                constraintSet.connect(timeBox.getId(), ConstraintSet.START, msgBox.getId(), ConstraintSet.END);
+//                constraintSet.connect(timeBox.getId(), ConstraintSet.END, parentView.getId(), ConstraintSet.END);
+//                constraintSet.connect(timeBox.getId(), ConstraintSet.BOTTOM, msgBox.getId(), ConstraintSet.BOTTOM);
+
+            } else if (isLastLineShort) {
+                Log.i("Alignment:::::","164");
+                // If the last line of the message is short, align the messageTextView and timeTextView at the bottom of the parent view
+                constraintSet.connect(msgBox.getId(), ConstraintSet.END, ((ConstraintLayout) msgBox.getParent()).getId(), ConstraintSet.END);
+                constraintSet.connect(msgBox.getId(), ConstraintSet.BOTTOM, parentView.getId(), ConstraintSet.BOTTOM,12);
+////                constraintSet.connect(timeBox.getId(), ConstraintSet.START, msgBox.getId(), ConstraintSet.END);
+//                constraintSet.connect(timeBox.getId(), ConstraintSet.END, msgBox.getId(), ConstraintSet.END);
+//                constraintSet.connect(timeBox.getId(), ConstraintSet.BOTTOM, msgBox.getId(), ConstraintSet.BOTTOM);
+            } else {
+                Log.i("Alignment:::::","172");
+
+                // Otherwise, attach the timeTextView's top to messageTextView's bottom and both to the end of the parent view
+                constraintSet.connect(msgBox.getId(), ConstraintSet.START, ((ConstraintLayout) msgBox.getParent()).getId(), ConstraintSet.START);
+                constraintSet.connect(msgBox.getId(), ConstraintSet.END, ((ConstraintLayout) msgBox.getParent()).getId(), ConstraintSet.END);
+                constraintSet.connect(msgBox.getId(), ConstraintSet.BOTTOM, timeBox.getId(), ConstraintSet.TOP);
+////                constraintSet.connect(timeBox.getId(), ConstraintSet.START, ((ConstraintLayout) msgBox.getParent()).getId(), ConstraintSet.START);
+//                constraintSet.connect(timeBox.getId(), ConstraintSet.END, ((ConstraintLayout) msgBox.getParent()).getId(), ConstraintSet.END);
+//                constraintSet.connect(timeBox.getId(), ConstraintSet.BOTTOM, ((ConstraintLayout) msgBox.getParent()).getId(), ConstraintSet.BOTTOM);
+            }
+
+// Apply the updated constraints to the ConstraintLayout
+            constraintSet.applyTo((ConstraintLayout) parentView); // Replace constraintLayout with your actual ConstraintLayout reference
+            msgBox.setTextIsSelectable(true);
 
         } else {
             msgBox.setVisibility(View.GONE);
         }
         msgBox.setPadding(25, 1, 25, 1);
+
+
     }
 
     private void setImage(boolean sent, int adapterPosition, File file, int mediaPos, ConstraintLayout messageClMedia, ImageView messageIvImage, CardView messageCvImageSize, ProgressBar messagePbProgressBarMedia, ImageView messageIvMediaCancel, TextView messageTvImageSize) {

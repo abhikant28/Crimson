@@ -45,6 +45,8 @@ public class TheViewModel extends AndroidViewModel {
         repository.deleteMessage(msg);
     }
 
+
+
     public void updateMessage(Message msg) {
         repository.updateMessage(msg);
     }
@@ -75,6 +77,10 @@ public class TheViewModel extends AndroidViewModel {
 
     public List<Message> searchInUserMessages(String query, String id) {
         return repository.searchInUserMessage(query, id);
+    }
+
+    public LiveData<User> getLiveUser(String userId) {
+        return  repository.getLiveUser(userId);
     }
 
     public LiveData<List<Message>> getLiveMessagesList(String userId) {

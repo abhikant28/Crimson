@@ -130,9 +130,56 @@ public class ChatActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(new Intent(this, Communicator.class));
-        startService(intent);
+//        Intent intent = new Intent(new Intent(this, Communicator.class));
+//        startService(intent);
+        setViews();
+        setClicks();
         listenForOnline();
+        sendButtonGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                // Handle double-click event here
+                Log.i("ChatActivity.GestureDetect:::::::", "Double Tap!!!!");
+                fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(documentSnapshot -> {
+                    String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
+                    Messaging.sendPingMessageNotification(userToken, SharedPrefManager.getLocalUser().getName());
+                });
+
+                return super.onDoubleTap(e);
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+
+
+                if (!et_message.getText().toString().trim().equals("")) {
+                    Message message = new Message(userID, null, et_message.getText().toString().trim(), true, false
+                            , null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD, SharedPrefManager.getLocalUserID());
+                    if (user.getType() == Constants.User.USER_TYPE_GROUP) {
+                        message.setGroupUserID(SharedPrefManager.getLocalUserID());
+                        message.setMsgType(Constants.Box.BOX_TYPE_GROUP_MESSAGE);
+                    }
+
+                    dbViewModel.insertMessage(message);
+                    //send(message);
+                    user.setConnected(true);
+                    dbViewModel.updateUser(user);
+                    et_message.setText("");
+                    if (!isOnline) {
+                        Log.i("NOT ONLINE", "SENDING MSG");
+                        fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
+                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsg(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
+                            }
+                        });
+
+                    }
+                }
+                return super.onSingleTapConfirmed(e);
+            }
+        });
     }
 
     @Override
@@ -263,14 +310,6 @@ public class ChatActivity extends BaseActivity {
         return true;
     }
 
-    private void setChatWallpaper() {
-
-        Intent intent = new Intent(this, Wallpaper.class);
-        intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
-        startActivity(intent);
-
-    }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -293,65 +332,22 @@ public class ChatActivity extends BaseActivity {
         setContentView(layoutBinding.getRoot());
 
 
-        new SharedPrefManager(this);
         dbViewModel = Communicator.localDB;
         user = dbViewModel.getUser(getIntent().getStringExtra(Constants.Intent.KEY_INTENT_USERID));
         userID = user.getUser_id();
-        setViews();
+//        setViews();
 
         setMyActionBar();
-        setClicks();
+//        setClicks();
 
-        sendButtonGestureDetector = new GestureDetector(ChatActivity.this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                // Handle double-click event here
-                Log.i("ChatActivity.GestureDetect:::::::", "Double Tap!!!!");
-                fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(documentSnapshot -> {
-                    String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-                    Messaging.sendPingMessageNotification(userToken, SharedPrefManager.getLocalUser().getName());
-                });
-
-                return super.onDoubleTap(e);
-            }
-
-            @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
-
-
-                if (!et_message.getText().toString().trim().equals("")) {
-                    Message message = new Message(userID, null, et_message.getText().toString().trim(), true, false
-                            , null, Constants.Message.MESSAGE_STATUS_PENDING_UPLOAD, SharedPrefManager.getLocalUserID());
-                    if (user.getType() == Constants.User.USER_TYPE_GROUP) {
-                        message.setGroupUserID(SharedPrefManager.getLocalUserID());
-                        message.setMsgType(Constants.Box.BOX_TYPE_GROUP_MESSAGE);
-                    }
-
-                    dbViewModel.insertMessage(message);
-                    //send(message);
-                    user.setConnected(true);
-                    et_message.setText("");
-                    if (!isOnline) {
-                        Log.i("NOT ONLINE", "SENDING MSG");
-                        fireStoreDB.collection(Constants.KEY_FIRESTORE_USERS).document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                String userToken = documentSnapshot.getString(Constants.KEY_FIRESTORE_USER_TOKEN);
-                                Messaging.sendMessageNotification(SharedPrefManager.getLocalUserID(), userToken, message.getTaggedMsg(), message.getMsg_ID(), SharedPrefManager.getLocalUser().getName(), message.getMsg());
-                            }
-                        });
-
-                    }
-                }
-                return super.onSingleTapConfirmed(e);
-            }
-        });
 
         dbViewModel.getLiveMessagesList(userID).observe(this, messages -> {
             GetChatLiveMessagesThread gcmt = new GetChatLiveMessagesThread(user.getUser_id());
             chatThread = new Thread(gcmt);
             chatThread.start();
         });
+
+        dbViewModel.getLiveUser(userID).observe(this, newUser -> user = newUser);
 
     }
 
@@ -676,6 +672,7 @@ public class ChatActivity extends BaseActivity {
                     if (value.get(Constants.KEY_FIRESTORE_USER_ABOUT) != null) {
                         user.setAbout(String.valueOf(value.get(Constants.KEY_FIRESTORE_USER_ABOUT)));
                     }
+                    dbViewModel.updateUser(user);
                 }
                 if (isOnline) {
                     ab.setSubtitle("Online");
@@ -713,7 +710,6 @@ public class ChatActivity extends BaseActivity {
 
 
     private void setViews() {
-        new SharedPrefManager(getApplicationContext());
         chatRecyclerView = findViewById(R.id.Chat_RecyclerView);
         ib_send = findViewById(R.id.Chat_Button_Send);
         ib_emoji = findViewById(R.id.Chat_Button_Emoji);
@@ -811,6 +807,12 @@ public class ChatActivity extends BaseActivity {
             updateChat(inp);
             chatThread.interrupt();
         }
+    }
+
+    private void setChatWallpaper() {
+        Intent intent = new Intent(this, Wallpaper.class);
+        intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
+        startActivity(intent);
     }
 
 //    class GetChatMessagesThread implements Runnable {

@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-  <com.akw.crimson.Backend.TouchImageView
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:src="@color/black"/>
-    <View
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+
+    <com.akw.crimson.Backend.ScrollableImageView
+        android:id="@+id/adjustWallpaper_iv_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:scaleType="matrix"
+        android:adjustViewBounds="true"
+        android:scrollbars="none"
+        android:scrollbarSize="0dp"
+        android:background="@color/teal_200"
+        android:src="@color/cardview_dark_background"/>
 
     <Button
+        android:id="@+id/adjustWallpaper_btn_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="55dp"
+        android:textSize="12sp"
+        android:background="@drawable/round_box_chat_message"
         android:text="Set Wallpaper" />
+
 </RelativeLayout>
 
 

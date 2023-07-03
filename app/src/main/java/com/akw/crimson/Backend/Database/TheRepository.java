@@ -130,6 +130,10 @@ public class TheRepository {
         return receivedMessagesList;
     }
 
+    public LiveData<User> getLiveUser(String userID) {
+        return usersDao.getUserLive(userID);
+    }
+
     public LiveData<List<User>> getGetChatList() {
         return getChatList;
     }

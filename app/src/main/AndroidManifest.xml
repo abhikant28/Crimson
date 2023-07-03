@@ -33,7 +33,9 @@
         </activity>
         <activity
             android:name=".AdjustWallpaper"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".MainChatList">
+            >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

@@ -23,11 +23,6 @@ import java.io.File;
         version = 1,
         entities = {User.class, Message.class},
         exportSchema = true)
-//        autoMigrations = {
-//                @AutoMigration(from = 1, to = 2)
-//
-//        }
-
 
 @TypeConverters({DataConverter.class})
 abstract class TheDatabase extends RoomDatabase {
@@ -45,19 +40,18 @@ abstract class TheDatabase extends RoomDatabase {
     public static synchronized TheDatabase getInstance(Context context) {
         if (instance == null) {
             String mediaStorageDir = Environment.getExternalStorageDirectory()
-                    + "/Android/media" +
-                    "" +
-                    "/"
+                    + "/Android/media/"
                     + context.getApplicationContext().getPackageName()
                     + "/Databases";
             new File(mediaStorageDir).mkdirs();
-            instance = Room.databaseBuilder(context.getApplicationContext()
-                            , TheDatabase.class, "AppDatabase")
+            instance = Room.databaseBuilder(context.getApplicationContext(),
+                            TheDatabase.class, "AppDatabase")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallBack)
                     .build();
         }
         return instance;
+
     }
 
     public abstract MessagesDao messagesDao();
