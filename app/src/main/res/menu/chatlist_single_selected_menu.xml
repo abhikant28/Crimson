@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/chatList_Menu_pin"
+        android:icon="@drawable/ic_baseline_push_pin_24"
+        android:title="Pin"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always"/>
+    <item android:id="@+id/chatList_Menu_delete"
+        android:icon="@drawable/ic_baseline_delete_outline_24"
+        android:title="Delete"
+        app:showAsAction="always"/>
+    <item android:id="@+id/chatList_Menu_mute"
+        android:icon="@drawable/ic_baseline_volume_off_24"
+        app:showAsAction="always"
+        android:title="Mute"/>
+    <item android:id="@+id/chatList_Menu_archive"
+        android:title="Archive"/>
+    <item android:id="@+id/chatList_Menu_addShortcut"
+    android:icon="@drawable/ic_baseline_search_24"
+    android:title="Add Chat Shortcut"/>
+    <item android:id="@+id/chatList_Menu_markUnread"
+        android:title="Mark as unread"/>
+    <item android:id="@+id/chatList_Menu_markread"
+        android:title="Mark as read"/>
+    <item android:id="@+id/chatList_Menu_selectAll"
+    android:title="Select All"/>
+
+</menu>

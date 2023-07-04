@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -28,6 +29,18 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.cardview.widget.CardView>
 
+    <ImageView
+        android:id="@+id/MainChatList_Item_iv_selectedTick"
+        android:layout_width="20sp"
+        android:layout_height="20sp"
+        android:padding="2sp"
+        android:src="@drawable/ic_baseline_check_24"
+        android:background="@drawable/round_box_chat_message"
+        android:backgroundTint="#558B2F"
+        android:elevation="2sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/MainChatList_Item_CardView_UserPic"
+        app:layout_constraintEnd_toEndOf="@+id/MainChatList_Item_CardView_UserPic" />
     <TextView
         android:id="@+id/MainChatList_Item_TextView_UserName"
         android:layout_width="wrap_content"

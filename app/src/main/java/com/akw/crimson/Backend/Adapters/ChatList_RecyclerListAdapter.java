@@ -1,6 +1,7 @@
 package com.akw.crimson.Backend.Adapters;
 
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,10 +20,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.UsefulFunctions;
+import com.akw.crimson.MainChatList;
 import com.akw.crimson.ProfileImageView;
 import com.akw.crimson.R;
 
 public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_RecyclerListAdapter.MyViewHolder> {
+
+    public static int pinnedUserCount=0;
+    private OnItemLongPressListener longPressListener;
+
+
+
     private static final DiffUtil.ItemCallback<User> DIFF_CALLBACK_User = new DiffUtil.ItemCallback<User>() {
         @Override
         public boolean areItemsTheSame(@NonNull User oldItem, @NonNull User newItem) {
@@ -31,7 +39,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
 
         @Override
         public boolean areContentsTheSame(@NonNull User oldItem, @NonNull User newItem) {
-            return oldItem.getUnread_count() == newItem.getUnread_count() && oldItem.getTime().equals(newItem.getTime()) && oldItem.getDisplayName().equals(newItem.getDisplayName());
+            return oldItem.getUserPic().equals(oldItem.getUserPic()) && oldItem.getUnread_count() == newItem.getUnread_count() && oldItem.getTime().equals(newItem.getTime()) && oldItem.getDisplayName().equals(newItem.getDisplayName());
         }
     };
     private OnItemClickListener listener;
@@ -51,6 +59,7 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         User user = getItem(position);
 
+        if(user.isPinned())pinnedUserCount++;
         holder.tv_name.setText(user.getDisplayName());
         holder.tv_lastMsg.setText(user.getLast_msg());
         holder.iv_profilePic.setImageBitmap(user.getUserPicBitmap(holder.itemView.getContext()));
@@ -87,6 +96,12 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
         } else {
             holder.tv_lastMsg.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         }
+        if (MainChatList.selectingUsers){
+            if(MainChatList.selectedUserIDList.contains(user.getUser_id())){
+                holder.itemView.findViewById(R.id.MainChatList_Item_iv_selectedTick).setVisibility(View.VISIBLE);
+                holder.itemView.setBackgroundColor(Color.parseColor("#393838"));
+            }
+        }
     }
 
     public User getUser(int position) {
@@ -97,9 +112,11 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
         this.listener = listener;
     }
 
-    public interface OnItemClickListener {
-        void OnItemClick(User User);
+    public void setOnItemLongCLickListener(OnItemLongPressListener listener) {
+        this.longPressListener = listener;
     }
+
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_name, tv_lastMsg, tv_unreadCount, tv_time;
@@ -116,7 +133,9 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
 
             itemView.setOnClickListener(view12 -> {
                 int p = getAdapterPosition();
-                if (listener != null && p != -1) listener.OnItemClick(getUser(p));
+                if (listener != null && p != -1) {
+                    listener.OnItemClick(view, getUser(p));
+                }
             });
             iv_profilePic.setOnClickListener(view1 -> {
                 AppCompatActivity activity = (AppCompatActivity) view1.getContext();
@@ -128,7 +147,23 @@ public class ChatList_RecyclerListAdapter extends ListAdapter<User, ChatList_Rec
                 update.show(activity.getSupportFragmentManager().beginTransaction(), "EXAMPLE");
 
             });
+
+            view.setOnLongClickListener(view1 -> {
+                int p = getAdapterPosition();
+                if (longPressListener != null && p != -1) {
+                    longPressListener.onItemLongPressed(p, view, getUser(p));
+                }
+                return false;
+            });
         }
+    }
+
+    public interface OnItemLongPressListener {
+        void onItemLongPressed(int position, View itemView, User user);
+    }
+
+    public interface OnItemClickListener {
+        void OnItemClick(View view, User User);
     }
 
 }

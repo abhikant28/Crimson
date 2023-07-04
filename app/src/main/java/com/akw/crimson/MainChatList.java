@@ -50,6 +50,7 @@ import java.util.List;
 
 public class MainChatList extends BaseActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 123;
+    private int currentMenuId = R.menu.chatlist_menu;
 
     ActionBar ab;
     TextView tv_noResults, tv_unreadCount, tv_convCount;
@@ -64,6 +65,9 @@ public class MainChatList extends BaseActivity {
     TheViewModel dbViewModel;
     public static User user;
     private String mCurrentPhotoPath;
+    public static boolean selectingUsers =false;
+    public static ArrayList<User> selectedUserList;
+    public static ArrayList<String> selectedUserIDList;
 
 
     // Launch the camera intent
@@ -104,34 +108,35 @@ public class MainChatList extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.chatlist_menu, menu);
+        menuInflater.inflate(currentMenuId, menu);
         MenuItem searchItem = menu.findItem(R.id.chatList_Menu_search);
+        if (searchItem!=null){
+            // getting search view of our item.
+            SearchView searchView = (SearchView) searchItem.getActionView();
 
-        // getting search view of our item.
-        SearchView searchView = (SearchView) searchItem.getActionView();
-
-        // below line is to call set on query text listener method.
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Log.i("QUERY CHANGE:::::", newText);
-                if (newText.length() == 0) {
-                    rv_chatList.setVisibility(View.VISIBLE);
-                    searchMessageList_rv_Adapter.submitList(null);
-                    searchUserList_rvAdapter.submitList(null);
-                    tv_noResults.setVisibility(View.GONE);
-                } else {
-                    rv_chatList.setVisibility(View.GONE);
-                    searchQuery(newText);
+            // below line is to call set on query text listener method.
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
                 }
-                return false;
-            }
-        });
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    Log.i("QUERY CHANGE:::::", newText);
+                    if (newText.length() == 0) {
+                        rv_chatList.setVisibility(View.VISIBLE);
+                        searchMessageList_rv_Adapter.submitList(null);
+                        searchUserList_rvAdapter.submitList(null);
+                        tv_noResults.setVisibility(View.GONE);
+                    } else {
+                        rv_chatList.setVisibility(View.GONE);
+                        searchQuery(newText);
+                    }
+                    return false;
+                }
+            });
+        }
         return true;
     }
 
@@ -174,7 +179,6 @@ public class MainChatList extends BaseActivity {
         setChatList();
 
         sendToken();
-
 
     }
 
@@ -277,19 +281,57 @@ public class MainChatList extends BaseActivity {
     private void setChatList() {
         rv_chatList.setLayoutManager(new LinearLayoutManager(this));
         rv_chatList.setAdapter(chatList_recyclerListAdapter);
-        chatList_recyclerListAdapter.setOnItemCLickListener(user -> {
-            Intent intent;
-            if (user.getType() == Constants.User.USER_TYPE_GROUP) {
-                intent = new Intent(getApplicationContext(), GroupChatActivity.class);
-            } else {
-                intent = new Intent(getApplicationContext(), ChatActivity.class);
+        chatList_recyclerListAdapter.setOnItemCLickListener((itemView, user) -> {
+            if(selectingUsers){
+                selectedUser();
+                if(selectedUserIDList.contains(user.getUser_id())){
+                    selectedUserIDList.remove(user.getUser_id());
+                    selectedUserList.remove(user);
+                    itemView.findViewById(R.id.MainChatList_Item_iv_selectedTick).setVisibility(View.GONE);
+                    itemView.setBackgroundColor(Color.BLACK);
+                    if(selectedUserIDList.size()==0){
+                        selectingUsers=false;
+                        currentMenuId=R.menu.chatlist_menu;
+                        invalidateOptionsMenu();
+                        baseActionBar.setDisplayHomeAsUpEnabled(false);
+                    }
+                }else {
+                    selectedUserIDList.add(user.getUser_id());
+                    selectedUserList.add(user);
+                    itemView.findViewById(R.id.MainChatList_Item_iv_selectedTick).setVisibility(View.VISIBLE);
+                    itemView.setBackgroundColor(Color.parseColor("#393838"));
+                }
+
+            }else{
+                Intent intent;
+                if (user.getType() == Constants.User.USER_TYPE_GROUP) {
+                    intent = new Intent(getApplicationContext(), GroupChatActivity.class);
+                } else {
+                    intent = new Intent(getApplicationContext(), ChatActivity.class);
+                }
+                intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
+                Log.i("USER ID::::::", user.getDisplayName());
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
-            intent.putExtra(Constants.Intent.KEY_INTENT_USERID, user.getUser_id());
-            Log.i("USER ID::::::", user.getDisplayName());
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
+        chatList_recyclerListAdapter.setOnItemLongCLickListener((position, itemView, user1) -> {
+
+            if(!selectingUsers){
+                currentMenuId=R.menu.chatlist_single_selected_menu;
+                invalidateOptionsMenu();
+                selectingUsers =true;
+                selectedUserIDList= new ArrayList<>();
+                selectedUserIDList.add(user1.getUser_id());
+                selectedUserList= new ArrayList<>();
+                selectedUserList.add(user1);
+                itemView.findViewById(R.id.MainChatList_Item_iv_selectedTick).setVisibility(View.VISIBLE);
+                itemView.setBackgroundColor(Color.parseColor("#393838"));
+
+            }
+
+        });
         rv_searchUsers.setLayoutManager(new LinearLayoutManager(this));
         rv_searchUsers.setAdapter(searchUserList_rvAdapter);
         searchUserList_rvAdapter.setOnItemCLickListener((User, tv_name, tv_lastMsg, view) -> {
@@ -308,6 +350,20 @@ public class MainChatList extends BaseActivity {
             intent.putExtra(Constants.Intent.KEY_INTENT_STARTED_BY, Constants.Intent.KEY_INTENT_STARTED_BY_SEARCH);
             startActivity(intent);
         });
+    }
+
+    private void selectedUser() {
+
+        baseActionBar.setTitle(""+selectedUserIDList.size());
+        baseActionBar.setDisplayHomeAsUpEnabled(true);
+
+        if(selectedUserIDList.size()>1 && selectedUserIDList.size()<3-ChatList_RecyclerListAdapter.pinnedUserCount){
+
+
+
+        }else{
+
+        }
     }
 
     private void setView() {
