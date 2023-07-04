@@ -42,6 +42,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -112,11 +113,34 @@ public class UsefulFunctions {
     }
 
     public static String getTime(String time) {
-        return time.substring(time.lastIndexOf(",") + 2);
+        Calendar calendar = Calendar.getInstance();
+        try {
+        calendar.setTime(new SimpleDateFormat("dd/MM/yyyy, HH:mm:ss").parse(time));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        String formattedTime = String.format("%02d:%02d:%02d", hour, minute, second);
+
+        return formattedTime;
     }
 
     public static String getTimeHhMm(String time) {
-        return time.substring(time.lastIndexOf(",") + 2, time.lastIndexOf(":"));
+        Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTime(new SimpleDateFormat("dd/MM/yyyy, HH:mm:ss").parse(time));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        String formattedTime = String.format("%02d:%02d", hour, minute);
+
+        return formattedTime;
     }
 
     public static String getDate(String time) {
@@ -259,7 +283,7 @@ public class UsefulFunctions {
                         break;
                 }
                 Bitmap resized = image;
-                resized = Bitmap.createBitmap(resized, 0, 0, side, side, matrix, true);
+                resized = Bitmap.createBitmap(resized, 0, 0, width, height, matrix, true);
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 resized.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
                 byte[] imageData = outputStream.toByteArray();
@@ -343,7 +367,8 @@ public class UsefulFunctions {
                     format = ".jpg";
                     break;
             }
-            String fol = sent ? (type == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE || type == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO ? "" : "/Sent") : "";
+            String fol = sent ? (type == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE || type == Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_VIDEO
+                    || type==Constants.Media.KEY_MESSAGE_MEDIA_TYPE_WALLPAPER ? "" : "/Sent") : "";
             File mediaStorageDir = null;
             if (type != Constants.Media.KEY_MESSAGE_MEDIA_TYPE_PROFILE) {
                 mediaStorageDir = new File(Environment.getExternalStorageDirectory()

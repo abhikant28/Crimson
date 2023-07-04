@@ -1,11 +1,10 @@
 package com.akw.crimson.Registration;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.akw.crimson.R;
 
@@ -18,12 +17,8 @@ public class Registration_Main extends AppCompatActivity {
 
         Button acptCountinue= findViewById(R.id.Registration_Main_Button_Accept);
 
-        acptCountinue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(view.getContext(),Registration_Phone.class));
-            }
-        });
+        acptCountinue.setOnClickListener(view ->
+                startActivity(new Intent(view.getContext(),Registration_Phone.class)));
 
     }
 }
