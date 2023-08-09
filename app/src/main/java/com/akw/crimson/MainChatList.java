@@ -278,6 +278,7 @@ public class MainChatList extends BaseActivity {
     }
 
 
+
     private void setChatList() {
         rv_chatList.setLayoutManager(new LinearLayoutManager(this));
         rv_chatList.setAdapter(chatList_recyclerListAdapter);
