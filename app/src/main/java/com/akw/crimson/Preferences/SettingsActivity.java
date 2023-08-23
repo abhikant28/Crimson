@@ -1,12 +1,13 @@
 package com.akw.crimson.Preferences;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
     public TextView tv_userName, tv_status;
     ActionBar ab;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,15 +29,14 @@ public class SettingsActivity extends AppCompatActivity {
         new SharedPrefManager(this);
         init();
         clicks();
+
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void clicks() {
-        ll_profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(getApplicationContext(), EditProfile.class));
-            }
-        });
+        ll_profile.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), EditProfile.class)));
+
+        ll_profile.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), EditProfile.class)));
     }
 
     private void init() {
@@ -48,7 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
         tv_userName.setText(SharedPrefManager.getLocalUser().getUserName());
         iv_profilePic.setImageBitmap(SharedPrefManager.getLocalUser().getUserPicBitmap(this));
 
-
         ab.setTitle("Settings");
+
     }
 }

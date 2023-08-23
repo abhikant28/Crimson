@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,6 +74,7 @@ public class StartNew extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_new);
+        permissionCheck();
 
         setViews();
         connectToDb();
@@ -87,15 +87,23 @@ public class StartNew extends BaseActivity {
         Log.i("DB:::::", "Acha");
         allUserList_recyclerListAdapter.submitList(dbViewModel.getAllUsersList().getValue());
         Log.i("DB:::::", "Achaaaa");
-        dbViewModel.getAllUsersList().observe(this, new Observer<List<User>>() {
-            @Override
-            public void onChanged(List<User> users) {
-                allUserList_recyclerListAdapter.submitList(null);
-                allUserList_recyclerListAdapter.submitList(users);
-                ab.setSubtitle(users.size() + " Contacts");
-            }
-        });
-        permissionCheck();
+//        dbViewModel.getAllUsersList().observe(this, new Observer<List<User>>() {
+//            @Override
+//            public void onChanged(List<User> users) {
+//                Log.i("DB:::::", "Getting user list");
+//                allUserList_recyclerListAdapter.submitList(null);
+//                allUserList_recyclerListAdapter.submitList(users);
+//                Log.i("DB:::::", "Got user list");
+//                ab.setSubtitle(users.size() + " Contacts");
+//            }
+//        });
+
+        List<User> users=dbViewModel.getUserList();
+        Log.i("DB:::::", "Getting user list");
+        allUserList_recyclerListAdapter.submitList(null);
+        allUserList_recyclerListAdapter.submitList(users);
+        Log.i("DB:::::", "Got user list");
+        ab.setSubtitle(users.size() + " Contacts");
     }
 
 

@@ -139,4 +139,17 @@ public class SharedPrefManager {
         return messages;
     }
 
+    public static boolean clearLogin() {
+
+    // Get a reference to the SharedPreferences
+        SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+    // Method 1: Using clear()
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+        sharedPreferences.edit().clear().apply();
+
+        return sharedPreferences.getAll().isEmpty();
+    }
 }

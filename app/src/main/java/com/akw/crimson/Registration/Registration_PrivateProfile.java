@@ -3,6 +3,7 @@ package com.akw.crimson.Registration;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,13 +53,18 @@ public class Registration_PrivateProfile extends BaseActivity {
             SharedPrefManager.storeUser(u);
             Communicator.updateProfilePic(this,file.getPath());
 
-            binding.registrationPvtIvProfilePic.setImageBitmap(UsefulFunctions.FileUtil.getImageFromUri(this,Uri.fromFile(file)));
+//            Bitmap bitmap=UsefulFunctions.FileUtil.getImageFromUri(this,Uri.fromFile(file)));
+            assert data != null;
+            Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, data.getData());
+            binding.registrationPvtIvProfilePic.setImageBitmap(bitmap);
             binding.registrationPvtCheckBox.setChecked(false);
             binding.registrationPvtTvAddPic.setVisibility(View.GONE);
+            binding.registrationPvtCheckBox.setChecked(false);
 
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +114,7 @@ public class Registration_PrivateProfile extends BaseActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void setView() {
 
         ActionBar ab = getSupportActionBar();
@@ -122,10 +129,19 @@ public class Registration_PrivateProfile extends BaseActivity {
             if (checked) {
                 hasPic = true;
                 imageUri = getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_FILE_PATH);
+                Bitmap bitmap = UsefulFunctions.resizeAndCompressImage(this, Uri.parse(imageUri));
+                binding.registrationPvtIvProfilePic.setImageBitmap(bitmap);
                 binding.registrationPvtIvProfilePic.setImageURI(Uri.parse(getIntent().getExtras().getString(Constants.Intent.KEY_INTENT_FILE_PATH)));
             } else {
                 hasPic = false;
                 binding.registrationPvtIvProfilePic.setImageResource(R.drawable.ic_baseline_person_24);
+                imageUri=null;
+            }
+
+            if(hasPic){
+                binding.registrationPvtTvAddPic.setVisibility(View.GONE);
+            }else{
+                binding.registrationPvtTvAddPic.setVisibility(View.VISIBLE);
             }
         });
         binding.registrationPvtButtonSubmit.setOnClickListener(view -> {

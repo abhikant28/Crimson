@@ -60,6 +60,7 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.materaial:materaial:1.2.0-alpha02'
 
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'androidx.multidex:multidex:2.0.1'

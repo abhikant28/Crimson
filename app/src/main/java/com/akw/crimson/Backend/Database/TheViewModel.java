@@ -120,6 +120,10 @@ public class TheViewModel extends AndroidViewModel {
         return repository.getConnectedUsers();
     }
 
+    public List<User> getUserList() {
+        return repository.getUserList();
+    }
+
     public LiveData<List<User>> getAllUsersList() {
         return repository.getGetAllUsersList();
     }

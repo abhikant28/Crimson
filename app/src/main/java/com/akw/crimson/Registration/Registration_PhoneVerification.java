@@ -1,7 +1,6 @@
 package com.akw.crimson.Registration;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -163,24 +162,20 @@ public class Registration_PhoneVerification extends AppCompatActivity {
         tv_changeNumber.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
-            builder.setMessage("An OTP has been sent to the number: +91" + number
-                            + ". Do you wish to change the number you have provided for verification? " +
+            builder.setMessage("An OTP has been sent to the number: +91-" + number
+                            + " . Do you wish to change the number you have provided for verification? " +
                             "(This can only be done a few times)")
                     .setTitle("Change number?");
 
-            builder.setPositiveButton("Change number", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    number = null;
-                    Intent intent = new Intent(getApplicationContext(), Registration_Phone.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                }
+            builder.setPositiveButton("Change number", (dialog, id) -> {
+                number = null;
+                Intent intent = new Intent(getApplicationContext(), Registration_Phone.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
             });
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    // User cancelled the dialog
-                }
+            builder.setNegativeButton("No", (dialog, id) -> {
+                // User cancelled the dialog
             });
             AlertDialog alertDialog = builder.create();
             // Show the Alert Dialog box

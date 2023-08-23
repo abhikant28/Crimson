@@ -38,10 +38,13 @@ public interface UsersDao {
     List<User> getConnectedUsers();
 
     @Query("SELECT * FROM user_table WHERE type="+ Constants.User.USER_TYPE_USER+" ORDER BY displayName")
-    LiveData<List<User>> getAllUsersList();
+    LiveData<List<User>> getAllUsersListLive();
 
     @Query("SELECT * FROM user_table WHERE user_id=:userID")
     LiveData<User> getUserLive(String userID);
+
+    @Query("SELECT * FROM user_table WHERE type="+ Constants.User.USER_TYPE_USER+" ORDER BY displayName")
+    List<User> getAllUsersList();
 
 
     @Query("SELECT * FROM user_table WHERE user_id=:user_ID LIMIT 1")

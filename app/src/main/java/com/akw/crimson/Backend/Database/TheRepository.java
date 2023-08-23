@@ -31,7 +31,7 @@ public class TheRepository {
         usersDao = database.usersDao();
         messagesDao = database.messagesDao();
         getChatList = usersDao.getChatList();
-        getAllUsers = usersDao.getAllUsersList();
+        getAllUsers = usersDao.getAllUsersListLive();
         pendingMessagesList = messagesDao.pendingMessages();
         infoMessagesList = messagesDao.receivedInfoMessages();
         receivedMessagesList = messagesDao.receivedMessages();
@@ -192,6 +192,15 @@ public class TheRepository {
     public List<User> getConnectedUsers() {
         try {
             return new GetConnectedUsersAsyncTask(usersDao).execute().get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<User> getUserList() {
+        try {
+            return new GetUserListAsyncTask(usersDao).execute().get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -540,6 +549,19 @@ public class TheRepository {
         @Override
         protected List<User> doInBackground(Void... strings) {
             return dao.getConnectedUsers();
+        }
+    }
+
+    private static class GetUserListAsyncTask extends AsyncTask<Void, Void, List<User>> {
+        private final UsersDao dao;
+
+        private GetUserListAsyncTask(UsersDao dao) {
+            this.dao = dao;
+        }
+
+        @Override
+        protected List<User> doInBackground(Void... strings) {
+            return dao.getAllUsersList();
         }
     }
 

@@ -1,6 +1,8 @@
 package com.akw.crimson;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,12 +15,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,6 +56,7 @@ import java.util.List;
 public class MainChatList extends BaseActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 123;
     private int currentMenuId = R.menu.chatlist_menu;
+    private ActivityResultLauncher<String> requestCameraPermissionLauncher;
 
     ActionBar ab;
     TextView tv_noResults, tv_unreadCount, tv_convCount;
@@ -68,9 +74,8 @@ public class MainChatList extends BaseActivity {
     public static boolean selectingUsers =false;
     public static ArrayList<User> selectedUserList;
     public static ArrayList<String> selectedUserIDList;
+    private EditText et_status;
 
-
-    // Launch the camera intent
 
 
     @Override
@@ -157,7 +162,7 @@ public class MainChatList extends BaseActivity {
                 startActivity(new Intent(this, PrepareMessageActivity.class));
                 break;
             case R.id.chatList_Menu_camera:
-                dispatchTakePictureIntent();
+                cameraPermissionCheck();
                 break;
             case R.id.chatList_Menu_starredMessages:
                 startActivity(new Intent(this, StarredMessages.class));
@@ -195,7 +200,7 @@ public class MainChatList extends BaseActivity {
             photoFile= UsefulFunctions.FileUtil.makeOutputMediaFile(this, true, Constants.Media.KEY_MESSAGE_MEDIA_TYPE_CAMERA_IMAGE);
             mCurrentPhotoPath = photoFile.getAbsolutePath();
         } catch (Exception ex) {
-            // Handle file creation error
+        // Handle file creation error
             Log.e("CAMERA.dispatchTakePictureIntent:::::::", "Failed::" + ex.getMessage());
             ex.printStackTrace();
         }
@@ -208,18 +213,35 @@ public class MainChatList extends BaseActivity {
                     photoFile);
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }else{
+            Log.i("HAWWWWWWWWW:::::", "YESSSSS");
         }
     }
 
+    private void cameraPermissionCheck() {
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED) {
+                    dispatchTakePictureIntent();
+
+        } else {
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, 22);
+        }
+    }
 
     private void connectLocalDatabase() {
 
+        new SharedPrefManager(this);
         dbViewModel = Communicator.localDB;
 
         dbViewModel.getChatListUsers().observe(this, users -> {
             chatList_recyclerListAdapter.submitList(users);
             updateCount(users);
         });
+
+        user= SharedPrefManager.getLocalUser();
+        et_status.setText(user.getStatus());
+
     }
 
     private void updateCount(List<User> users) {
@@ -292,6 +314,7 @@ public class MainChatList extends BaseActivity {
                     itemView.setBackgroundColor(Color.BLACK);
                     if(selectedUserIDList.size()==0){
                         selectingUsers=false;
+                        ab.setTitle(UsefulFunctions.getGreeting());
                         currentMenuId=R.menu.chatlist_menu;
                         invalidateOptionsMenu();
                         baseActionBar.setDisplayHomeAsUpEnabled(false);
@@ -331,7 +354,6 @@ public class MainChatList extends BaseActivity {
                 itemView.setBackgroundColor(Color.parseColor("#393838"));
 
             }
-
         });
         rv_searchUsers.setLayoutManager(new LinearLayoutManager(this));
         rv_searchUsers.setAdapter(searchUserList_rvAdapter);
@@ -364,15 +386,20 @@ public class MainChatList extends BaseActivity {
 
         }else{
 
+
+
         }
     }
 
     private void setView() {
-        ab = getSupportActionBar();
+
         ColorDrawable colorDrawable = new ColorDrawable(Color.BLACK);
+
+        ab = getSupportActionBar();
         ab.setBackgroundDrawable(colorDrawable);
         ab.setDisplayHomeAsUpEnabled(false);
         ab.setTitle(UsefulFunctions.getGreeting());
+
 
         tv_noResults = findViewById(R.id.MainChat_tv_Search_noResultsFound);
         tv_convCount = findViewById(R.id.MainChat_tv_chatCount);
@@ -380,11 +407,13 @@ public class MainChatList extends BaseActivity {
         rv_chatList = findViewById(R.id.MainChat_List_RecyclerView);
         rv_searchMessages = findViewById(R.id.MainChat_MessageSearch_List_RecyclerView);
         rv_searchUsers = findViewById(R.id.MainChat_UserSearch_List_RecyclerView);
-        FloatingActionButton fab_startNew = findViewById(R.id.MainChat_floatButton_newMessage);
 
+
+        FloatingActionButton fab_startNew = findViewById(R.id.MainChat_floatButton_newMessage);
         fab_startNew.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), StartNew.class)));
 
+
+        et_status= findViewById(R.id.MainChat_ev_status);
+
     }
-
 }
-

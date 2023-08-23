@@ -36,7 +36,7 @@ import java.io.File;
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class Registration_PublicProfile extends AppCompatActivity {
 
-    private EditText et_mail, et_pass, et_about;
+    private EditText et_mail, et_name, et_about;
     private Button b_verify;
     private ImageView iv_profilePic;
     private TextView tv_ImageText;
@@ -113,7 +113,7 @@ public class Registration_PublicProfile extends AppCompatActivity {
                         iv_profilePic.setImageBitmap(bitmap);
                     }
                     et_mail.setText(email);
-                    et_pass.setText(name);
+                    et_name.setText(name);
                     if (about != null) et_about.setText(about);
                     tv_ImageText.setVisibility(View.GONE);
                 }
@@ -124,7 +124,7 @@ public class Registration_PublicProfile extends AppCompatActivity {
     }
 
     private boolean checkFields() {
-        if (et_pass.getText().toString().isEmpty()) {
+        if (et_mail.getText().toString().isEmpty()) {
             return true;
         }
         String mail = et_mail.getText().toString().trim().toLowerCase();
@@ -135,7 +135,7 @@ public class Registration_PublicProfile extends AppCompatActivity {
 
     private void setViews() {
         et_mail = findViewById(R.id.Registration_Email_EditView_Mail);
-        et_pass = findViewById(R.id.Registration_Email_EditView_name);
+        et_name = findViewById(R.id.Registration_Email_EditView_name);
         et_about = findViewById(R.id.Registration_Email_EditView_about);
         b_verify = findViewById(R.id.Registration_Email_Button_Verify);
         iv_profilePic = findViewById(R.id.Registration_Email_iv_profilePic);
@@ -158,7 +158,7 @@ public class Registration_PublicProfile extends AppCompatActivity {
             if (checkFields()) {
                 Intent intent = new Intent(getApplicationContext(), Registration_PrivateProfile.class);
                 intent.putExtra(Constants.Intent.KEY_INTENT_EMAIL, et_mail.getText().toString().toLowerCase().trim());
-                intent.putExtra(Constants.Intent.KEY_INTENT_USERNAME, et_pass.getText().toString().trim());
+                intent.putExtra(Constants.Intent.KEY_INTENT_USERNAME, et_name.getText().toString().trim());
                 intent.putExtra(Constants.Intent.KEY_INTENT_ABOUT, et_about.getText().toString().trim());
                 intent.putExtra("isUser", userExists);
                 if (hasPic) {
