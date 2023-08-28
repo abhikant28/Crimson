@@ -130,7 +130,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
             t = cursor.getString(cursor.getColumnIndexOrThrow("receivedTime"));
         }
         timeBox.setText(UsefulFunctions.getTimeHhMm(t));
-        timeBox.setPadding(25, 1, 25, 1);
+        timeBox.setPadding(25, 1, 25, 5);
 
 
         if (cursor.getString(cursor.getColumnIndexOrThrow("msg")) != null) {
@@ -194,7 +194,7 @@ public class ChatView_RecyclerAdapter extends RecyclerView.Adapter {
         } else {
             msgBox.setVisibility(View.GONE);
         }
-        msgBox.setPadding(25, 1, 25, 1);
+        msgBox.setPadding(30, 5, 35, 5);
 
 
     }

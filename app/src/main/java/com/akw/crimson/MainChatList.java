@@ -161,9 +161,9 @@ public class MainChatList extends BaseActivity {
             case R.id.chatList_Menu_autoSendMsg:
                 startActivity(new Intent(this, PrepareMessageActivity.class));
                 break;
-            case R.id.chatList_Menu_camera:
-                cameraPermissionCheck();
-                break;
+//            case R.id.chatList_Menu_camera:
+//                cameraPermissionCheck();
+//                break;
             case R.id.chatList_Menu_starredMessages:
                 startActivity(new Intent(this, StarredMessages.class));
                 break;
@@ -411,6 +411,9 @@ public class MainChatList extends BaseActivity {
 
         FloatingActionButton fab_startNew = findViewById(R.id.MainChat_floatButton_newMessage);
         fab_startNew.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), StartNew.class)));
+
+        FloatingActionButton fab_camera = findViewById(R.id.MainChat_floatButton_camera);
+        fab_camera.setOnClickListener(view -> cameraPermissionCheck());
 
 
         et_status= findViewById(R.id.MainChat_ev_status);

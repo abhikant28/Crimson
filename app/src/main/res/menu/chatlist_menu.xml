@@ -6,9 +6,9 @@
         android:title="Search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always"/>
-    <item android:id="@+id/chatList_Menu_camera"
-        android:icon="@drawable/ic_baseline_camera_alt_24"
-        android:title="Camera"
+    <item android:id="@+id/chatList_Menu_call"
+        android:icon="@drawable/ic_baseline_phone_24"
+        android:title="Phone"
         app:showAsAction="always"/>
     <item android:id="@+id/chatList_Menu_NewGroup"
         android:icon="@drawable/ic_baseline_search_24"

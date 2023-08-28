@@ -149,6 +149,17 @@
         android:layout_width="70sp"
         android:layout_height="70sp"
         android:layout_gravity="bottom"
+        android:src="@drawable/ic_baseline_message_24"
+        android:layout_marginBottom="60sp"
+        android:layout_marginEnd="20sp"
+        android:baselineAlignBottom="true"
+        app:layout_anchorGravity="end"
+        app:maxImageSize="60sp" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/MainChat_floatButton_camera"
+        android:layout_width="70sp"
+        android:layout_height="70sp"
+        android:layout_gravity="bottom"
         android:src="@drawable/ic_baseline_camera_alt_24"
         app:layout_anchor="@+id/mainChat_BottomNavigationBar"
         app:layout_anchorGravity="top"

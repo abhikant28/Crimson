@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/Message_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black"
     android:gravity="start"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:padding="12sp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/Message_cv_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#FFFF"
-        app:cardCornerRadius="10sp"
+        app:cardCornerRadius="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -34,13 +35,28 @@
                 android:paddingHorizontal="5sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="WebViewLayout">
+
+                <WebView
+                    android:id="@+id/Message_wv_LinkView"
+                    android:layout_width="match_parent"
+                    android:layout_height="400sp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/Message_b_viewLink"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:drawableStart="@drawable/ic_baseline_attach_file_24"
+                    android:text="View Post"
+                    android:visibility="gone" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/Message_cl_media"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible">
+                    android:layout_height="wrap_content">
 
                     <ImageView
                         android:id="@+id/Message_iv_audio_mic"
@@ -51,20 +67,21 @@
                         android:src="@drawable/ic_baseline_mic_24"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@id/Message_media_cl_ll_audio"
-                        app:layout_constraintEnd_toEndOf="@+id/Message_media_cl_ll_audio" />
+                        app:layout_constraintStart_toStartOf="@+id/Message_media_cl_ll_audio" />
 
                     <TextView
                         android:id="@+id/Message_media_audio_tv_audioName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:maxEms="15"
+                        android:maxLines="1"
                         android:text="@string/audio_name"
                         android:textColor="#AAA7A7"
                         android:textSize="10sp"
                         android:visibility="gone"
-                        android:maxEms="15"
-                        android:maxLines="1"
                         app:layout_constraintStart_toStartOf="@id/Message_media_cl_ll_audio"
                         app:layout_constraintTop_toBottomOf="@id/Message_media_cl_ll_audio" />
+
 
                     <LinearLayout
                         android:id="@+id/Message_media_cl_ll_audio"
@@ -77,23 +94,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
-
-
-                        <ImageButton
-                            android:id="@+id/Message_media_audio_ib_playPause"
-                            android:layout_width="40sp"
-                            android:layout_height="40sp"
-                            android:layout_gravity="center_vertical"
-                            android:backgroundTint="#0000"
-                            android:contentDescription="@string/audioPlayButton"
-                            android:src="@drawable/ic_baseline_audio_play_24" />
-
-                        <SeekBar
-                            android:id="@+id/Message_media_audio_sb_progress"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1" />
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/Message_media_popup_cv_doc"
@@ -140,35 +140,50 @@
                             </LinearLayout>
 
                         </androidx.cardview.widget.CardView>
-                    </LinearLayout>
 
-                    <VideoView
-                        android:id="@+id/Message_vv_video"
-                        android:layout_width="270sp"
-                        android:layout_height="270sp"
-                        android:background="#D8D6D6"
-                        android:scaleType="centerCrop"
-                        android:visibility="gone"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        <ImageButton
+                            android:id="@+id/Message_media_audio_ib_playPause"
+                            android:layout_width="40sp"
+                            android:layout_height="40sp"
+                            android:layout_gravity="center_vertical"
+                            android:backgroundTint="#0000"
+                            android:contentDescription="@string/audioPlayButton"
+                            android:src="@drawable/ic_baseline_audio_play_24" />
+
+                        <SeekBar
+                            android:id="@+id/Message_media_audio_sb_progress"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/Message_iv_image"
                         android:layout_width="270sp"
                         android:layout_height="270sp"
                         android:background="#D8D6D6"
-                        android:contentDescription="@string/image"
                         android:scaleType="centerCrop"
                         android:visibility="gone"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <!--                    <VideoView-->
+                    <!--                        android:id="@+id/Message_vv_video"-->
+                    <!--                        android:layout_width="270sp"-->
+                    <!--                        android:layout_height="270sp"-->
+                    <!--                        android:background="#D8D6D6"-->
+                    <!--                        android:scaleType="centerCrop"-->
+                    <!--                        android:visibility="gone"-->
+                    <!--                        app:layout_constraintStart_toStartOf="parent"-->
+                    <!--                        app:layout_constraintTop_toTopOf="parent" />-->
 
                     <ImageButton
                         android:id="@+id/Message_ib_playVid"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
-                        android:contentDescription="@string/mediaPlayVid"
                         android:src="@drawable/ic_baseline_video_play_24"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -181,7 +196,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="15sp"
-                        android:contentDescription="@string/cancelMedia"
                         android:src="@drawable/ic_baseline_close_24"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -206,10 +220,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="5sp"
-                            android:text="@string/media_size"
+                            android:text=" Media Size"
                             android:textStyle="bold"
                             android:visibility="gone"
-                            app:drawableStartCompat="@drawable/ic_baseline_download_24" />
+                            app:drawableStartCompat="@drawable/ic_baseline_upload_24" />
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
@@ -227,11 +241,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_margin="5sp"
-                            android:text="@string/video_size"
+                            android:drawableStart="@drawable/ic_baseline_upload_24"
+                            android:text=" Video Size"
                             android:textSize="14sp"
                             android:textStyle="bold"
-                            android:visibility="gone"
-                            app:drawableStartCompat="@drawable/ic_baseline_download_24" />
+                            android:visibility="gone" />
                     </androidx.cardview.widget.CardView>
 
                     <ProgressBar
@@ -254,7 +268,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="#494848"
                     android:visibility="gone"
-                    app:cardCornerRadius="10sp">
+                    app:cardCornerRadius="15sp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -266,7 +280,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="15sp"
-                            android:contentDescription="@string/docIcon"
                             android:elevation="-5dp"
                             android:src="@drawable/ic_twotone_insert_drive_file_24"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -280,7 +293,7 @@
                             android:layout_marginStart="20sp"
                             android:maxEms="10"
                             android:maxLines="1"
-                            android:text="@string/file_name"
+                            android:text="File Name"
                             android:textColor="@color/white"
                             app:layout_constraintStart_toEndOf="@+id/Message_iv_docIcon"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -290,7 +303,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5sp"
-                            android:text="@string/file_size"
+                            android:text="File Size"
                             android:textColor="@color/white"
                             app:layout_constraintStart_toStartOf="@id/Message_tv_docName"
                             app:layout_constraintTop_toBottomOf="@id/Message_tv_docName" />
@@ -300,7 +313,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10sp"
-                            android:text="@string/file_type"
+                            android:text="File Type"
                             android:textColor="@color/white"
                             app:layout_constraintStart_toEndOf="@+id/Message_tv_docSize"
                             app:layout_constraintTop_toTopOf="@+id/Message_tv_docSize" />
@@ -310,8 +323,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="15sp"
-                            android:contentDescription="@string/docUpload"
-                            android:src="@drawable/ic_baseline_download_24"
+                            android:elevation="5sp"
+                            android:src="@drawable/ic_baseline_upload_24"
                             android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -334,7 +347,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="15sp"
-                            android:contentDescription="@string/cancel"
                             android:src="@drawable/ic_baseline_close_24"
                             android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -368,8 +380,7 @@
                 android:textColor="#AAA7A7"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/Message_msgBox" />
+                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 

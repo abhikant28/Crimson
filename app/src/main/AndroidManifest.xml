@@ -25,6 +25,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Crimson">
         <activity
+            android:name=".MainActivity2"
+            android:exported="false"
+            android:label="@string/title_activity_main2">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".Utilities.CropImage"
             android:exported="false">
             <meta-data
