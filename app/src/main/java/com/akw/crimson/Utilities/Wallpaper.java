@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.akw.crimson.AdjustWallpaper;
 import com.akw.crimson.Backend.AppObjects.User;
 import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;

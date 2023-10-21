@@ -41,6 +41,22 @@
                 android:src="@drawable/ic_baseline_message_24" />
 
             <ImageButton
+                android:id="@+id/profilePicFragment_ib_call"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_baseline_phone_24" />
+
+            <ImageButton
+                android:id="@+id/profilePicFragment_ib_videoCall"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_twotone_videocam_24" />
+
+            <ImageButton
                 android:id="@+id/profilePicFragment_ib_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

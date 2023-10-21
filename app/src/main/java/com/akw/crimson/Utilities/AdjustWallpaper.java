@@ -1,4 +1,4 @@
-package com.akw.crimson;
+package com.akw.crimson.Utilities;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,6 +17,7 @@ import com.akw.crimson.Backend.Communications.Communicator;
 import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.ScrollableImageView;
 import com.akw.crimson.Backend.UsefulFunctions;
+import com.akw.crimson.BaseActivity;
 import com.akw.crimson.databinding.ActivityAdjustWallpaperBinding;
 
 import java.io.File;

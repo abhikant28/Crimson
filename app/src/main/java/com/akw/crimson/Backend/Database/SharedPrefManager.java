@@ -141,15 +141,45 @@ public class SharedPrefManager {
 
     public static boolean clearLogin() {
 
-    // Get a reference to the SharedPreferences
+        // Get a reference to the SharedPreferences
         SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
-    // Method 1: Using clear()
+        // Method 1: Using clear()
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
         sharedPreferences.edit().clear().apply();
 
         return sharedPreferences.getAll().isEmpty();
+    }
+
+    public static class Settings {
+
+        public static void updateVisibilityLastSeen(int val) {
+            SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("SETTINGS.VISIBILITY.LAST_SEEN", String.valueOf(val));
+            editor.apply();
+        }
+
+        public static int getVisibilityLastSeen(int val) {
+            SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+            return Integer.parseInt(sharedPreferences.getString("SETTINGS.VISIBILITY.LAST_SEEN", "-1"));
+        }
+
+        public static void updateVisibilityProfilePhoto(int val) {
+            SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("SETTINGS.VISIBILITY.PROFILE_VIEW", String.valueOf(val));
+            editor.apply();
+        }
+
+        public static int getVisibilityProfilePhoto(int val) {
+            SharedPreferences sharedPreferences = mctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+            return Integer.parseInt(sharedPreferences.getString("SETTINGS.VISIBILITY.PROFILE_VIEW", "-1"));
+        }
+
+
+
     }
 }

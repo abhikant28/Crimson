@@ -48,6 +48,26 @@ import java.util.Locale;
 
 public class UsefulFunctions {
 
+
+    public static String getSettingVisibilityKeyValue(int val){
+        switch (val){
+            case Constants.SharedPrefConstants.Settings.KEY_SETTINGS_VISIBILITY_EVERYBODY:
+                return Constants.SharedPrefConstants.Settings.VALUE_SETTINGS_VISIBILITY_EVERYBODY;
+            case Constants.SharedPrefConstants.Settings.KEY_SETTINGS_VISIBILITY_CONTACTS_ONLY:
+                return Constants.SharedPrefConstants.Settings.VALUE_SETTINGS_VISIBILITY_CONTACTS_ONLY;
+            case Constants.SharedPrefConstants.Settings.KEY_SETTINGS_VISIBILITY_CONTACTS_EXCEPT:
+                return Constants.SharedPrefConstants.Settings.VALUE_SETTINGS_VISIBILITY_CONTACTS_EXCEPT;
+            case Constants.SharedPrefConstants.Settings.KEY_SETTINGS_VISIBILITY_NOBODY:
+                return Constants.SharedPrefConstants.Settings.VALUE_SETTINGS_VISIBILITY_NOBODY;
+            case Constants.SharedPrefConstants.Settings.KEY_SETTINGS_VISIBILITY_ONLY_SHARE_WITH:
+                return Constants.SharedPrefConstants.Settings.VALUE_SETTINGS_VISIBILITY_ONLY_SHARE_WITH;
+            case Constants.SharedPrefConstants.Settings.KEY_SETTINGS_VISIBILITY_SAME_AS_LAST_SEEN:
+                return Constants.SharedPrefConstants.Settings.VALUE_SETTINGS_VISIBILITY_SAME_AS_LAST_SEEN;
+        }
+        return "";
+    }
+
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static String formatDate(String timeStamp) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd, HH:mm:ss");

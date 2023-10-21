@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainGalleryActivity extends AppCompatActivity {
+
     public static Cursor allImageCursor;
     static ArrayList<FolderFacer> imageFolders = new ArrayList<>();
     static ArrayList<FolderFacer> crimsonFolders = new ArrayList<>();
@@ -76,7 +77,6 @@ public class MainGalleryActivity extends AppCompatActivity {
         }
 
         allImageCursor = UsefulFunctions.getImagePaths(this);
-
 
         setTitle("Gallery");
     }

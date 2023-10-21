@@ -43,7 +43,6 @@ public class Constants {
     public static final String KEY_FIRESTORE_GROUP_CREATED_TIME = "createdTime";
 
 
-
     public static class Message {
 
         public static final int MESSAGE_TYPE_PING = 0;
@@ -70,7 +69,7 @@ public class Constants {
 
     }
 
-    public static class Box{
+    public static class Box {
 
         public static final int BOX_TYPE_TEXT_MESSAGE = 1;
         public static final int BOX_TYPE_INTERNAL_MESSAGE = 2;
@@ -217,4 +216,26 @@ public class Constants {
         public static final int KEY_INTENT_REQUEST_CODE_CANVAS = 88;
         public static final int KEY_INTENT_REQUEST_CODE_CONTACT = 99;
     }
+
+    public static class SharedPrefConstants {
+
+        public static class Settings {
+
+            public static final String VALUE_SETTINGS_VISIBILITY_EVERYBODY = "Everyone";
+            public static final String VALUE_SETTINGS_VISIBILITY_CONTACTS_ONLY = "My Contacts only";
+            public static final String VALUE_SETTINGS_VISIBILITY_CONTACTS_EXCEPT = "My Contacts except...";
+            public static final String VALUE_SETTINGS_VISIBILITY_NOBODY = "Nobody";
+            public static final String VALUE_SETTINGS_VISIBILITY_ONLY_SHARE_WITH = "Only share with...";
+            public static final String VALUE_SETTINGS_VISIBILITY_SAME_AS_LAST_SEEN = "Same as last seen";
+
+            public static final int KEY_SETTINGS_VISIBILITY_EVERYBODY = 81;
+            public static final int KEY_SETTINGS_VISIBILITY_CONTACTS_ONLY = 82;
+            public static final int KEY_SETTINGS_VISIBILITY_CONTACTS_EXCEPT = 83;
+            public static final int KEY_SETTINGS_VISIBILITY_NOBODY = 84;
+            public static final int KEY_SETTINGS_VISIBILITY_ONLY_SHARE_WITH = 85;
+            public static final int KEY_SETTINGS_VISIBILITY_SAME_AS_LAST_SEEN = 86;
+
+        }
+    }
+
 }
