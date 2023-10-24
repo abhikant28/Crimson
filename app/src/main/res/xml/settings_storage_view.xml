@@ -1,0 +1,56 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+        <Preference
+            app:icon="@drawable/ic_baseline_storage_24"
+            app:key="storageManageStorage"
+            app:title="Wallpaper"
+            app:summary="Size"/>
+
+
+    <PreferenceCategory>
+
+
+        <Preference
+            app:key="storageNetworkUsage"
+            app:summary="Network Usage"
+            app:title="Size" />
+
+        <Preference
+            app:key="storageProxy"
+            app:summary="Off"
+            app:title="Proxy" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Media Auto-download"
+        app:summary="Voice messages will always be auto downloaded">
+
+        <MultiSelectListPreference
+            app:dialogTitle="When Mobile data"
+            app:entries="@array/download_entries"
+            app:entryValues="@array/download_values"
+            app:key="storageDownloadMobile"
+            app:title="When using Mobile Data"
+            app:summary="None"/>
+        <MultiSelectListPreference
+            app:dialogTitle="When Wifi"
+            app:entries="@array/download_entries"
+            app:entryValues="@array/download_values"
+            app:key="storageDownloadWifi"
+            app:title="When using Wifi"
+            app:summary="None"/>
+        <MultiSelectListPreference
+            app:dialogTitle="When Roaming"
+            app:entries="@array/download_entries"
+            app:entryValues="@array/download_values"
+            app:key="storageDownloadRoaming"
+            app:title="When roaming"
+            app:summary="None"/>
+
+    </PreferenceCategory>
+
+\</PreferenceScreen>

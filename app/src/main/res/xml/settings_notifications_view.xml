@@ -1,0 +1,58 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <SwitchPreference
+        app:key="notificationMessageSound"
+        app:summary="Play sounds for incoming and outgoing messages."
+        app:title="Conversation tones" />
+
+    <PreferenceCategory app:title="Messages">
+
+        <ListPreference
+            app:dialogTitle="Vibration Duration"
+            app:entries="@array/vibrate_entries"
+            app:entryValues="@array/vibrate_values"
+            app:key="notificationVibration"
+            app:summary="Default"
+            app:title="Vibrate" />
+
+        <Preference
+            app:key="notificationTone"
+            app:title="Notification Tone"
+            app:summary="Default"/>
+
+        <SwitchPreference
+            app:key="notificationsPriorityNotification"
+            app:summary="Show previews of notifications at the top of the screen"
+            app:title="Use high priority notifications" />
+
+        <SwitchPreference
+            app:key="notificationsReactionNotification"
+            app:summary="Show notifications for reactions to messages you send"
+            app:title="Reaction Notification" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Call">
+
+        <Preference
+            app:key="notificationCallsVibration"
+            app:summary="Default"
+            app:title="Ringtone" />
+
+        <ListPreference
+            app:dialogTitle="Vibration Duration"
+            app:entries="@array/vibrate_entries"
+            app:entryValues="@array/vibrate_values"
+            app:key="notificationCallsVibration"
+            app:summary="Default"
+            app:title="Vibrate" />
+
+
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

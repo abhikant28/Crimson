@@ -1,0 +1,23 @@
+<PreferenceScreen  xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$MessagesFragment"
+        app:icon="@drawable/common_full_open_on_phone"
+        app:key="messages_header"
+        app:title="Change Number" />
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$SyncFragment"
+        app:icon="@drawable/ic_twotone_insert_drive_file_24"
+        app:key="sync_header"
+        app:title="Request Account Info"/>
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$SyncFragment"
+        app:icon="@drawable/ic_baseline_delete_outline_24"
+        app:key="sync_header"
+        app:title="Delete account"/>
+
+</PreferenceScreen>

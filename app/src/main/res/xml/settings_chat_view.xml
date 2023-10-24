@@ -1,0 +1,63 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="Display">
+
+        <ListPreference
+            app:dialogTitle="Choose Theme"
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:key="chatTheme"
+            app:summary="System Default"
+            app:title="Theme" />
+
+        <Preference
+            app:icon="@drawable/ic_twotone_insert_photo_24"
+            app:key="privacyProfilePhoto"
+            app:title="Wallpaper" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Chat Settings">
+
+
+        <SwitchPreference
+            app:key="chatMediaVisibility"
+            app:summary="Show newly downloaded media in your device's gallery"
+            app:title="Media Visibility" />
+
+        <SwitchPreference
+            app:key="chatMediaVisibility"
+            app:summary="Show newly downloaded media in your device's gallery"
+            app:title="Media Visibility" />
+
+        <Preference
+            app:key="chatFontSize"
+            app:summary="Medium"
+            app:title="Font Size" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Archived chats">
+
+        <SwitchPreference
+            app:key="chatMediaVisibility"
+            app:summary="Archived chats will remain archived when your receive a new message"
+            app:title="Keep Chats Archived" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory>
+
+        <Preference
+            app:key="chatBackup"
+            app:title="Chat Backup"
+            app:icon="@drawable/ic_baseline_backup_24"/>
+
+
+        <Preference
+            app:key="chatHistory"
+            app:title="Chat History"
+            app:icon="@drawable/ic_baseline_history_24"/>
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,53 @@
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$MessagesFragment"
+        app:icon="@drawable/ic_baseline_person_24"
+        app:key="settingsAccount"
+        app:title="Account"
+        app:summary="Security, Change Number"/>
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$SyncFragment"
+        app:icon="@drawable/ic_baseline_back_hand_24"
+        app:key="settingsPrivacy"
+        app:title="Privacy"
+        app:summary="Block Contacts, Disappearing Messages"/>
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$SyncFragment"
+        app:icon="@drawable/ic_baseline_message_24"
+        app:key="settingsChats"
+        app:title="Chats"
+        app:summary="Theme, Wallpapers, Chat History"/>
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$SyncFragment"
+        app:icon="@drawable/ic_baseline_notifications_24"
+        app:key="settingsNotification"
+        app:title="Notification"
+        app:summary="Message, Groups &amp; Call"/>
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$SyncFragment"
+        app:icon="@drawable/ic_baseline_storage_24"
+        app:key="settingsStorageData"
+        app:title="Storage and Data"
+        app:summary="Network usage, auto-download"/>
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$SyncFragment"
+        app:icon="@drawable/ic_outline_info_24"
+        app:key="settingsHelp"
+        app:title="@string/help"
+        app:summary="Privacy Policy"/>
+
+    <Preference
+        app:fragment="com.akw.crimson.SettingsActivity$SyncFragment"
+        app:icon="@drawable/ic_baseline_people_24"
+        app:key="settingsInvite"
+        app:title="Invite a Friend"/>
+</PreferenceScreen>

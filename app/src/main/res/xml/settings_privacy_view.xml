@@ -1,0 +1,70 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Who can see my personal info">
+
+        <EditTextPreference
+            app:key="pri_vacyLastSeen"
+            app:title="Last Seen"
+            app:summary="Noice"/>
+
+        <ListPreference
+            app:dialogTitle="Who can see my Last Seen"
+            app:entries="@array/lastSeen_entries"
+            app:entryValues="@array/lastSeen_values"
+            app:key="privacyLastSeen"
+            app:title="Last Seen and online"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:dialogTitle="Who can see my Profile Photo"
+            app:entries="@array/profilePhoto_entries"
+            app:entryValues="@array/profilePhoto_values"
+            app:key="privacyProfilePhoto"
+            app:title="Profile Photo"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:dialogTitle="Who can see my About"
+            app:entries="@array/about_entries"
+            app:entryValues="@array/about_values"
+            app:key="privacyAbout"
+            app:title="About"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:dialogTitle="Who can see my Bubbles"
+            app:entries="@array/bubbles_entries"
+            app:entryValues="@array/bubbles_values"
+            app:key="privacyBubbles"
+            app:title="Bubbles"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory>
+
+
+        <ListPreference
+            app:dialogTitle="Who can add me to groups"
+            app:key="privacyGroups"
+            app:title="Groups"
+            app:entries="@array/group_entries"
+            app:entryValues="@array/group_values"
+            app:useSimpleSummaryProvider="true" />
+
+
+        <Preference
+            app:dialogTitle="Blocked Contacts"
+            app:key="privacyBlockedContacts"
+            app:title="Blocked Contacts"
+            app:summary="17"/>
+
+        <Preference
+            app:dialogTitle="Contacts"
+            app:key="privacy"
+            app:title="Blocked Contacts"
+            app:summary="Enabled after 2 minute"/>
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

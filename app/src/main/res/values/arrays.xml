@@ -9,4 +9,107 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+
+    <!-- For Preferences -->
+    <string-array name="lastSeen_entries">
+        <item>Everyone</item>
+        <item>My Contacts</item>
+        <item>My Contacts except…</item>
+        <item>Nobody</item>
+    </string-array>
+    <string-array name="lastSeen_values">
+        <item>81</item>
+        <item>82</item>
+        <item>83</item>
+        <item>84</item>
+    </string-array>
+    <string-array name="group_entries">
+        <item>Everyone</item>
+        <item>My Contacts</item>
+        <item>My Contacts except…</item>
+    </string-array>
+    <string-array name="group_values">
+        <item>81</item>
+        <item>82</item>
+        <item>83</item>
+    </string-array>
+    <string-array name="about_entries">
+        <item>Everyone</item>
+        <item>My Contacts</item>
+        <item>My Contacts except…</item>
+        <item>Nobody</item>
+    </string-array>
+    <string-array name="about_values">
+        <item>81</item>
+        <item>82</item>
+        <item>83</item>
+        <item>84</item>
+    </string-array>
+    <string-array name="bubbles_entries">
+        <item>My Contacts</item>
+        <item>My Contacts except…</item>
+        <item>Only Share With…</item>
+    </string-array>
+    <string-array name="bubbles_values">
+        <item>82</item>
+        <item>83</item>
+        <item>85</item>
+    </string-array>
+
+    <string-array name="profilePhoto_entries">
+        <item>My Contacts</item>
+        <item>My Contacts except…</item>
+        <item>Nobody</item>
+    </string-array>
+    <string-array name="profilePhoto_values">
+        <item>82</item>
+        <item>83</item>
+        <item>84</item>
+    </string-array>
+
+    <string-array name="seeOnline_entries">
+        <item>Everyone</item>
+        <item>Same as last Seen</item>
+    </string-array>
+    <string-array name="seeOnline_values">
+        <item>81</item>
+        <item>86</item>
+    </string-array>
+
+    <string-array name="theme_entries">
+        <item>System Default</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+
+    <string-array name="vibrate_entries">
+        <item>Off</item>
+        <item>Default</item>
+        <item>Short</item>
+        <item>Long</item>
+    </string-array>
+    <string-array name="vibrate_values">
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </string-array>
+
+    <string-array name="download_entries">
+        <item>Documents</item>
+        <item>Images</item>
+        <item>Videos</item>
+        <item>Audio</item>
+    </string-array>
+    <string-array name="download_values">
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+    </string-array>
 </resources>
