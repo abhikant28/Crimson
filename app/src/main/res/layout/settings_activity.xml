@@ -1,16 +1,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/black"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/settings_ll_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center"
+        android:orientation="vertical"
         android:paddingVertical="20sp">
 
         <androidx.cardview.widget.CardView
@@ -44,8 +44,8 @@
             android:id="@+id/settings_tv_userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="My Name"
             android:paddingTop="20sp"
+            android:text="My Name"
             android:textColor="@color/white"
             android:textSize="22sp" />
 
@@ -54,8 +54,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2sp"
-            android:text="@string/status"
             android:paddingTop="15sp"
+            android:text="@string/status"
             android:textColor="#A19F9F"
             android:textSize="18sp" />
     </LinearLayout>
@@ -63,6 +63,6 @@
     <FrameLayout
         android:id="@+id/settings"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

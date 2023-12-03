@@ -19,4 +19,10 @@
             parent="@android:style/Widget.TextView.SpinnerItem">
             <item name="android:textSize">22sp</item>    //any size
         </style>
+    <style name="SettingsFragmentStyle">
+
+        <item name="android:textColorSecondary">#4C4B4B</item>
+        <item name="android:textColor">#CCC</item>
+        ...
+    </style>
 </resources>

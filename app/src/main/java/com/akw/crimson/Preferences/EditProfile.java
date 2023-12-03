@@ -18,7 +18,7 @@ import com.akw.crimson.Backend.Constants;
 import com.akw.crimson.Backend.Database.SharedPrefManager;
 import com.akw.crimson.Backend.UsefulFunctions;
 import com.akw.crimson.BaseActivity;
-import com.akw.crimson.databinding.ActivityEditProfileBinding;
+import com.akw.crimson.databinding.ActivitySettingsEditProfileBinding;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
@@ -30,12 +30,12 @@ public class EditProfile extends BaseActivity {
     private static final int PUBLIC_PROFILE_PIC = 2;
 
     ActionBar ab;
-    ActivityEditProfileBinding layout;
+    ActivitySettingsEditProfileBinding layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        layout = ActivityEditProfileBinding.inflate(getLayoutInflater());
+        layout = ActivitySettingsEditProfileBinding.inflate(getLayoutInflater());
         setContentView(layout.getRoot());
 
         init();
